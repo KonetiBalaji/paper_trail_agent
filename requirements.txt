@@ -9,3 +9,6 @@ pytest>=8,<10
 reportlab>=4,<5
 pypdfium2>=4,<6
 Pillow>=10,<14
+SQLAlchemy>=2.0,<3
+psycopg[binary]>=3.2,<4
+cryptography>=44,<51

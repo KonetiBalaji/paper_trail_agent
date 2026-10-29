@@ -1,5 +1,9 @@
 const $ = id => document.getElementById(id);
 let report = null;
+let currentRole = 'admin';
+function csrfToken() {
+  return document.cookie.split('; ').find(part => part.startsWith('pta_csrf='))?.split('=').slice(1).join('=') || '';
+}
 function el(tag, text, cls) {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -7,7 +11,11 @@ function el(tag, text, cls) {
   return node;
 }
 async function jsonRequest(url, options) {
-  const response = await fetch(url, options);
+  const settings = {...options};
+  if (settings.method && !['GET', 'HEAD'].includes(settings.method)) {
+    settings.headers = {...settings.headers, 'X-CSRF-Token': csrfToken()};
+  }
+  const response = await fetch(url, settings);
   const body = await response.json();
   if (!response.ok) throw Error(typeof body.detail === 'string' ? body.detail : 'Request rejected. Check the supplied values.');
   return body;
@@ -30,6 +38,7 @@ $('upload').addEventListener('submit', async event => {
     report = await jsonRequest('/api/analyze', {method: 'POST', body: form});
     location.hash = 'case=' + report.id;
     render();
+    loadHistory();
     $('message').textContent = 'Analysis complete. Review decisions do not change the original machine findings.';
   } catch (error) { $('message').textContent = error.message; }
   finally { $('analyze').disabled = false; }
@@ -40,6 +49,7 @@ function showDoc(id, source) {
   $('document').value = id;
   $('original').href = `/api/cases/${report.id}/documents/${id}#page=${source?.page || 1}`;
   $('pdf').src = `/api/cases/${report.id}/documents/${id}/page/${source?.page || 1}?source=${encodeURIComponent(source?.id || '')}`;
+  $('source-page').max = pageCount(doc); $('source-page').value = source?.page || 1;
   $('citation').textContent = source ? `${doc.name} · page ${source.page} · line ${source.line}: ${source.text}` : 'Original PDF · choose an evidence line below.';
   $('lines').replaceChildren();
   for (const line of doc.lines) {
@@ -47,6 +57,23 @@ function showDoc(id, source) {
     row.append(el('small', `${line.id} · page ${line.page}`));
     $('lines').append(row);
   }
+  renderComparison();
+}
+function pageCount(doc) { return Math.max(1, ...doc.lines.map(line => line.page), ...(doc.issues || []).map(issue => issue.page || 1)); }
+function renderComparison() {
+  if (!report) return;
+  const enabled = $('compare-enabled').checked;
+  $('comparison-secondary').hidden = !enabled;
+  $('comparison-images').classList.toggle('side-by-side', enabled);
+  const previous = $('compare-document').value;
+  $('compare-document').replaceChildren();
+  for (const doc of report.documents) { const option = el('option', doc.name); option.value = doc.id; $('compare-document').append(option); }
+  const candidate = report.documents.find(doc => doc.id === previous) || report.documents.find(doc => doc.id !== $('document').value) || report.documents[0];
+  $('compare-document').value = candidate.id;
+  $('compare-page').max = pageCount(candidate);
+  const page = Math.max(1, Math.min(pageCount(candidate), Number($('compare-page').value) || 1));
+  $('compare-page').value = page;
+  $('compare-pdf').src = `/api/cases/${report.id}/documents/${candidate.id}/page/${page}`;
 }
 function sources(ids) {
   const group = el('div', undefined, 'sources');
@@ -86,6 +113,7 @@ async function saveReview(finding, action, note, controls, feedback) {
     });
     if (report?.id !== caseId) return;
     report = updated; render();
+    loadHistory();
     $('message').textContent = 'Review saved. Original finding, severity and calculations are unchanged.';
   } catch (error) { feedback.textContent = error.message; }
   finally { for (const button of controls.querySelectorAll('button')) button.disabled = false; }
@@ -102,6 +130,7 @@ function reviewControls(finding) {
   for (const [action, text] of [['confirm', 'Approve'], ['reject', 'Reject'], ['note', 'Save note']]) {
     const button = el('button', text, 'secondary'); button.type = 'button';
     button.setAttribute('aria-label', `${text} ${finding.id}`);
+    button.disabled = !['admin', 'reviewer', 'demo'].includes(currentRole);
     button.onclick = () => saveReview(finding, action, input.value, wrapper, feedback);
     actions.append(button);
   }
@@ -160,11 +189,24 @@ function render() {
   $('checklist').href = `/api/cases/${report.id}/export?format=md`;
 }
 $('document').onchange = () => showDoc($('document').value);
+$('compare-enabled').onchange = renderComparison;
+$('compare-document').onchange = renderComparison;
+$('compare-page').onchange = renderComparison;
+$('source-page').onchange = () => {
+  if (!report) return;
+  const doc = report.documents.find(item => item.id === $('document').value);
+  const page = Math.max(1, Math.min(pageCount(doc), Number($('source-page').value) || 1));
+  $('source-page').value = page;
+  $('pdf').src = `/api/cases/${report.id}/documents/${doc.id}/page/${page}`;
+  $('original').href = `/api/cases/${report.id}/documents/${doc.id}#page=${page}`;
+  $('citation').textContent = `${doc.name} · page ${page} · original page view`;
+};
 $('delete').onclick = async () => {
   if (!report) return;
   try {
     await jsonRequest(`/api/cases/${report.id}`, {method: 'DELETE'});
-    report = null; location.hash = ''; $('results').hidden = true; $('pdf').removeAttribute('src'); $('message').textContent = 'Local case deleted.';
+    report = null; location.hash = ''; $('results').hidden = true; $('pdf').removeAttribute('src'); $('message').textContent = 'Case deleted.';
+    loadHistory();
   } catch (error) { $('message').textContent = error.message; }
 };
 const percent = value => value === null ? 'N/A' : (value * 100).toFixed(0) + '%';
@@ -193,3 +235,89 @@ async function restoreCase() {
   catch (error) { $('message').textContent = 'Cannot reopen case: ' + error.message; }
 }
 restoreCase();
+
+async function loadHistory() {
+  $('history-message').textContent = 'Loading saved cases…';
+  try {
+    const params = new URLSearchParams();
+    if ($('history-query').value) params.set('q', $('history-query').value);
+    if ($('history-status').value) params.set('status', $('history-status').value);
+    if ($('history-decision').value) params.set('decision', $('history-decision').value);
+    const data = await jsonRequest('/api/cases?' + params);
+    $('history-results').replaceChildren();
+    const table = el('table'); const header = el('tr');
+    for (const label of ['Case', 'Loan / account', 'Period', 'Machine status', 'Human decision']) header.append(el('th', label));
+    const head = el('thead'); head.append(header); table.append(head);
+    const body = el('tbody');
+    for (const item of data.cases) {
+      const row = el('tr'); const cell = el('td'); const open = el('button', 'Open ' + item.id.slice(0, 8), 'secondary'); open.type = 'button';
+      open.onclick = async () => {
+        try { report = await jsonRequest('/api/cases/' + item.id); location.hash = 'case=' + item.id; render(); $('message').textContent = 'Saved case reopened.'; }
+        catch (error) { $('history-message').textContent = error.message; }
+      };
+      cell.append(open); row.append(cell);
+      for (const value of [item.identifiers.join(', ') || 'Unknown', item.periods.join(', ') || 'Unknown', item.status, item.review_decisions.join(', ') || 'No findings']) row.append(el('td', value));
+      body.append(row);
+    }
+    table.append(body); $('history-results').append(table);
+    $('history-message').textContent = `${data.total_in_window} matching cases; showing ${data.cases.length}.${data.truncated ? ' Search window limit reached.' : ''}`;
+  } catch (error) { $('history-results').replaceChildren(); $('history-message').textContent = error.message; }
+}
+$('history-form').onsubmit = event => { event.preventDefault(); loadHistory(); };
+
+function updateAccess(actor) {
+  currentRole = actor?.role || 'anonymous';
+  const canWrite = ['admin', 'reviewer', 'demo'].includes(currentRole);
+  $('analyze').disabled = !canWrite || currentRole === 'demo'; $('delete').disabled = !canWrite;
+  $('upload-panel').hidden = currentRole === 'demo'; $('demo-cases').hidden = currentRole !== 'demo';
+  $('login-form').hidden = !!actor; $('logout').hidden = !actor;
+  $('identity-status').textContent = actor ? `${actor.workspace} · ${actor.role}` : 'Sign in to access workspace statements. Public synthetic demo is separate.';
+  if (report) render();
+}
+async function configureService() {
+  try {
+    const config = await jsonRequest('/api/platform/config');
+    $('service-auth').hidden = !config.authentication_required;
+    $('public-demo').hidden = !config.public_demo;
+    if (config.authentication_required) {
+      try { updateAccess(await jsonRequest('/api/platform/auth/me')); }
+      catch { report = null; $('results').hidden = true; updateAccess(null); }
+    }
+    loadHistory();
+  } catch (error) { $('history-message').textContent = 'Service setup unavailable: ' + error.message; }
+}
+$('login-form').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    const actor = await jsonRequest('/api/platform/auth/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: $('login-email').value, password: $('login-password').value})});
+    $('login-password').value = ''; updateAccess(actor); loadHistory(); restoreCase();
+  } catch (error) { $('identity-status').textContent = error.message; }
+};
+$('logout').onclick = async () => {
+  try {
+    await jsonRequest('/api/platform/auth/logout', {method: 'POST'});
+    report = null; $('results').hidden = true; $('history-results').replaceChildren();
+    $('pdf').removeAttribute('src'); $('compare-pdf').removeAttribute('src'); updateAccess(null); location.hash = '';
+  } catch (error) { $('identity-status').textContent = error.message; }
+};
+configureService();
+
+$('start-demo').onclick = async () => {
+  $('start-demo').disabled = true;
+  try {
+    const actor = await jsonRequest('/api/platform/demo/start', {method: 'POST'});
+    report = null; location.hash = ''; $('results').hidden = true; updateAccess(actor); loadHistory();
+    $('demo-message').textContent = 'Your isolated synthetic session is ready. Choose a case; reviews persist for this session.';
+  } catch (error) { $('demo-message').textContent = error.message; }
+  finally { $('start-demo').disabled = false; }
+};
+for (const button of document.querySelectorAll('[data-fixture]')) button.onclick = async () => {
+  button.disabled = true; $('demo-message').textContent = 'Running calculator checks on fictional statements…';
+  try {
+    report = await jsonRequest('/api/platform/demo/cases/' + button.dataset.fixture, {method: 'POST'});
+    location.hash = 'case=' + report.id; render(); loadHistory();
+    $('demo-message').textContent = 'Synthetic case checked. Sources, trace, exports and human review are connected to the backend. No model call was made.';
+    $('results').scrollIntoView({behavior: 'smooth', block: 'start'});
+  } catch (error) { $('demo-message').textContent = error.message; }
+  finally { button.disabled = false; }
+};

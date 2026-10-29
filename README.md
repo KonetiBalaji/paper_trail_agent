@@ -1,5 +1,7 @@
 # Paper Trail Agent
 
+Submission materials: [draft](docs/SUBMISSION.md), [three-minute demo shot list](docs/DEMO-SHOT-LIST.md), and [hosting preparation](docs/DEPLOYMENT.md).
+
 Build for Your World: a solo FastAPI web app that reconciles PDF loan/bank statements using evidence-linked extraction, exact calculator tools, and Muse Spark reasoning.
 
 The UI now includes **Offline Evals**, an ordered **Trace timeline**, and persisted **Human Review** with Approve, Reject and Save note controls. These are connected to the backend APIs, not static demonstrations.
@@ -28,6 +30,22 @@ META_MODEL=muse-spark-1.3
 
 Restart the server and select Muse Spark mode. The key remains on the server; it is never sent to the browser. Extracted text and evidence are sent to Meta only when Muse Spark mode is selected. No OpenAI API key is needed. Check Meta credits, billing and model access before live testing. API errors do not produce a clean result.
 
+## Service foundation (deployment verification pending)
+
+Set `PAPER_TRAIL_MODE=service`, `DATABASE_URL`, and `DATA_ENCRYPTION_KEY` in server secret settings. Vercel requires PostgreSQL with TLS enabled; use Neon's pooled connection string. The encryption key must be a valid Fernet key and must be backed up separately from the database. Losing it makes encrypted documents and reports unrecoverable. Missing configuration fails closed. Never commit these values or paste them into chat.
+
+Service mode stores encrypted PDFs, reports and user identifiers in the database, isolates workspaces, uses opaque sessions and CSRF protection, and enforces admin/reviewer/viewer permissions. Provision accounts interactively with `python scripts/manage_users.py --email EMAIL --workspace WORKSPACE --role admin`; passwords are entered through a hidden prompt. There is no public registration. Local mode retains the original file storage behavior.
+
+Case history supports loan/period text search, status and human-decision filters. The evidence viewer offers side-by-side pages. Service reviews preserve report versions, actor identity and a verifiable audit chain. Versioned JSON/Markdown exports are available through the case API's `version` parameter. Upload limits and shared database rate counters apply in service mode.
+
+Durable eval jobs can be queued through `POST /api/platform/jobs/eval`; run `python -m app.worker --once` to process one job, or omit `--once` to poll continuously on a separate worker host. OCR and ingestion job handlers are not implemented yet. SQLite backup restoration is tested; hosted PostgreSQL backups and recovery still require provider verification. A Vercel function is not a continuously running worker.
+
+Current local validation: 125 tests and 6/6 offline evaluation cases pass. These checks use SQLite for the repository and HTTPS TestClient sessions for service behavior; they do not prove PostgreSQL production behavior. Neon free database creation is confirmed, but project connection, secrets, hosted smoke tests and uptime checks remain pending. Do not expose real documents until deployment and privacy controls are verified.
+
+### Public synthetic demo
+
+Service mode offers four fixed fixture buttons after **Start private demo session**: clean, $25 interest contradiction, $50 total error and image-only review. Each visitor gets a separate one-hour workspace. Sources, side-by-side viewing, trace, human review and exports use the same backend as private cases. Guests cannot upload PDFs, call Meta, queue jobs or manage accounts. This demo makes zero model calls; it does not prove live Meta behavior. Shared rate limits and revocable secure sessions are tested. Demo cleanup runs opportunistically on new sessions for guest data older than 24 hours; do not enter personal information in review notes.
+
 ## How it works
 
 1. pdfplumber extracts text lines and page bounding boxes; image-only pages become review items.
@@ -40,7 +58,7 @@ Restart the server and select Muse Spark mode. The key remains on the server; it
 
 The local parser supports explicit `Loan:` or `Account:`, `Currency:`, ISO period-end dates, `Tranche ... | Principal: ... | Interest: ...`, and explicitly labeled principal-plus-interest totals. Bank support includes `Opening balance:`, `Closing balance:`, and `Transaction ID | YYYY-MM-DD | Amount: signed-value`. Meta extraction supports alternative wording only when amounts and identifiers can be grounded in extracted text. This is not a general accounting engine: it does not infer amortization schedules, day-count conventions, unlabeled debit/credit table conventions, or exchange rates. No OCR is included; scanned pages request review. Multi-line tables whose fields cannot be grounded on one source line require review. Missing fields and mismatched periods are not confirmed financial contradictions.
 
-An empty discrepancy list means only that supported checks found none; it is not a guarantee that a statement is correct. The app is for local single-user use and binds to loopback. Add authentication, retention controls and deployment security before exposing it publicly. Uploaded PDFs and reports are stored in ignored `storage/` until explicitly deleted. Use synthetic data in the public repo and demo.
+An empty discrepancy list means only that supported checks found none; it is not a guarantee that a statement is correct. The default mode is local single-user use on loopback; PDFs and reports remain in ignored `storage/` until deleted. Service mode adds encrypted database storage and authenticated workspaces, but hosted security, redaction and operational verification remain pending. Use synthetic data in the public repo and demo.
 
 ## Testing
 

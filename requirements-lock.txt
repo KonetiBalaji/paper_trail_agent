@@ -19,6 +19,8 @@ pdfminer.six==20260107
 pdfplumber==0.11.10
 pillow==13.0.0
 pluggy==1.7.0
+psycopg==3.3.6
+psycopg-binary==3.3.6
 pycparser==3.12
 pydantic==2.14.1
 pydantic_core==2.50.1
@@ -28,7 +30,9 @@ pytest==9.1.1
 python-dotenv==1.2.4
 python-multipart==0.0.32
 reportlab==4.5.1
+SQLAlchemy==2.1.6
 starlette==1.10.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0
+tzdata==2026.6
 uvicorn==0.54.0

@@ -1,0 +1,114 @@
+{
+  "started_at": "2026-10-29T02:57:23.846804+00:00",
+  "model": "muse-spark-1.3",
+  "data": "repository synthetic PDFs only",
+  "cases": [
+    {
+      "case": "clean",
+      "result": "passed",
+      "status": "consistent",
+      "confirmed_findings": 0,
+      "review_items": 0,
+      "differences": [],
+      "source_counts": [],
+      "tools": [
+        "calculator",
+        "search_evidence",
+        "search_evidence"
+      ],
+      "tool_call_count": 3,
+      "elapsed_seconds": 18.83
+    },
+    {
+      "case": "contradiction",
+      "result": "passed",
+      "status": "discrepancies",
+      "confirmed_findings": 1,
+      "review_items": 0,
+      "differences": [
+        "25.00"
+      ],
+      "source_counts": [
+        2
+      ],
+      "tools": [
+        "search_evidence",
+        "calculator",
+        "calculator",
+        "calculator"
+      ],
+      "tool_call_count": 4,
+      "elapsed_seconds": 18.31
+    },
+    {
+      "case": "math_error",
+      "result": "passed",
+      "status": "discrepancies",
+      "confirmed_findings": 1,
+      "review_items": 0,
+      "differences": [
+        "50.00"
+      ],
+      "source_counts": [
+        3
+      ],
+      "tools": [
+        "search_evidence",
+        "search_evidence",
+        "search_evidence",
+        "calculator",
+        "calculator"
+      ],
+      "tool_call_count": 5,
+      "elapsed_seconds": 17.88
+    },
+    {
+      "case": "messy",
+      "result": "passed",
+      "status": "review",
+      "confirmed_findings": 0,
+      "review_items": 2,
+      "differences": [],
+      "source_counts": [],
+      "tools": [
+        "calculator",
+        "search_evidence",
+        "search_evidence",
+        "search_evidence",
+        "search_evidence",
+        "search_evidence",
+        "search_evidence",
+        "search_evidence"
+      ],
+      "tool_call_count": 8,
+      "elapsed_seconds": 15.22
+    }
+  ],
+  "status": "passed",
+  "max_tool_calls_per_case": 8,
+  "source_sha256": {
+    "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/core.py": "a5d3edc7af4e323ff20d1fae9ad74940e6cdfb3523939c0df64bebd7fdd85987",
+    "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
+    "app/main.py": "500fdeafc751f2b682350358241306b3e1985efd6dbfe38575cf921239ca3f2f",
+    "app/meta.py": "87ce860295ba1876904bf3150c9e677fc6a49a09576f7fa5c35f9a73edadc947",
+    "app/platform.py": "76038586ab06f5acf0f6b95f1e2f01eacb547587424efb46ff561f06c0aa0cbc",
+    "app/repository.py": "c954721dca5b603e87d16b16ee6fc7df39abdada518ef6c6157ac8de3513b017",
+    "app/security.py": "82469f95e2c4071c193def5ef39ca606d5742ab1904493e8dc6cd9ed819a114f",
+    "app/trace.py": "61cf7d27a6f8e876a209bd81b94d0f5377427d5f71db1425a26aef1a3dede6a5",
+    "app/worker.py": "9a864cce0020aff5496a6978e67f788758c1f232c1d2d8adc10a3c49a999e5bd"
+  },
+  "fixture_sha256": {
+    "data/synthetic/clean/statement_A.pdf": "f547a5c18e61440c5de07ec018f7f77095feaa323d89cd5a36d62b3458a7b334",
+    "data/synthetic/clean/statement_B.pdf": "2ce99e0580d823fba04709c726e455c5921fe547a226e5340d30e9f954da90be",
+    "data/synthetic/contradiction/statement_A.pdf": "beaa2faf94bda32635a9d3b7b80582374fdff250e11c700d68bdfbeae6c144ca",
+    "data/synthetic/contradiction/statement_B.pdf": "99c0b55b5ac20b9b4b829d11a52640b0ecf22f007e33a40d89bbbbff00984029",
+    "data/synthetic/math_error/statement_A.pdf": "dfd326854d9db7a9651e1a6a87c15eed9335612b0fade002c59f04e4d3839b74",
+    "data/synthetic/math_error/statement_B.pdf": "9ebb1d3100c33e9a80e5e4b65a9a06c130ebf833b6f578e47f4ff7a45cb8be9d",
+    "data/synthetic/messy/statement_A.pdf": "a1046e64908c11a5bc4d64ef2a8ddb792bfbbec016f4566727fb1d9e327c376e",
+    "data/synthetic/messy/statement_B.pdf": "b502b0d715b73d609bdb97d4b7b30dfc64cf1d7e846f326123541076460b5285"
+  },
+  "revision": "217fa27a35a4e3394170f0cad6f4d5538dbad423",
+  "working_tree_modified": true,
+  "finished_at": "2026-10-29T02:58:34.300402+00:00"
+}

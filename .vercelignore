@@ -1,0 +1,11 @@
+.env
+.env.*
+.venv
+.git
+storage
+work
+outputs
+data/private
+__pycache__
+.pytest_cache
+tests
