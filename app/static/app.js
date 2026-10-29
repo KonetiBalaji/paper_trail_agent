@@ -180,7 +180,7 @@ function render() {
     $('agent').append(list, sources(report.agent.sources));
   } else $('agent').append(el('p', report.agent_error || 'Local mode: model investigation was not run.'));
   $('trace').replaceChildren();
-  $('trace').append(el('p', 'Ordered execution events. Model calls show metadata; tool calls show exact inputs and outputs. Cost is not measured. Shared investigation events appear here.', 'note'), traceTimeline(report.trace || []));
+  $('trace').append(el('p', 'Ordered execution events. Model calls show metadata; tool calls show inputs and outputs with supported personal-data patterns redacted. Cost is not measured. Shared investigation events appear here.', 'note'), traceTimeline(report.trace || []));
   if (report.harness) $('trace').prepend(el('p', `Harness: ${report.harness.max_model_turns} investigation turns · ${report.harness.max_tool_calls_total} total tool calls · ${report.harness.request_timeout_seconds}s per request`, 'note'));
   $('document').replaceChildren();
   for (const doc of report.documents) { const option = el('option', doc.name); option.value = doc.id; $('document').append(option); }
@@ -239,11 +239,10 @@ restoreCase();
 async function loadHistory() {
   $('history-message').textContent = 'Loading saved cases…';
   try {
-    const params = new URLSearchParams();
-    if ($('history-query').value) params.set('q', $('history-query').value);
-    if ($('history-status').value) params.set('status', $('history-status').value);
-    if ($('history-decision').value) params.set('decision', $('history-decision').value);
-    const data = await jsonRequest('/api/cases?' + params);
+    const query = {q: $('history-query').value};
+    if ($('history-status').value) query.status = $('history-status').value;
+    if ($('history-decision').value) query.decision = $('history-decision').value;
+    const data = await jsonRequest('/api/cases/search', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(query)});
     $('history-results').replaceChildren();
     const table = el('table'); const header = el('tr');
     for (const label of ['Case', 'Loan / account', 'Period', 'Machine status', 'Human decision']) header.append(el('th', label));

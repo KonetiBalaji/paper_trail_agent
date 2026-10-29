@@ -29,9 +29,11 @@ def test_end_to_end(client,case,status):
     assert client.get(base+'/documents/doc1/page/99').status_code==404
     assert client.get(base+'/documents/fake/page/1').status_code==404
     assert client.get(base+'/search',params={'q':'T1 principal'}).json()
-    assert client.get(base+'/export').json()==report
+    exported=client.get(base+'/export').json()
+    assert exported['privacy']['redacted'] and exported['calculations']==report['calculations']
+    assert exported['status']==report['status'] and exported['documents'][0]['statement']['loan_id']=='[REDACTED]'
     checklist=client.get(base+'/export?format=md').text
-    for f in report['findings']:
+    for f in exported['findings']:
         assert f['message'] in checklist
         for source in f['sources']:assert source in checklist
     assert client.delete(base).status_code==200
@@ -118,5 +120,5 @@ def test_bank_upload_export_and_source(client):
     assert finding['type']=='incorrect_closing_balance' and finding['difference']=='25.00'
     assert report['calculations'][0]['computed']=='975.00'
     base='/api/cases/'+report['id']
-    assert finding['message'] in client.get(base+'/export?format=md').text
+    assert 'doc1.pdf: closing balance is 25.00 USD too high.' in client.get(base+'/export?format=md').text
     assert client.get(base+'/documents/doc1/page/1',params={'source':finding['sources'][0]}).status_code==200

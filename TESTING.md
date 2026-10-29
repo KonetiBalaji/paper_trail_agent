@@ -49,6 +49,16 @@ The extraction schema covers explicit tranche principal/interest totals and bank
 - HTTPS service integration tests cover session cookies, CSRF, roles, body limits, stale revisions, cross-workspace denial and administrator boundaries.
 - Public demo tests exercise all four fixture outcomes, source PNGs, saved review/export, isolated guest sessions, token tampering, logout revocation, quotas, and denial of upload/model/job/admin operations. Cleanup tests prove private cases survive guest-data expiration.
 - Browser service run: started an isolated guest session, ran the $50 total-error case, and saved a note through the frontend; the backend returned review revision 1. This browser check used a local SQLite service and is not hosted proof.
-- PostgreSQL integration tests are in `tests/test_postgres.py`, with a disposable PostgreSQL 16 GitHub Actions job. Locally these three tests skip when a dedicated `TEST_DATABASE_URL` is absent. CI must pass before PostgreSQL compatibility is claimed.
+- PostgreSQL integration tests are in `tests/test_postgres.py`, with a disposable PostgreSQL 16 GitHub Actions job. Locally these three tests skip when a dedicated `TEST_DATABASE_URL` is absent. GitHub Actions run 40809557128 passed all three against PostgreSQL 16; this proves the tested repository/session behaviors, not hosted backup recovery.
 - `docs/live-meta-results.json` records the latest synthetic live run with source/fixture SHA-256 hashes, revision, dirty-worktree indicator, tool names/counts, timings and observed outcomes. It contains no credentials or raw prompts. Match the hashes before applying the record to a different code revision.
 - Hosted smoke, provider backup restoration, OCR, broad layout accuracy, PII redaction and uptime remain pending. The older 80-test sections above describe the baseline, not the current service's deployment status.
+
+
+## Privacy patch verification
+
+- Full local regression: 142 passed, 3 PostgreSQL tests skipped locally; the PostgreSQL CI job runs those tests separately.
+- Privacy tests use fictional identity/contact fields in an actual PDF and exercise local and service uploads, source retrieval, saved review, JSON and Markdown exports. Calculations, differences, source IDs and original PDF bytes are preserved.
+- Legacy trace views redact supported PII without rewriting immutable database versions. Tests also cover duplicate filenames, redaction idempotence, query/body search, log arguments/exception text, Uvicorn access-log formatting and escaped Markdown evidence.
+- Running HTTP service smoke: all four loan cases, six offline evals, redacted exports, review persistence and deletion passed on port 8770. Frontend JavaScript syntax passed.
+- Four live Muse Spark cases passed after privacy wiring. `docs/live-meta-results.json` includes source hashes normalized to UTF-8/LF and raw fixture hashes; model/tool outcomes remain grounded with no more than eight tool calls per case.
+- Browser verification of this privacy patch and provider log settings remains pending. Pattern recognition does not cover every unlabeled or international identifier; exported scope metadata makes that limit explicit.

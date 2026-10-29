@@ -25,7 +25,8 @@ def main():
     evidence={'started_at':datetime.now(timezone.utc).isoformat(),'model':os.getenv('META_MODEL','muse-spark-1.3'),
         'data':'repository synthetic PDFs only','cases':[],'status':'running','max_tool_calls_per_case':8}
     project=root.parents[1]
-    evidence['source_sha256']={path.relative_to(project).as_posix():hashlib.sha256(path.read_bytes()).hexdigest()
+    evidence['source_sha256_encoding']='UTF-8 with universal LF newlines'
+    evidence['source_sha256']={path.relative_to(project).as_posix():hashlib.sha256(path.read_text(encoding='utf-8').encode('utf-8')).hexdigest()
         for path in sorted((project/'app').glob('*.py'))}
     evidence['fixture_sha256']={path.relative_to(project).as_posix():hashlib.sha256(path.read_bytes()).hexdigest()
         for case in ('clean','contradiction','math_error','messy') for path in sorted((root/case).glob('*.pdf'))}
@@ -41,8 +42,12 @@ def main():
             started=time.monotonic()
             print('RUN live Meta:',case,flush=True)
             files=[('files',(p.name,p.read_bytes(),'application/pdf')) for p in sorted((root/case).glob('*.pdf'))]
-            response=client.post('/api/analyze',files=files,data={'mode':'meta'})
-            response.raise_for_status();report=response.json();base='/api/cases/'+report['id']
+            try:
+                response=client.post('/api/analyze',files=files,data={'mode':'meta'})
+                response.raise_for_status();report=response.json();base='/api/cases/'+report['id']
+            except Exception:
+                evidence['status']='failed';evidence['cases'].append({'case':case,'result':'failed','stage':'http_analysis'})
+                save();raise
             try:
                 assert not report.get('agent_error'),report.get('agent_error')
                 assert report['agent'] is not None

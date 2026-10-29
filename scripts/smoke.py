@@ -1,9 +1,13 @@
 """Smoke and sanity checks against an already running local HTTP server."""
 from pathlib import Path
 import httpx
+import argparse
 
 ROOT=Path(__file__).resolve().parents[1]
-with httpx.Client(base_url='http://127.0.0.1:8765',timeout=60) as client:
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--base-url',default='http://127.0.0.1:8765')
+args=parser.parse_args()
+with httpx.Client(base_url=args.base_url,timeout=60) as client:
     assert client.get('/').status_code==200
     assert client.get('/api/health').json()['status']=='ok'
     evaluation=client.get('/api/evals');evaluation.raise_for_status()
@@ -20,7 +24,9 @@ with httpx.Client(base_url='http://127.0.0.1:8765',timeout=60) as client:
             if case=='clean':assert report['findings']==[]
             if case=='messy':assert all(f['severity']=='review' for f in report['findings'])
             assert client.get(base+'/documents/doc1').content.startswith(b'%PDF-')
-            assert client.get(base+'/export').json()==report
+            exported=client.get(base+'/export').json()
+            assert exported['privacy']['redacted'] and exported['calculations']==report['calculations']
+            assert exported['status']==report['status']
             assert client.get(base+'/export?format=md').status_code==200
             if report['findings']:
                 finding=report['findings'][0]

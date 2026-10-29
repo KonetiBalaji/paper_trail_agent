@@ -40,7 +40,7 @@ Case history supports loan/period text search, status and human-decision filters
 
 Durable eval jobs can be queued through `POST /api/platform/jobs/eval`; run `python -m app.worker --once` to process one job, or omit `--once` to poll continuously on a separate worker host. OCR and ingestion job handlers are not implemented yet. SQLite backup restoration is tested; hosted PostgreSQL backups and recovery still require provider verification. A Vercel function is not a continuously running worker.
 
-Current local validation: 125 tests and 6/6 offline evaluation cases pass. These checks use SQLite for the repository and HTTPS TestClient sessions for service behavior; they do not prove PostgreSQL production behavior. Neon free database creation is confirmed, but project connection, secrets, hosted smoke tests and uptime checks remain pending. Do not expose real documents until deployment and privacy controls are verified.
+Current local validation: 142 tests and 6/6 offline evaluation cases pass. These checks use SQLite for the repository and HTTPS TestClient sessions for service behavior; they do not prove PostgreSQL production behavior. Neon free database creation is confirmed, but project connection, secrets, hosted smoke tests and uptime checks remain pending. Do not expose real documents until deployment and privacy controls are verified.
 
 ### Public synthetic demo
 
@@ -71,7 +71,7 @@ An empty discrepancy list means only that supported checks found none; it is not
 
 Unit tests cover calculator precision, invalid input, PDF extraction, citation coordinates and comparison guards. Integration tests exercise upload -> report -> source PDF -> retrieval -> exports -> deletion across all four ground-truth cases. Provider contract tests simulate extraction failures, tool calls, bad citations, rate limits and invalid credentials. Smoke tests exercise the running HTTP server. Live Meta testing is a separate gate; mocked tests do not prove provider access or model behavior.
 
-Product tests also exercise eval failures and forged citations, review persistence and exports, concurrent/stale revisions, invalid notes, legacy reports, exact trace inputs/outputs and validation failures. HTTP smoke now checks Evals, case traces and saved review notes in addition to the four loan cases. Frontend JavaScript can be syntax-checked with `node --check app/static/app.js`.
+Product tests also exercise eval failures and forged citations, review persistence and exports, concurrent/stale revisions, invalid notes, legacy reports, trace inputs/outputs with supported PII patterns redacted, plus validation failures. HTTP smoke now checks Evals, case traces and saved review notes in addition to the four loan cases. Frontend JavaScript can be syntax-checked with `node --check app/static/app.js`.
 
 See `data/synthetic/README.md` for expected outcomes. Regenerate fixtures using `scripts/generate_fixtures.py` after additionally installing PyMuPDF. The evaluation cases are simple, single-page synthetic statements, not a broad benchmark of real-world PDFs.
 
@@ -107,7 +107,7 @@ Click **Run offline evals** to execute the same evaluator as `python scripts/eva
 
 Each new report includes a persisted `trace` array. Events have stable sequential IDs, UTC timestamps, kind/name, inputs, outputs, validation result and elapsed milliseconds where measured. Untimed events store null and display "not timed". Expand an event to inspect its inputs and outputs. Relevant deterministic checks and review events appear under each finding. The model/tool investigation is available under each finding and in the case timeline, explicitly labeled as shared rather than falsely attributed to one finding.
 
-Events cover PDF extraction, local/model extraction, grounded-schema validation, deterministic totals, model calls, search_evidence/calculator tool calls, citation validation, budget failures and human review. Model events expose request metadata, not full prompts, credentials or hidden reasoning. Tool events contain exact arguments and results, which can include document text; they stay in local case storage and JSON exports. Cost is unknown and displayed as unmeasured, not estimated.
+Events cover PDF extraction, local/model extraction, grounded-schema validation, deterministic totals, model calls, search_evidence/calculator tool calls, citation validation, budget failures and human review. Model events expose request metadata, not full prompts, credentials or hidden reasoning. Tool events contain arguments and results with supported identity/contact patterns redacted. Original evidence text is retained in the private case view. Previously saved traces are redacted on read without modifying immutable database versions. Cost is unknown and displayed as unmeasured, not estimated.
 
 The investigation harness allows six model turns and **eight tool calls total across the run**, with a 60-second timeout per provider request. Invalid arguments and failed validation are recorded. Provider failures produce review rather than a clean result. There are no automatic provider retries. Local mode has extraction/calculator/validation events and makes no model calls. Older reports explicitly show that no trace was recorded; historical events are not invented.
 
@@ -117,14 +117,26 @@ Each finding has an independent `human_review` object with decision, revision an
 
 The page URL includes `#case=<id>` after analysis. Reload or bookmark that URL to reopen the saved case and history. JSON and Markdown exports retain review decisions, notes and timestamps. JavaScript renders notes as text rather than executable HTML.
 
-Updates require `expected_revision`; stale edits return HTTP 409 and instruct the user to reopen before retrying. Report writes are atomic, and a process-local lock prevents conflicting updates in the supported single-process local deployment. There is no authenticated reviewer identity, multi-user authorization or cross-process database lock. Use one worker and retain the local single-user scope.
+Updates require `expected_revision`; stale edits return HTTP 409 and instruct the user to reopen before retrying. Report writes are atomic, and a process-local lock prevents conflicting updates in the supported single-process local deployment. That process-local restriction applies to local mode. Service mode uses authenticated workspace roles, database transactions, actor audit events and versioned reports; PostgreSQL integration tests exercise concurrent reviewers.
 
 | Endpoint | Purpose |
 | --- | --- |
+| POST /api/cases/search | Search cases using a JSON body so private filters stay out of URLs |
 | GET /api/evals | Run and return six offline eval cases plus metric definitions |
 | GET /api/cases/{id} | Reopen a report, trace and human-review history |
 | PATCH /api/cases/{id}/findings/{finding_id} | Save action, note and expected_revision; returns the updated report |
-| GET /api/cases/{id}/export?format=json | Export the complete report, trace and review history |
+| GET /api/cases/{id}/export?format=json | Export a redacted report, trace and review history |
 | GET /api/cases/{id}/export?format=md | Export machine findings and human-review checklist/history |
 
 Example review payload: `{"action":"note","note":"Request a clearer statement","expected_revision":0}`. Supported actions are confirm, reject and note. A2A and MCP are not part of this implementation.
+
+
+## Privacy of traces, logs and exports
+
+JSON and Markdown exports redact labeled borrower/customer names, account/loan identifiers, addresses, email, US SSNs and formatted US phone numbers. Original filenames become document IDs. Arithmetic values, dates, source IDs and review revisions remain intact; original PDFs are not embedded. Markdown escapes untrusted evidence and notes so document text cannot create executable HTML or tracking-image links.
+
+The authenticated/private case view keeps original PDFs and source lines for verification. Its trace and agent output redact supported PII patterns, including older traces redacted on read. This does not rewrite immutable stored report versions. Human review notes remain available privately; their exported copies and trace entries are redacted. New UI history searches use POST bodies rather than URL query strings. Legacy GET search remains available for clients; avoid putting private identifiers in URLs.
+
+Application logging redacts supported text patterns, URL query values, configured server secrets and exception text before handlers receive a record. This does not configure Vercel/Neon infrastructure logging, external telemetry or logs emitted before application startup. Never put document text or credentials in a URL or turn on body/header capture at the host.
+
+The redactor is pattern-based: unlabeled names/addresses, compact phone numbers and unsupported international formats may remain. Exports explicitly state this scope; inspect them before sharing. It is not an anonymization guarantee. Tests use fictional identities and prove redaction, unchanged calculations/citations, source-PDF preservation, legacy-version handling and logging compatibility.

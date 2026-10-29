@@ -17,9 +17,12 @@ from .core import read_pdf, parse_statement, reconcile, retrieve
 from . import meta
 from .trace import record
 from .evals import evaluate_suite
+from .privacy import report_for_export,private_report_view,install_log_redaction,markdown_text
+from .platform import HistoryQuery
 
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT/'.env')
+install_log_redaction()
 STORE = Path(os.getenv('PAPER_TRAIL_STORAGE', str(ROOT/'storage')))
 CASE_LOCK=threading.RLock()
 app = FastAPI(title='Paper Trail Agent')
@@ -59,7 +62,7 @@ def case_path(case_id):
     if not (path/'report.json').is_file(): raise HTTPException(404,'Case not found')
     return path
 
-def load(case_id): return json.loads((case_path(case_id)/'report.json').read_text())
+def load(case_id): return private_report_view(json.loads((case_path(case_id)/'report.json').read_text()))
 
 @app.patch('/api/cases/{case_id}/findings/{finding_id}')
 def review_finding(case_id,finding_id,update:ReviewUpdate):
@@ -131,6 +134,7 @@ def analyze_files(files,mode='local',persist=True):
         except meta.MetaError as exc:
             report['agent_error']=str(exc)
             report['status']='review'
+    report=private_report_view(report)
     if persist:
         path=STORE/report['id']; path.mkdir(parents=True)
         for doc,raw in zip(docs,blobs): (path/(doc['id']+'.pdf')).write_bytes(raw)
@@ -160,6 +164,10 @@ def local_history(q:str='',status:str|None=None,decision:str|None=None,limit:int
                        'review_decisions':decisions,'updated_at':datetime.fromtimestamp(path.stat().st_mtime,timezone.utc).isoformat()})
     return {'cases':result[offset:offset+limit],'total_in_window':len(result),'window_limit':10000,'truncated':len(paths)>10000}
 
+@app.post('/api/cases/search')
+def local_history_search(data:HistoryQuery):
+    return local_history(data.q,data.status,data.decision,data.limit,data.offset)
+
 @app.get('/api/cases/{case_id}/documents/{doc_id}')
 def document(case_id,doc_id):
     report=load(case_id)
@@ -179,20 +187,20 @@ def search(case_id,q:str): return retrieve(load(case_id)['documents'],q[:500])
 
 @app.get('/api/cases/{case_id}/export')
 def export(case_id,format:str='json'):
-    report=load(case_id)
+    report=report_for_export(load(case_id))
     if format=='json': return Response(json.dumps(report,indent=2),media_type='application/json',headers={'Content-Disposition':'attachment; filename=paper-trail-report.json'})
     if format!='md': raise HTTPException(422,'Choose json or md')
-    text='# Paper Trail Agent\n\nStatus: '+report['status']+'\n\n'
+    text='# Paper Trail Agent\n\nStatus: '+report['status']+'\n\nPattern-redacted export. Original PDFs are excluded. Review unlabeled personal details before sharing.\n\n'
     for finding in report['findings']:
-        text+=f"- [ ] [{finding['severity']}] {finding['message']} Sources: {', '.join(finding['sources']) or 'manual review'}\n"
+        text+=f"- [ ] [{finding['severity']}] {markdown_text(finding['message'])} Sources: {', '.join(finding['sources']) or 'manual review'}\n"
         review=finding.get('human_review',{'decision':'pending','revision':0,'history':[]})
         text+=f"  Human review: {review['decision']} (revision {review['revision']}); original machine finding retained.\n"
         for entry in review['history']:
-            text+=f"  - {entry['timestamp']} {entry['action']}: {entry['note']}\n"
+            text+=f"  - {entry['timestamp']} {entry['action']}: {markdown_text(entry['note'])}\n"
     if not report['findings']: text+='No discrepancies in the supported checks.\n'
     text+='\n## Source index\n'
     for d in report['documents']:
-        for l in d['lines']: text+=f"\n{l['id']} | {d['name']} page {l['page']}: {l['text']}\n"
+        for l in d['lines']: text+=f"\n{l['id']} | {d['name']} page {l['page']}: {markdown_text(l['text'])}\n"
     return Response(text,media_type='text/markdown',headers={'Content-Disposition':'attachment; filename=paper-trail-checklist.md'})
 
 @app.delete('/api/cases/{case_id}')

@@ -59,7 +59,9 @@ def test_encrypted_service_case_review_versions_and_source(service):
     changed=client.patch(base+'/findings/F1',json={'action':'confirm','note':'Reviewed','expected_revision':0},headers=headers)
     assert changed.status_code==200,changed.text
     assert client.get(base,params={'version':1}).json()==report
-    assert client.get(base+'/export',params={'version':1}).json()==report
+    exported=client.get(base+'/export',params={'version':1}).json()
+    assert exported['privacy']['redacted'] and exported['calculations']==report['calculations']
+    assert exported['findings'][0]['human_review']['revision']==0
     assert client.get(base+'/audit').json()['verified']
     assert 'Reviewed' in client.get(base+'/export?format=md').text
     assert client.delete(base,headers=headers).status_code==200

@@ -54,7 +54,9 @@ def test_review_persists_and_keeps_machine_result(client):
     assert all(x['timestamp'] for x in finding['human_review']['history'])
     assert {k:v for k,v in finding.items() if k!='human_review'}=={k:v for k,v in f.items() if k!='human_review'}
     assert saved['status']==original['status']=='review' and saved['calculations']==original['calculations']
-    exported=client.get('/api/cases/'+case+'/export').json();assert exported==saved
+    exported=client.get('/api/cases/'+case+'/export').json()
+    assert exported['privacy']['redacted'] and exported['calculations']==saved['calculations']
+    assert exported['findings'][0]['human_review']==finding['human_review']
     markdown=client.get('/api/cases/'+case+'/export?format=md').text
     assert 'Human review: rejected' in markdown and 'Request clearer PDF' in markdown
     assert saved['trace'][-1]['kind']=='human_review'

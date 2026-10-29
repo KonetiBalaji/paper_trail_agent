@@ -16,6 +16,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel,ConfigDict,Field
 from .repository import Repository,Missing,Conflict,LimitExceeded
 from .security import Security,Principal,Unauthorized
+from .privacy import report_for_export,private_report_view,markdown_text
 
 def service_mode():return os.getenv('PAPER_TRAIL_MODE','local')=='service' or os.getenv('VERCEL')=='1'
 
@@ -62,6 +63,14 @@ class Review(BaseModel):
     note:str=Field(default='',max_length=2000)
     expected_revision:int=Field(ge=0,strict=True)
 
+class HistoryQuery(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    q:str=Field(default='',max_length=200)
+    status:Literal['consistent','discrepancies','review']|None=None
+    decision:Literal['pending','confirmed','rejected']|None=None
+    limit:int=Field(default=50,ge=1,le=100)
+    offset:int=Field(default=0,ge=0,le=10000)
+
 def render_page(raw,doc,page,source):
     import pypdfium2 as pdfium
     from PIL import ImageDraw
@@ -76,16 +85,16 @@ def render_page(raw,doc,page,source):
         output=io.BytesIO();image.save(output,format='PNG');return output.getvalue()
 
 def markdown_report(report):
-    text=f"# Paper Trail Agent\n\nMachine status: {report['status']}\n\n"
+    text=f"# Paper Trail Agent\n\nMachine status: {report['status']}\n\nPattern-redacted export. Original PDFs are excluded. Review unlabeled personal details before sharing.\n\n"
     for f in report['findings']:
-        text+=f"- [ ] [{f['severity']}] {f['message']} Sources: {', '.join(f['sources']) or 'manual review'}\n"
+        text+=f"- [ ] [{f['severity']}] {markdown_text(f['message'])} Sources: {', '.join(f['sources']) or 'manual review'}\n"
         review=f.get('human_review',{'decision':'pending','revision':0,'history':[]})
         text+=f"  Human review: {review['decision']} (revision {review['revision']}); original machine result retained.\n"
-        for event in review['history']:text+=f"  - {event['timestamp']} {event['action']}: {event['note']}\n"
+        for event in review['history']:text+=f"  - {event['timestamp']} {event['action']}: {markdown_text(event['note'])}\n"
     if not report['findings']:text+='No discrepancies in supported checks.\n'
     text+='\n## Source index\n'
     for doc in report['documents']:
-        for line in doc['lines']:text+=f"\n{line['id']} | {doc['name']} page {line['page']}: {line['text']}\n"
+        for line in doc['lines']:text+=f"\n{line['id']} | {doc['name']} page {line['page']}: {markdown_text(line['text'])}\n"
     return text
 
 def create_router(root_provider,analyze_files):
@@ -196,13 +205,22 @@ def create_router(root_provider,analyze_files):
         try:return resources()[0].list_cases(actor.workspace,q[:200],status,decision,limit,offset)
         except ValueError as exc:raise HTTPException(422,str(exc)) from None
 
+    @router.post('/cases/search')
+    def history_search(data:HistoryQuery,request:Request,actor=Depends(principal)):
+        # Searches are read-only for viewers; the body avoids exposing loan IDs
+        # in browser history, referrers and ordinary host request-URL logs.
+        if service_mode():
+            try:resources()[1].validate_csrf(actor,request.headers.get('X-CSRF-Token'),request.cookies.get('pta_csrf'))
+            except Unauthorized:raise HTTPException(403,'CSRF validation failed') from None
+        return history(data.q,data.status,data.decision,data.limit,data.offset,actor)
+
     @router.get('/cases/{case_id}')
     def case(case_id,version:int|None=None,actor=Depends(principal)):
-        return resources()[0].get_case(actor.workspace,case_id,version)
+        return private_report_view(resources()[0].get_case(actor.workspace,case_id,version))
 
     @router.patch('/cases/{case_id}/findings/{finding_id}')
     def review(case_id,finding_id,data:Review,actor=Depends(write_principal)):
-        try:return resources()[0].review(actor.workspace,actor.id,case_id,finding_id,data.action,data.note,data.expected_revision)
+        try:return private_report_view(resources()[0].review(actor.workspace,actor.id,case_id,finding_id,data.action,data.note,data.expected_revision))
         except ValueError as exc:raise HTTPException(422,str(exc)) from None
 
     @router.get('/cases/{case_id}/audit')
@@ -232,7 +250,7 @@ def create_router(root_provider,analyze_files):
 
     @router.get('/cases/{case_id}/export')
     def export(case_id,format:str='json',version:int|None=None,actor=Depends(principal)):
-        report=resources()[0].get_case(actor.workspace,case_id,version)
+        report=report_for_export(resources()[0].get_case(actor.workspace,case_id,version))
         if format=='json':body=json.dumps(report,indent=2);media='application/json'
         elif format=='md':body=markdown_report(report);media='text/markdown'
         else:raise HTTPException(422,'Choose json or md')

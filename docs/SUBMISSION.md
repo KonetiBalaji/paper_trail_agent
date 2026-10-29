@@ -19,7 +19,7 @@ The model connects document evidence to a structured, tool-driven investigation.
 ## Evidence
 
 - Public code: https://github.com/KonetiBalaji/paper_trail_agent
-- 125 automated tests passed locally; PostgreSQL integration is a separate CI gate.
+- 142 automated tests passed locally; PostgreSQL integration is a separate CI gate.
 - Four HTTP smoke/sanity cases passed.
 - Four live Muse Spark acceptance cases passed on October 28, 2026; see TESTING.md for the precise scope.
 - GitHub Actions runs automated tests and HTTP smoke/sanity checks; live Meta tests require a local key and are separate.
