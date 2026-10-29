@@ -1,4 +1,4 @@
-# Verification record - October 27, 2026
+# Verification record - October 28, 2026
 
 ## Verified
 
@@ -19,9 +19,13 @@
 | Math error | Exactly one confirmed stated-total error, 50.00 too high; computed total 3300.00. |
 | Messy | Review/OCR required; image-only document yields no invented fields or confirmed contradiction. |
 
-## Not verified / remaining gate
+## Live Meta verification
 
-`python scripts/live_meta_test.py` reported NOT RUN because MODEL_API_KEY is absent. Enter the Meta key in `.env` locally. Restart the server, run the live script and resolve any provider/model issues before calling the full Meta integration complete. This script sends only the supplied synthetic data; it must demonstrate successful model extraction and actual tool activity across all four cases.
+`python scripts/live_meta_test.py` passed all four cases on October 28 using Muse Spark 1.3 with the local Meta key. The acceptance gate verified successful model extraction, no provider or agent errors, expected confirmed-finding counts, the $25 interest difference with two sources, the $50 total error, review status for the messy case, and nonempty actual agent tool traces. Only synthetic PDFs were sent. Test-created live cases were deleted afterwards.
 
-The extraction schema covers explicit tranche principal/interest totals and bank opening/closing balances with signed transactions. Bank tests use independent in-memory PDFs. Added checks cover duplicate transactions, partial rows, omitted labeled rows and swapped principal/interest. It is not a universal statement-layout or amortization checker. Broad real-world layout accuracy, public deployment, remote GitHub publication and demo-video production have not been verified or performed.
+The server was restarted with the local key loaded. `/api/health` returned status `ok`, `meta_configured: true`, and model `muse-spark-1.3`. Final regression: 51 tests passed; all four HTTP smoke/sanity cases passed. GitHub Actions also passed the committed code's dependency checks, tests and HTTP smoke/sanity checks.
+
+## Scope and limits
+
+The extraction schema covers explicit tranche principal/interest totals and bank opening/closing balances with signed transactions. Bank tests use independent in-memory PDFs; the four-case live benchmark covers loan statements. Added checks cover duplicate transactions, partial rows, omitted labeled rows and swapped principal/interest. It is not a universal statement-layout or amortization checker. Broad real-world layout accuracy, hosted deployment and demo-video production remain outside this verification record. The project is published at https://github.com/KonetiBalaji/paper_trail_agent. The local API key remains ignored and was not committed.
 
