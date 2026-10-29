@@ -68,3 +68,18 @@ def test_retrieval_is_source_evidence():
 
 def test_corrupt_pdf():
     with pytest.raises(ValueError):read_pdf(b'not pdf','bad.pdf','doc1')
+
+@pytest.mark.parametrize('field,value',[('loan_id','OTHER-ACCOUNT'),('currency','EUR')])
+def test_identity_mismatch_is_review(field,value):
+    docs=documents('clean');docs[1]['statement'][field]=value
+    findings,_=reconcile(docs)
+    assert [f['type'] for f in findings]==['identity_mismatch']
+    assert findings[0]['severity']=='review'
+
+def test_blocked_comparison_is_explicit():
+    findings,_=reconcile(documents('messy'))
+    assert {f['type'] for f in findings}=={'ocr_required','comparison_skipped'}
+    assert all(f['severity']=='review' for f in findings)
+    docs=documents('clean');docs[1]['statement']['loan_id']=None
+    findings,_=reconcile(docs)
+    assert any(f['type']=='identity_incomplete' and f['severity']=='review' for f in findings)

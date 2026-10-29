@@ -144,9 +144,15 @@ def reconcile(documents):
                         difference=format(abs(delta),'.2f'),computed=computed,stated=s['closing_balance'])
     for a,b in combinations(documents,2):
         x,y = a['statement'],b['statement']
-        if a['issues'] or b['issues'] or not all([x['loan_id'],y['loan_id'],x['period_end'],y['period_end'],x['currency'],y['currency']]):
+        if a['issues'] or b['issues']:
+            add('comparison_skipped',f"{a['name']} and {b['name']}: comparison blocked because a document requires review.",[], 'review')
             continue
-        if x['loan_id'] != y['loan_id'] or x['currency'] != y['currency']: continue
+        if not all([x['loan_id'],y['loan_id'],x['period_end'],y['period_end'],x['currency'],y['currency']]):
+            add('identity_incomplete',f"{a['name']} and {b['name']}: account, currency or reporting-period identity could not be verified.",[], 'review')
+            continue
+        if x['loan_id'] != y['loan_id'] or x['currency'] != y['currency']:
+            add('identity_mismatch',f"{a['name']} and {b['name']}: different account identifiers or currencies; comparison requires review.",[], 'review')
+            continue
         if x['period_end'] != y['period_end']:
             add('period_mismatch',f"{a['name']} and {b['name']}: different reporting periods; do not compare balances as contradictions.",[], 'review')
             continue

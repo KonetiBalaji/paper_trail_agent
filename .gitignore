@@ -5,3 +5,5 @@ __pycache__/
 storage/
 work/
 data/private/
+data/synthetic/bank_clean/bank.pdf
+data/synthetic/bank_error/bank.pdf

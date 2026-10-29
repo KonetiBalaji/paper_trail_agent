@@ -61,3 +61,11 @@ See `data/synthetic/README.md` for expected outcomes. Regenerate fixtures using 
 - Project description, Meta usage and rationale, feedback, and all contributors listed.
 - Submit by November 4, 2026 at 9 PM Eastern / 8 PM Chicago.
 
+
+## Comparison trust rules and offline evaluation
+
+Cross-document comparisons never disappear silently. Different accounts or currencies produce identity_mismatch review; missing account, currency or reporting-period identity produces identity_incomplete review. A document with extraction/OCR issues blocks comparison with comparison_skipped review. These review findings do not assert financial contradictions.
+
+The image-only messy case reports ocr_required plus comparison_skipped, with zero confirmed findings. Its period and missing tranche cannot be inferred from ground truth.
+
+Two additional bank cases cover a clean closing balance and a 25.00 error. Generate their PDFs with python scripts/generate_bank_fixtures.py; tests generate them in temporary setup. Run python scripts/evaluate.py for all six offline cases and confirmed-source resolution checks. The bank generator uses reportlab only; no Meta key is required.

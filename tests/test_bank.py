@@ -49,3 +49,17 @@ def test_partial_transaction_prevents_false_arithmetic_finding():
     findings,calculations=reconcile([doc])
     assert all(f['severity']=='review' for f in findings)
     assert calculations==[]
+
+def test_bank_fixture_pdfs(tmp_path):
+    import json
+    from scripts.generate_bank_fixtures import generate,ROOT
+    for case,path in generate(tmp_path).items():
+        truth=json.loads((ROOT/case/'ground_truth.json').read_text())
+        doc=read_pdf(path.read_bytes(),path.name,'bank1');doc['statement']=parse_statement(doc)
+        findings,calculations=reconcile([doc])
+        assert len(findings)==truth['expected_confirmed_contradictions']
+        assert calculations[0]['computed']==truth['computed_closing_balance']
+        index={l['id'] for l in doc['lines']}
+        if case=='bank_error':
+            assert findings[0]['type']=='incorrect_closing_balance'
+            assert findings[0]['difference']=='25.00' and set(findings[0]['sources'])<=index

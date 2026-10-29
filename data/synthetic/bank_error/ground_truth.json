@@ -1,0 +1,15 @@
+{
+  "case": "bank_error",
+  "account_id": "BANK-DEMO",
+  "currency": "USD",
+  "period_end": "2026-10-31",
+  "opening_balance": "1000.00",
+  "transactions": [
+    {"id": "PAY-1", "date": "2026-10-05", "amount": "100.00"},
+    {"id": "FEE-1", "date": "2026-10-10", "amount": "-125.00"}
+  ],
+  "closing_balance": "1000.00",
+  "computed_closing_balance": "975.00",
+  "expected_confirmed_contradictions": 1,
+  "expected_findings": [{"type": "incorrect_closing_balance", "difference": "25.00", "computed": "975.00"}]
+}
