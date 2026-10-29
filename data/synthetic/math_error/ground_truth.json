@@ -1,0 +1,88 @@
+{
+  "case": "math_error",
+  "documents": [
+    {
+      "file": "statement_A.pdf",
+      "page": 1,
+      "text_layer": true,
+      "period_end": "2026-10-31",
+      "loan_id": "DEMO-001",
+      "currency": "USD",
+      "tranches": [
+        {
+          "id": "T1",
+          "principal": "1000.00",
+          "interest": "100.00",
+          "source_line": "L05"
+        },
+        {
+          "id": "T2",
+          "principal": "2000.00",
+          "interest": "200.00",
+          "source_line": "L06"
+        }
+      ],
+      "stated_total": "3300.00",
+      "computed_total": "3300.00",
+      "total_source_line": "L07",
+      "source_lines": {
+        "L01": "SYNTHETIC TEST DATA - NOT A REAL FINANCIAL DOCUMENT",
+        "L02": "Fictional Cedar Lending | Example Customer",
+        "L03": "Document: A | Loan: DEMO-001 | Currency: USD",
+        "L04": "Statement period end: 2026-10-31",
+        "L05": "Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+        "L06": "Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+        "L07": "Stated principal plus interest total: 3300.00"
+      }
+    },
+    {
+      "file": "statement_B.pdf",
+      "page": 1,
+      "text_layer": true,
+      "period_end": "2026-10-31",
+      "loan_id": "DEMO-001",
+      "currency": "USD",
+      "tranches": [
+        {
+          "id": "T1",
+          "principal": "1000.00",
+          "interest": "100.00",
+          "source_line": "L05"
+        },
+        {
+          "id": "T2",
+          "principal": "2000.00",
+          "interest": "200.00",
+          "source_line": "L06"
+        }
+      ],
+      "stated_total": "3350.00",
+      "computed_total": "3300.00",
+      "total_source_line": "L07",
+      "source_lines": {
+        "L01": "SYNTHETIC TEST DATA - NOT A REAL FINANCIAL DOCUMENT",
+        "L02": "Fictional Cedar Lending | Example Customer",
+        "L03": "Document: B | Loan: DEMO-001 | Currency: USD",
+        "L04": "Statement period end: 2026-10-31",
+        "L05": "Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+        "L06": "Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+        "L07": "Stated principal plus interest total: 3350.00"
+      }
+    }
+  ],
+  "expected_findings": [
+    {
+      "type": "incorrect_statement_total",
+      "document": "statement_B.pdf",
+      "stated": "3350.00",
+      "computed": "3300.00",
+      "difference": "50.00",
+      "sources": [
+        "statement_B.pdf#page=1:L05",
+        "statement_B.pdf#page=1:L06",
+        "statement_B.pdf#page=1:L07"
+      ]
+    }
+  ],
+  "expected_confirmed_contradictions": 1
+}

@@ -1,0 +1,29 @@
+name: Tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip check
+      - run: python -m pytest -q
+      - name: HTTP smoke and sanity tests
+        shell: bash
+        run: |
+          python -m uvicorn app.main:app --host 127.0.0.1 --port 8765 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for attempt in {1..20}; do
+            curl --fail --silent http://127.0.0.1:8765/api/health && break
+            sleep 0.5
+          done
+          python scripts/smoke.py
