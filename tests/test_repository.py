@@ -141,7 +141,7 @@ def test_eval_worker_completes_a_durable_job(repo):
 
 def test_unimplemented_job_handler_never_claims_success(repo):
     from app.worker import run_once
-    job=repo.enqueue('team-a','alice','ocr',{'document':'synthetic'})
+    job=repo.enqueue('team-a','alice','ingest',{'document':'synthetic'})
     assert run_once(repo)
     result=repo.get_job('team-a',job)
     assert result['state']=='failed' and 'not implemented' in result['result']['error']

@@ -54,12 +54,21 @@ The service accepts at most 4,000,000 total request bytes on Vercel, including m
 
 ## Worker and operational limits
 
-The optional OCR component and actual scan evaluation are documented in
-`docs/OCR.md`. It is not yet connected to the job worker or web UI; Vercel must
-continue to use the lightweight core dependencies. The production encryption
+The authenticated OCR API, UI and actual scan/job evaluation are documented in
+`docs/OCR.md`. Run its optional persistent worker separately; Vercel must
+continue to use lightweight core dependencies. No hosted OCR worker has been
+configured, and a missing heartbeat disables requests instead of creating
+unserviceable jobs. The production encryption
 key has an ignored local `.env.production` backup, separate from the local
 development environment. Keep it private and recoverable; losing it makes
 stored reports unreadable. Neither `.env` nor `.env.*` files are committed or
 included in Vercel source uploads.
 
-Run `python -m app.worker` on a separate persistent worker host for durable eval jobs. Vercel request functions do not provide a continuously running worker. OCR/ingestion handlers, hosted uptime monitoring and provider backup restoration remain pending. A Dockerfile is an optional worker packaging draft; container execution has not been verified. Do not claim production readiness for real financial documents before the remaining privacy, redaction, retention and security gates pass.
+Run `python -m app.worker` on a separate persistent worker host for durable eval
+jobs and, with optional OCR dependencies, OCR jobs. Vercel request functions do
+not provide a continuously running worker. Persistent hosted worker setup,
+ingestion/monitor handlers, hosted uptime monitoring and provider backup
+restoration remain pending. A Dockerfile is an optional worker packaging draft;
+container execution has not been verified. Do not claim production readiness
+for real financial documents before the remaining privacy, retention and
+security gates pass.

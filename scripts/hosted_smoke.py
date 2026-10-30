@@ -74,6 +74,7 @@ def run(base):
             export=first.get(case+'/export',params={'format':format})
             check(format+'_export',export.status_code==200 and '50.00' in export.text)
         check('guest_jobs_denied',first.post('/api/platform/jobs/eval',headers=headers).status_code==403)
+        check('guest_ocr_denied',first.post(case+'/ocr',headers=headers,json={'expected_version':reopened['report_version']}).status_code==403)
         sample=Path(__file__).resolve().parents[1]/'data/synthetic/clean/statement_A.pdf'
         for mode in ('local','meta','auto'):
             upload=first.post('/api/analyze',headers=headers,files={'files':('synthetic.pdf',sample.read_bytes(),'application/pdf')},data={'mode':mode})

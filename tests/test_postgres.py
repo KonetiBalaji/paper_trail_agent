@@ -72,3 +72,29 @@ def test_postgres_jobs_sessions_and_guest_cleanup(postgres):
     security.logout(guest)
     with pytest.raises(Unauthorized):security.authenticate(guest)
     assert repo.expire_demo_data()==0
+
+
+def test_postgres_ocr_commit_races_review_without_lost_updates(postgres,monkeypatch):
+    from app import ocr_case
+    from test_ocr_jobs import scanned_case,recognition
+    repo,_,_=postgres;original=scanned_case(repo);case=original['id']
+    repo.enqueue_ocr('team-a','alice',case,1)
+    monkeypatch.setattr(ocr_case,'recognize',recognition)
+    job=repo.claim_job(kinds=['ocr']);derived=ocr_case.build_report(repo,job)
+    def review():
+        try:repo.review('team-a','bob',case,'F1','note','Concurrent review',0,1);return 'reviewed'
+        except Conflict:return 'stale'
+    def complete():return repo.complete_ocr(job['id'],job['lease_token'],derived)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        saved=pool.submit(review);committed=pool.submit(complete)
+        review_result=saved.result();committed.result()
+    current=repo.get_case('team-a',case);state=repo.get_job('team-a',job['id'])['state']
+    assert current['report_version']==2
+    if state=='completed':
+        assert review_result=='stale' and current['derived_from']['kind']=='ocr'
+        assert all(f['human_review']['revision']==0 for f in current['findings'])
+    else:
+        assert state=='failed' and review_result=='reviewed'
+        assert current['findings'][0]['human_review']['history'][0]['note']=='Concurrent review'
+    assert repo.get_case('team-a',case,1)==original
+    assert repo.audit('team-a')['verified']

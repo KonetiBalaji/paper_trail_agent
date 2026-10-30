@@ -1,5 +1,6 @@
 .venv/
 .venv-ocr/
+node_modules/
 .env
 .env.*
 !.env.example

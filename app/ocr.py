@@ -86,6 +86,8 @@ def _recognize(raw, doc_id, pages):
                     image = bitmap.to_pil().convert('RGB')
                     detections, _ = engine(np.array(image), text_score=0.0)
                     lines.extend(source_lines(detections, doc_id, number, width, height, image.width, image.height))
+                    if sum(len(line['text']) for line in lines)>100000:
+                        raise ValueError('OCR text exceeds the document character limit')
                 finally:
                     bitmap.close()
             finally:
@@ -95,6 +97,8 @@ def _recognize(raw, doc_id, pages):
 
 def _child(connection, raw, doc_id, pages):
     try:
+        from .privacy import install_log_redaction
+        install_log_redaction()
         connection.send(('ok', _recognize(raw, doc_id, pages)))
     except OCRUnavailable:
         connection.send(('unavailable', None))
@@ -152,6 +156,8 @@ def extract(raw, original, recognizer=recognize):
         raise ValueError('Document has no image-only pages requiring OCR')
     started = time.monotonic()
     lines = recognizer(raw, original['id'], pages)
+    if sum(len(line['text']) for line in original['lines']+lines)>100000:
+        raise ValueError('OCR text exceeds 100,000 characters per document; manual review required')
     doc = copy.deepcopy(original)
     doc.pop('statement', None)
     doc['lines'] += lines

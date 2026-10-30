@@ -55,6 +55,8 @@ jobs=Table('jobs',schema,Column('id',String(32),primary_key=True),Column('worksp
     Column('payload',LargeBinary,nullable=False),Column('result',LargeBinary),
     Column('attempts',Integer,nullable=False,default=0),Column('lease_until',Float,nullable=False,default=0),
     Column('lease_token',String(64)),Column('created_at',Float,nullable=False))
+workers=Table('worker_leases',schema,Column('id',String(32),primary_key=True),
+    Column('capabilities',String(80),nullable=False),Column('expires_at',Float,nullable=False))
 
 class Repository:
     def __init__(self,url,key):
@@ -158,7 +160,7 @@ class Repository:
     def create_case(self,workspace,actor,report,blobs,synthetic=False):
         self.provision_workspace(workspace)
         if len(report['documents'])!=len(blobs):raise ValueError('Document count differs from original files')
-        case_id=report['id'];now=utc()
+        case_id=report['id'];now=utc();report['report_version']=1
         with self.transaction() as conn:
             if conn.execute(select(cases.c.id).where(cases.c.id==case_id)).first():raise Conflict('Case already exists')
             conn.execute(cases.insert().values(id=case_id,workspace=workspace,created_at=now,updated_at=now,
@@ -176,7 +178,9 @@ class Repository:
                 value=conn.execute(select(versions.c.report).where(and_(versions.c.case_id==case_id,versions.c.version==version))).scalar_one_or_none()
                 if value is None:raise Missing('Report version not found')
             else:value=row['report']
-            return self.unseal(value)
+            report=self.unseal(value)
+            report['report_version']=row['version'] if version is None else version
+            return report
 
     def get_document(self,workspace,case_id,doc_id):
         with self.engine.connect() as conn:
@@ -214,10 +218,14 @@ class Repository:
                     'review_decisions':sorted(decisions),'synthetic':bool(row['synthetic'])})
             return {'cases':matches[offset:offset+limit],'total_in_window':len(matches),'window_limit':10000,'truncated':len(rows)>10000}
 
-    def review(self,workspace,actor,case_id,finding_id,action,note,expected_revision):
+    def review(self,workspace,actor,case_id,finding_id,action,note,expected_revision,expected_case_version=None):
         if action not in ('confirm','reject','note') or len(note)>2000 or (action=='note' and not note.strip()):raise ValueError('Invalid review')
         with self.transaction() as conn:
             row=self._case(conn,workspace,case_id);report=self.unseal(row['report'])
+            if expected_case_version is not None and row['version']!=expected_case_version:
+                raise Conflict('Report changed; reopen the latest case before reviewing')
+            if report.get('derived_from') and expected_case_version is None:
+                raise Conflict('Report version is required for derived findings; reopen the case')
             finding=next((f for f in report['findings'] if f['id']==finding_id),None)
             if finding is None:raise Missing('Finding not found')
             review=finding.setdefault('human_review',{'decision':'pending','revision':0,'history':[]})
@@ -228,7 +236,7 @@ class Repository:
             from .trace import record
             record(report.setdefault('trace',[]),'human_review',action,
                 {'finding_id':finding_id,'note':note.strip()},{'decision':review['decision'],'revision':review['revision']},finding_ids=[finding_id],actor=actor)
-            version=row['version']+1;now=utc()
+            version=row['version']+1;now=utc();report['report_version']=version
             conn.execute(update(cases).where(cases.c.id==case_id).values(report=self.seal(report),summary=self.seal(self.summary(report)),version=version,updated_at=now))
             conn.execute(versions.insert().values(case_id=case_id,version=version,created_at=now,report=self.seal(report)))
             self._audit(conn,workspace,actor,'finding_reviewed',case_id,{'finding_id':finding_id,'action':action,'version':version,'revision':review['revision']})
@@ -277,10 +285,14 @@ class Repository:
             self._audit(conn,workspace,actor,'job_queued',None,{'job_id':job_id,'kind':kind})
         return job_id
 
-    def claim_job(self,lease_seconds=60,now=None):
+    def claim_job(self,lease_seconds=60,now=None,kinds=None):
         now=time.time() if now is None else now
         with self.transaction() as conn:
             query=select(jobs).where((jobs.c.state=='queued')|((jobs.c.state=='running')&(jobs.c.lease_until<now)))
+            if kinds is not None:
+                if not kinds:return None
+                if any(kind not in ('eval','ocr','ingest','monitor') for kind in kinds):raise ValueError('Invalid worker capability')
+                query=query.where(jobs.c.kind.in_(kinds))
             query=query.order_by(jobs.c.created_at).limit(1).with_for_update(skip_locked=True)
             row=conn.execute(query).mappings().first()
             if not row:return None
@@ -302,3 +314,85 @@ class Repository:
             if not row:raise Missing('Job not found')
             return {'id':row['id'],'kind':row['kind'],'state':row['state'],'attempts':row['attempts'],
                     'result':self.unseal(row['result']) if row['result'] else None}
+
+    def touch_worker(self,worker_id,capabilities,ttl=90,now=None):
+        if len(worker_id)!=32 or not 1<=ttl<=120 or not capabilities or set(capabilities)-{'eval','ocr'}:
+            raise ValueError('Invalid worker heartbeat')
+        expires=(time.time() if now is None else now)+ttl
+        with self.transaction() as conn:
+            self._insert_once(conn,workers,{'id':worker_id,'capabilities':','.join(sorted(set(capabilities))),'expires_at':expires})
+            conn.execute(update(workers).where(workers.c.id==worker_id).values(capabilities=','.join(sorted(set(capabilities))),expires_at=expires))
+            conn.execute(delete(workers).where(workers.c.expires_at<expires-86400))
+
+    def worker_status(self,now=None):
+        with self.engine.connect() as conn:
+            active=conn.execute(select(workers.c.capabilities).where(workers.c.expires_at>(time.time() if now is None else now))).scalars().all()
+        return {kind:any(kind in value.split(',') for value in active) for kind in ('eval','ocr')}
+
+    def retire_worker(self,worker_id):
+        with self.transaction() as conn:conn.execute(delete(workers).where(workers.c.id==worker_id))
+
+    def _ocr_jobs(self,conn,workspace,case_id):
+        # Payloads remain encrypted. Workspace job quotas bound the active queue;
+        # historical discovery is explicitly limited to the newest 100 jobs.
+        rows=conn.execute(select(jobs).where(and_(jobs.c.workspace==workspace,jobs.c.kind=='ocr'))
+                          .order_by(jobs.c.created_at.desc()).limit(100)).mappings().all()
+        return [row for row in rows if self.unseal(row['payload']).get('case_id')==case_id]
+
+    def ocr_info(self,workspace,case_id):
+        with self.engine.connect() as conn:
+            row=self._case(conn,workspace,case_id)
+            related=self._ocr_jobs(conn,workspace,case_id)
+            job=related[0] if related else None
+            return {'version':row['version'],'latest_job':None if not job else {
+                'id':job['id'],'kind':'ocr','state':job['state'],'attempts':job['attempts'],
+                'result':self.unseal(job['result']) if job['result'] else None},'job_history_window':100}
+
+    def enqueue_ocr(self,workspace,actor,case_id,expected_version):
+        with self.transaction() as conn:
+            row=self._case(conn,workspace,case_id)
+            if row['version']!=expected_version:raise Conflict('Report changed; reopen before requesting OCR')
+            report=self.unseal(row['report'])
+            pages=sum(len({i['page'] for i in d.get('issues',[]) if i['type']=='ocr_required'}) for d in report['documents'])
+            if not 1<=pages<=5:raise ValueError('OCR requires 1 to 5 image-only pages across the case')
+            for job in self._ocr_jobs(conn,workspace,case_id):
+                if job['state'] in ('queued','running'):
+                    return {'job_id':job['id'],'state':job['state'],'reused':True}
+            job_id=uuid.uuid4().hex
+            payload={'case_id':case_id,'expected_version':expected_version,'requested_by':actor}
+            conn.execute(jobs.insert().values(id=job_id,workspace=workspace,kind='ocr',state='queued',
+                payload=self.seal(payload),attempts=0,lease_until=0,created_at=time.time()))
+            self._audit(conn,workspace,actor,'ocr_queued',case_id,{'job_id':job_id,'version':expected_version,'pages':pages})
+            return {'job_id':job_id,'state':'queued','reused':False}
+
+    def complete_ocr(self,job_id,lease_token,report):
+        """Commit a derived report and job outcome together; never overwrite reviews."""
+        with self.transaction() as conn:
+            job=conn.execute(select(jobs).where(jobs.c.id==job_id).with_for_update()).mappings().first()
+            if not job or job['kind']!='ocr' or job['state']!='running' or job['lease_token']!=lease_token or job['lease_until']<time.time():
+                raise Conflict('Job lease lost')
+            payload=self.unseal(job['payload']);workspace=job['workspace'];case_id=payload['case_id']
+            try:row=self._case(conn,workspace,case_id)
+            except Missing:row=None
+            if row is None or row['version']!=payload['expected_version']:
+                result={'case_id':case_id,'error':'Case deleted or changed during OCR; no derived report saved. Reopen before requesting again.'}
+                conn.execute(update(jobs).where(jobs.c.id==job_id).values(state='failed',result=self.seal(result),lease_until=0,lease_token=None))
+                self._audit(conn,workspace,payload['requested_by'],'ocr_discarded',case_id,{'job_id':job_id,'reason':'case_changed'})
+                return result
+            original=self.unseal(row['report'])
+            if (report['id']!=case_id or report['status']!='review'
+                    or [(d['id'],d['name']) for d in report['documents']]!=[(d['id'],d['name']) for d in original['documents']]
+                    or report.get('derived_from')!={'version':row['version'],'job_id':job_id,'kind':'ocr'}):
+                raise ValueError('Invalid OCR report identity or lineage')
+            ocr_sources={line['id'] for d in report['documents'] for line in d['lines'] if line.get('method')=='ocr'}
+            if not any(d.get('ocr',{}).get('performed') for d in report['documents']):raise ValueError('No OCR evidence')
+            if any(f['severity']=='confirmed' and ocr_sources.intersection(f['sources']) for f in report['findings']):
+                raise ValueError('OCR candidates cannot be machine-confirmed')
+            version=row['version']+1;now=utc();report['report_version']=version
+            conn.execute(update(cases).where(cases.c.id==case_id).values(status='review',report=self.seal(report),
+                summary=self.seal(self.summary(report)),version=version,updated_at=now))
+            conn.execute(versions.insert().values(case_id=case_id,version=version,report=self.seal(report),created_at=now))
+            result={'case_id':case_id,'report_version':version,'review_required':True}
+            self._audit(conn,workspace,payload['requested_by'],'ocr_completed',case_id,{'job_id':job_id,'version':version})
+            conn.execute(update(jobs).where(jobs.c.id==job_id).values(state='completed',result=self.seal(result),lease_until=0,lease_token=None))
+            return result

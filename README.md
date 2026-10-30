@@ -1,12 +1,15 @@
 # Paper Trail Agent
 
-Optional offline OCR component: install `requirements-ocr.txt` in a separate
-worker environment and run `scripts/evaluate_ocr.py`. Four actual image-only
-scan cases are evaluated; recognized amounts remain unverified candidates,
-with page boxes and uncalibrated scores. A labeled scan produces a provisional
-$50 arithmetic finding; degraded/blank scans and the unsupported table scan
-request review without calculating. **Web upload and queued-job integration
-are still pending.** See [OCR component and limits](docs/OCR.md).
+Authenticated OCR workflow: install `requirements-ocr.txt` in a separate worker
+environment, configure the same service database/encryption secrets, and run
+`python -m app.worker`. A reviewer can request OCR on an uploaded case, refresh
+job status, and open a new report version with candidate values, source boxes,
+uncalibrated scores and provisional arithmetic. Previous reports/reviews remain
+immutable; stale approvals and expired job leases cannot overwrite them.
+Four real scan evals include a provisional $50 error and table/degraded/blank
+abstentions. The public synthetic demo cannot queue OCR. **No persistent hosted
+OCR worker is configured yet**; the UI disables requests when its heartbeat is
+absent. See [OCR workflow and limits](docs/OCR.md).
 
 Live synthetic demo: **https://paper-trail-agent.vercel.app/**. Neon Free is
 connected to Vercel; database, encryption and Meta credentials are Sensitive
@@ -74,7 +77,7 @@ Service mode offers four fixed fixture buttons after **Start private demo sessio
 
 ### Current supported scope
 
-The local parser supports explicit `Loan:` or `Account:`, `Currency:`, ISO period-end dates, `Tranche ... | Principal: ... | Interest: ...`, and explicitly labeled principal-plus-interest totals. Bank support includes `Opening balance:`, `Closing balance:`, and `Transaction ID | YYYY-MM-DD | Amount: signed-value`. Meta extraction supports alternative wording only when amounts and identifiers can be grounded in extracted text. This is not a general accounting engine: it does not infer amortization schedules, day-count conventions, unlabeled debit/credit table conventions, or exchange rates. No OCR is included; scanned pages request review. Recognized tables support repeated headers, reordered principal/interest columns, and explicitly linked `T1 (continued)` rows across pages. Each split amount keeps its own source line. Unlinked wrapped rows and unknown column meanings require review. Missing fields and mismatched periods are not confirmed financial contradictions.
+The local parser supports explicit `Loan:` or `Account:`, `Currency:`, ISO period-end dates, `Tranche ... | Principal: ... | Interest: ...`, and explicitly labeled principal-plus-interest totals. Bank support includes `Opening balance:`, `Closing balance:`, and `Transaction ID | YYYY-MM-DD | Amount: signed-value`. Meta extraction supports alternative wording only when amounts and identifiers can be grounded in extracted text. This is not a general accounting engine: it does not infer amortization schedules, day-count conventions, unlabeled debit/credit table conventions, or exchange rates. Scanned pages request manual review by default; authenticated service workspaces can use the optional OCR worker to produce review-only candidates. Recognized tables support repeated headers, reordered principal/interest columns, and explicitly linked `T1 (continued)` rows across pages. Each split amount keeps its own source line. Unlinked wrapped rows and unknown column meanings require review. Missing fields and mismatched periods are not confirmed financial contradictions.
 
 An empty discrepancy list means only that supported checks found none; it is not a guarantee that a statement is correct. The default mode is local single-user use on loopback; PDFs and reports remain in ignored `storage/` until deleted. Service mode adds encrypted database storage and authenticated workspaces, but hosted security, redaction and operational verification remain pending. Use synthetic data in the public repo and demo.
 

@@ -1,0 +1,116 @@
+// Executes the real frontend handlers against a disposable loopback FastAPI
+// service. jsdom supplies DOM behavior, not browser layout or visual evidence.
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {JSDOM, CookieJar, VirtualConsole} from 'jsdom';
+
+const base = process.env.PAPER_TRAIL_UI_BASE;
+assert.match(base || '', /^http:\/\/127\.0\.0\.1:\d+$/, 'Use only the owned loopback test server');
+const offline = process.env.PAPER_TRAIL_UI_OFFLINE === '1';
+const origin = 'https://frontend.test.invalid';
+// Resolve explicitly relative to this file; no web-supplied script is executed.
+const actualHtml = await readFile(new URL('../../app/static/index.html', import.meta.url), 'utf8');
+
+async function waitFor(predicate, message, timeout = 20000) {
+  const until = Date.now() + timeout;
+  while (Date.now() < until) {
+    if (await predicate()) return;
+    await new Promise(resolve => setTimeout(resolve, 40));
+  }
+  throw Error(message);
+}
+
+async function frontend(t) {
+  const errors = []; const requests = [];
+  const virtualConsole = new VirtualConsole();
+  virtualConsole.on('jsdomError', error => errors.push(error.message));
+  const jar = new CookieJar();
+  const dom = new JSDOM(actualHtml, {url: origin + '/', runScripts: 'outside-only', cookieJar: jar, virtualConsole});
+  const w = dom.window; const doc = w.document;
+  t.after(() => { dom.window.close(); assert.deepEqual(errors, []); });
+  w.Element.prototype.scrollIntoView = function () {};
+  w.FormData = globalThis.FormData;
+  w.fetch = async (url, options = {}) => {
+    const target = new URL(url, origin);
+    assert.equal(target.origin, origin, 'Frontend requests must stay in this test origin');
+    const headers = new Headers(options.headers);
+    const cookies = jar.getCookieStringSync(origin + '/');
+    if (cookies) headers.set('Cookie', cookies);
+    const response = await fetch(base + target.pathname + target.search, {...options, headers});
+    for (const cookie of response.headers.getSetCookie()) jar.setCookieSync(cookie, origin + '/');
+    const entry = {method: options.method || 'GET', path: target.pathname, status: response.status};
+    if (entry.method === 'PATCH') entry.expectedCaseVersion = JSON.parse(options.body).expected_case_version;
+    requests.push(entry);
+    return response;
+  };
+  const code = await readFile(new URL('../../app/static/app.js', import.meta.url), 'utf8');
+  w.eval(code);
+  await waitFor(() => !doc.getElementById('service-auth').hidden, 'Service setup did not complete');
+  doc.getElementById('login-email').value = 'reviewer@example.invalid';
+  doc.getElementById('login-password').value = 'synthetic-frontend-password-123';
+  doc.getElementById('login-form').dispatchEvent(new w.Event('submit', {bubbles: true, cancelable: true}));
+  await waitFor(() => doc.getElementById('identity-status').textContent.includes('· reviewer'), 'Synthetic reviewer sign-in failed');
+  const scan = await readFile(new URL('../../data/ocr/labeled_error.pdf', import.meta.url));
+  Object.defineProperty(doc.getElementById('files'), 'files', {configurable: true, value: [new File([scan], 'fictional-scan.pdf', {type: 'application/pdf'})]});
+  doc.getElementById('upload').dispatchEvent(new w.Event('submit', {bubbles: true, cancelable: true}));
+  await waitFor(() => !doc.getElementById('results').hidden && !doc.getElementById('ocr-panel').hidden, 'Uploaded scan did not render');
+  const button = text => [...doc.querySelectorAll('button')].find(node => node.textContent === text);
+  const panelText = () => doc.getElementById('ocr-panel').textContent;
+  const api = async (path, options) => w.fetch(path, options);
+  return {w, doc, requests, button, panelText, api};
+}
+
+test('real frontend queues OCR and reopens reviewed candidates through HTTP', {skip: offline, timeout: 120000}, async t => {
+  const ui = await frontend(t);
+  await waitFor(() => ui.button('Request OCR · new report version') && !ui.button('Request OCR · new report version').disabled, 'A live OCR worker was not available');
+  ui.button('Request OCR · new report version').click();
+  await waitFor(() => ui.requests.some(r => r.method === 'POST' && r.path.endsWith('/ocr') && r.status === 202), 'OCR was not queued');
+  const until = Date.now() + 90000;
+  while (!ui.button('Open latest report') && Date.now() < until) {
+    const refresh = ui.button('Refresh OCR status');
+    if (refresh) refresh.click();
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+  assert.ok(ui.button('Open latest report'), 'Completed OCR report was not discoverable');
+  ui.button('Open latest report').click();
+  await waitFor(() => ui.panelText().includes('derived from version 1'), 'Derived OCR version did not open');
+  assert.match(ui.panelText(), /unverified/);
+  assert.match(ui.panelText(), /97\.3%/);
+  assert.match(ui.doc.getElementById('calculations-title').textContent, /OCR candidates require review/);
+  assert.match(ui.doc.getElementById('calculations').textContent, /1000\.00 \+ 100\.00 = 1100\.00/);
+  assert.match(ui.doc.getElementById('findings').textContent, /50\.00/);
+  assert.equal(ui.doc.getElementById('status').textContent, 'Manual review needed');
+  const source = ui.doc.querySelector('#ocr-panel button.source');
+  assert.ok(source); source.click();
+  assert.match(ui.doc.getElementById('citation').textContent, /OCR candidate/);
+  assert.match(ui.doc.getElementById('lines').textContent, /uncalibrated/);
+  const imageUrl = new URL(ui.doc.getElementById('pdf').src);
+  const image = await ui.api(imageUrl.pathname + imageUrl.search);
+  assert.equal(image.status, 200); assert.equal(Buffer.from(await image.arrayBuffer()).subarray(0, 4).toString('hex'), '89504e47');
+  const caseId = ui.doc.getElementById('case-id').textContent;
+  ui.doc.getElementById('note-F1').value = 'Synthetic frontend verification';
+  ui.doc.querySelector('[aria-label="Save note F1"]').click();
+  await waitFor(() => ui.doc.getElementById('findings').textContent.includes('revision 1'), 'Frontend review did not save');
+  assert.equal(ui.requests.find(r => r.method === 'PATCH').expectedCaseVersion, 2);
+  const current = await (await ui.api('/api/cases/' + caseId)).json();
+  assert.equal(current.report_version, 3);
+  assert.equal(current.findings[0].human_review.history[0].note, 'Synthetic frontend verification');
+  assert.equal(current.status, 'review');
+  const prior = await (await ui.api('/api/cases/' + caseId + '/export?format=json&version=1')).json();
+  assert.equal(prior.report_version, 1); assert.equal(prior.documents[0].lines.length, 0);
+  const markdown = await (await ui.api('/api/cases/' + caseId + '/export?format=md')).text();
+  assert.match(markdown, /Provisional OCR arithmetic/); assert.match(markdown, /uncalibrated/);
+  assert.equal((await (await ui.api('/api/cases/' + caseId + '/audit')).json()).verified, true);
+  ui.doc.getElementById('logout').click();
+  await waitFor(() => ui.doc.getElementById('results').hidden, 'Logout did not hide the report');
+  assert.equal((await ui.api('/api/cases/' + caseId)).status, 401);
+});
+
+test('offline worker is visible and cannot queue a dead OCR job', {skip: !offline, timeout: 30000}, async t => {
+  const ui = await frontend(t);
+  await waitFor(() => ui.panelText().includes('worker is offline'), 'Offline OCR state did not render');
+  const request = ui.button('Request OCR · new report version');
+  assert.ok(request?.disabled);
+  assert.equal(ui.requests.filter(r => r.method === 'POST' && r.path.endsWith('/ocr')).length, 0);
+});

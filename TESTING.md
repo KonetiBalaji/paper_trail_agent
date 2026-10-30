@@ -1,5 +1,30 @@
 # Verification record - October 28, 2026
 
+## OCR job and frontend integration - October 29, 2026
+
+The authenticated service API and frontend now queue real OCR jobs, show
+heartbeat availability/status and open derived report versions. Local core
+verification: 223 passed, five skipped (four PostgreSQL-only tests and one real
+OCR test). The optional OCR environment passes all 16 job integration tests,
+including the actual engine case. PostgreSQL now has an additional concurrent
+OCR-completion/review race test in its disposable CI database job.
+
+`scripts/test_frontend.py` executes actual HTML/JavaScript handlers in jsdom
+against a real disposable HTTP service and CPU worker. Both online-worker and
+offline-worker flows pass: signed session, upload, queue, status, candidate
+confidence/calculator labeling, source selection/PNG, version-guarded review,
+prior export, audit and logout. It is not a browser renderer. Browser visual,
+mobile and persistent hosted OCR worker checks remain pending; native Chrome
+verification was stopped by Computer Use's URL policy. See `docs/OCR.md` and
+`docs/frontend-ocr-results.json` for commands, scope and source hashes.
+
+Fresh live evidence for the final source passes clean/contradiction/math-error/
+messy with 3/7/4/4 actual tool calls. The initial attempt failed on API
+availability/response handling after the clean case; the sanitized failure is
+retained in `docs/live-meta-ocr-initial-failure.json`. A small provider probe
+succeeded before retrying. This is evidence of tested behavior, not guaranteed
+provider availability.
+
 ## Optional OCR component - October 29, 2026
 
 Hosted application commit `727f6c7` is verified at
@@ -26,7 +51,7 @@ skip locally and run in their own CI database job. The six baseline evals,
 19-case layout benchmark and four actual OCR cases pass locally. The fresh
 `docs/live-meta-results.json` rerun matches current application source hashes:
 clean, $25 contradiction, $50 arithmetic error and messy review all pass with
-4/4/7/4 actual tool calls, within the eight-call budget. Live layout reports
+3/7/4/4 actual tool calls, within the eight-call budget. Live layout reports
 from `44d6923` remain historical; they have not been rerun for this component.
 
 ## Evals + Trace + Human Review patch

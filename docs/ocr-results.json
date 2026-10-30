@@ -6,7 +6,7 @@
   },
   "manifest_sha256": "663d766b46e73a68fa96021c19b288c279cdb08c764d6cb96d382fbb57b5f65d",
   "source_sha256": {
-    "app/ocr.py": "d88a952d6a4ab31e97a144a4b1c43c4f17bd505f91d9582489b9134af250e596",
+    "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
     "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
     "app/layouts.py": "b3399c6f90dd07163f4aa65e5c350bc95697fd4703c24a6a1e4055609aea9f04",
     "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210"
@@ -34,7 +34,7 @@
         "threshold": 0.95,
         "confidence_calibrated": false,
         "performed": true,
-        "duration_ms": 21515,
+        "duration_ms": 11578,
         "usable_lines": 9,
         "total_lines": 10,
         "field_candidates": []
@@ -270,7 +270,7 @@
         "threshold": 0.95,
         "confidence_calibrated": false,
         "performed": true,
-        "duration_ms": 5860,
+        "duration_ms": 7156,
         "usable_lines": 6,
         "total_lines": 6,
         "field_candidates": [
@@ -497,7 +497,7 @@
         "threshold": 0.95,
         "confidence_calibrated": false,
         "performed": true,
-        "duration_ms": 3078,
+        "duration_ms": 5453,
         "usable_lines": 0,
         "total_lines": 0,
         "field_candidates": []
@@ -553,7 +553,7 @@
         "threshold": 0.95,
         "confidence_calibrated": false,
         "performed": true,
-        "duration_ms": 3281,
+        "duration_ms": 4390,
         "usable_lines": 0,
         "total_lines": 0,
         "field_candidates": []

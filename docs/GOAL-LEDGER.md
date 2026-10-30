@@ -8,11 +8,11 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 1 | Reliable hosted, abuse-protected judge demo | Public Vercel/Neon demo deployed; 49 hosted checks pass, including isolation, limits, CSRF, four outcomes, review, exports and paid-call/upload denial. Browser Evals 6/6 and benchmark 19/19 pass; uptime monitoring remains pending |
 | 2 | Three-minute actual-app video | Pending; shot plan exists, no completed video |
 | 3 | Final form and project write-up | Draft exists; final review, URLs and submission pending |
-| 4 | Sanitized live Meta evidence in repository | Fresh original four-case live evidence matches current app hashes and passes with 4/4/7/4 tool calls. Layout live evidence remains historical; hosted live smoke pending |
+| 4 | Sanitized live Meta evidence in repository | Fresh original four-case live evidence matches current app hashes and passes with 3/7/4/4 tool calls; initial API failure retained. Layout live evidence remains historical; hosted live Meta smoke pending |
 | 5 | Discord linked role | Optional manual account step; not verified |
 | 6 | Realistic varied loan/bank layouts and truth | 19-case fictional corpus with strict loan/bank table schemas and independent truth passes; real anonymized layouts and calibrated field confidence remain pending |
 | 7 | Cross-page benchmark | Linked split rows, repeated headers, cross-page totals and carried balances implemented with per-field source-page checks; arbitrary unlinked continuations remain review |
-| 8 | OCR with confidence and review gates | Optional offline CPU component and four actual scan evals implemented; labeled $50 provisional error, table/degraded/blank abstentions, uncalibrated scores and original-page coordinates. API/UI/leased-job integration pending |
+| 8 | OCR with confidence and review gates | Reviewer API, durable job, atomic version/audit commit, heartbeat readiness and UI connected; real OCR + DOM/HTTP tests pass. Candidate $50 finding stays review; original-page confidence exposed. Persistent hosted worker and browser visual verification pending |
 | 9 | Representative prompt-injection evaluation | Prefixed-note PDF preserves financial results/export projection; model-added row rejected; live Auto note case passes. Broader adversarial coverage pending |
 | 10 | PII redaction with tests | Pattern redaction wired to traces/logs/exports; fictional-PII and legacy-read tests added. Unlabeled/international PII and host telemetry remain outside verified coverage |
 | 11 | Representative hardening PDFs | Representative duplicate/partial/reversed-column, identity/currency/date, corrupt and oversized PDFs now tested; hostile-filename HTTP test also exists |
@@ -29,7 +29,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 22 | Continuous comparison and resolution history | Pending |
 | 23 | Historical reconciliation rules | Period guard exists; explicit carried-balance/payment rules pending |
 | 24 | Authenticated team roles and review | Service sessions, workspace isolation, admin/reviewer/viewer roles and CSRF covered by integration tests; live account setup pending |
-| 25 | Database, durable jobs, backup/recovery and uptime | Encrypted SQL repository, leased eval jobs, SQLite backup restore tested; PostgreSQL restore, OCR worker and uptime pending |
+| 25 | Database, durable jobs, backup/recovery and uptime | Encrypted SQL repository, leased eval/OCR jobs, heartbeat readiness, atomic derived-report completion and SQLite backup restore tested; persistent hosted worker, PostgreSQL restore and uptime pending |
 | 26 | Immutable originals, actor audit and versioned exports | Immutable original hashes, actor audit chain, report versions and export replay implemented; hosted replay verification pending |
 | 27 | Evidence-backed lender/dispute drafts | Pending; never auto-send or perform money actions |
 | 28 | Retention, deletion, encryption, privacy/terms | Local delete exists; service controls pending |

@@ -58,6 +58,16 @@ def test_empty_and_correct_candidates_never_clean():
     assert [f['type'] for f in candidate_checks(doc)[0]]==['ocr_review']
 
 
+def test_ocr_cannot_exceed_native_document_text_limit():
+    source=original()
+    def excessive(*args):
+        lines=source_lines(boxes(['synthetic text']),'doc1',1,600,800,600,800)
+        lines[0]['text']='x'*100001
+        return lines
+    with pytest.raises(ValueError,match='100,000'):
+        extract(b'%PDF-fixture',source,excessive)
+
+
 def test_missing_date_stays_missing_with_conditional_math():
     def no_date(*args):return source_lines(boxes([text for text in TEXT if not text.startswith('Period')]),'doc1',1,600,800,600,800)
     doc=extract(b'%PDF-fixture',original(),no_date)

@@ -62,6 +62,11 @@ class Review(BaseModel):
     action:Literal['confirm','reject','note']
     note:str=Field(default='',max_length=2000)
     expected_revision:int=Field(ge=0,strict=True)
+    expected_case_version:int|None=Field(default=None,ge=1,strict=True)
+
+class OCRRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    expected_version:int=Field(ge=1,strict=True)
 
 class HistoryQuery(BaseModel):
     model_config=ConfigDict(extra='forbid')
@@ -86,15 +91,25 @@ def render_page(raw,doc,page,source):
 
 def markdown_report(report):
     text=f"# Paper Trail Agent\n\nMachine status: {report['status']}\n\nPattern-redacted export. Original PDFs are excluded. Review unlabeled personal details before sharing.\n\n"
+    if report.get('report_version'):text+=f"Report version: {report['report_version']}\n\n"
+    if report.get('derived_from',{}).get('kind')=='ocr':
+        text+=f"Derived from report version {report['derived_from']['version']}. Previous reviews remain in that immutable version.\n\nOCR values and calculations are unverified candidates. Recognizer scores are uncalibrated and do not prove financial correctness. Human approval of a finding does not verify all OCR fields.\n\n"
     for f in report['findings']:
         text+=f"- [ ] [{f['severity']}] {markdown_text(f['message'])} Sources: {', '.join(f['sources']) or 'manual review'}\n"
         review=f.get('human_review',{'decision':'pending','revision':0,'history':[]})
         text+=f"  Human review: {review['decision']} (revision {review['revision']}); original machine result retained.\n"
         for event in review['history']:text+=f"  - {event['timestamp']} {event['action']}: {markdown_text(event['note'])}\n"
     if not report['findings']:text+='No discrepancies in supported checks.\n'
+    if any(calculation.get('provisional') for calculation in report['calculations']):
+        text+='\n## Provisional OCR arithmetic\n'
+        for calculation in report['calculations']:
+            if calculation.get('provisional'):
+                text+=f"\nIf the recognized values are correct: {' + '.join(calculation['operands'])} = {calculation['computed']}; recognized stated amount {calculation['stated']}. Verify the original PDF.\n"
     text+='\n## Source index\n'
     for doc in report['documents']:
-        for line in doc['lines']:text+=f"\n{line['id']} | {doc['name']} page {line['page']}: {markdown_text(line['text'])}\n"
+        for line in doc['lines']:
+            qualifier=f" [OCR score {line['confidence']:.3f}; uncalibrated; {'unverified candidate' if line['usable'] else 'excluded from checks'}]" if line.get('method')=='ocr' else ''
+            text+=f"\n{line['id']} | {doc['name']} page {line['page']}{qualifier}: {markdown_text(line['text'])}\n"
     return text
 
 def create_router(root_provider,analyze_files):
@@ -117,7 +132,9 @@ def create_router(root_provider,analyze_files):
     @router.get('/config')
     def config():return {'mode':'service' if service_mode() else 'local','authentication_required':service_mode(),
                         'storage':'encrypted_database' if service_mode() else 'local_files',
-                        'public_demo_live_meta':False,'public_demo':service_mode()}
+                        'public_demo_live_meta':False,'public_demo':service_mode(),
+                        'ocr':{'supported':service_mode(),'available':resources()[0].worker_status()['ocr'] if service_mode() else False,
+                               'max_pages_per_case':5,'timeout_seconds':90}}
 
     @router.post('/demo/start')
     def demo_start(request:Request,response:Response):
@@ -220,13 +237,30 @@ def create_router(root_provider,analyze_files):
 
     @router.patch('/cases/{case_id}/findings/{finding_id}')
     def review(case_id,finding_id,data:Review,actor=Depends(write_principal)):
-        try:return private_report_view(resources()[0].review(actor.workspace,actor.id,case_id,finding_id,data.action,data.note,data.expected_revision))
+        try:return private_report_view(resources()[0].review(actor.workspace,actor.id,case_id,finding_id,data.action,data.note,data.expected_revision,data.expected_case_version))
         except ValueError as exc:raise HTTPException(422,str(exc)) from None
 
     @router.get('/cases/{case_id}/audit')
     def audit(case_id,actor=Depends(principal)):
         repo,_=resources();repo.get_case(actor.workspace,case_id)
         return repo.audit(actor.workspace,case_id)
+
+    @router.get('/cases/{case_id}/ocr')
+    def ocr_status(case_id,actor=Depends(principal)):
+        repo,_=resources()
+        info=repo.ocr_info(actor.workspace,case_id)
+        return {**info,'worker_available':repo.worker_status()['ocr']}
+
+    @router.post('/cases/{case_id}/ocr')
+    def queue_ocr(case_id,data:OCRRequest,actor=Depends(write_principal)):
+        if not service_mode():raise HTTPException(409,'OCR jobs require authenticated database service mode')
+        if actor.role=='demo':raise HTTPException(403,'Public synthetic guests cannot queue OCR jobs')
+        repo,_=resources();repo.get_case(actor.workspace,case_id)
+        if not repo.worker_status()['ocr']:raise HTTPException(503,'No OCR worker is available. Start the separate OCR worker before requesting a job.')
+        repo.consume('ocr-jobs:'+actor.workspace,10,3600)
+        try:result=repo.enqueue_ocr(actor.workspace,actor.id,case_id,data.expected_version)
+        except ValueError as exc:raise HTTPException(422,str(exc)) from None
+        return JSONResponse(result,status_code=202)
 
     @router.get('/cases/{case_id}/documents/{doc_id}')
     def original(case_id,doc_id,actor=Depends(principal)):

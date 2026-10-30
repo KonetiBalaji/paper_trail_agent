@@ -1,6 +1,8 @@
 const $ = id => document.getElementById(id);
 let report = null;
 let currentRole = 'admin';
+let serviceEnabled = false;
+let ocrRenderGeneration = 0;
 function csrfToken() {
   return document.cookie.split('; ').find(part => part.startsWith('pta_csrf='))?.split('=').slice(1).join('=') || '';
 }
@@ -50,11 +52,11 @@ function showDoc(id, source) {
   $('original').href = `/api/cases/${report.id}/documents/${id}#page=${source?.page || 1}`;
   $('pdf').src = `/api/cases/${report.id}/documents/${id}/page/${source?.page || 1}?source=${encodeURIComponent(source?.id || '')}`;
   $('source-page').max = pageCount(doc); $('source-page').value = source?.page || 1;
-  $('citation').textContent = source ? `${doc.name} · page ${source.page} · line ${source.line}: ${source.text}` : 'Original PDF · choose an evidence line below.';
+  $('citation').textContent = source ? `${doc.name} · page ${source.page} · line ${source.line}: ${source.text}${source.method === 'ocr' ? ' · OCR candidate; verify against the original' : ''}` : 'Original PDF · choose an evidence line below.';
   $('lines').replaceChildren();
   for (const line of doc.lines) {
     const row = el('div', line.text, 'line' + (line.id === source?.id ? ' active' : ''));
-    row.append(el('small', `${line.id} · page ${line.page}`));
+    row.append(el('small', `${line.id} · page ${line.page}${line.method === 'ocr' ? ` · recognizer score ${(line.confidence * 100).toFixed(1)}% (uncalibrated)${line.usable ? ' · unverified candidate' : ' · excluded from checks'}` : ''}`));
     $('lines').append(row);
   }
   renderComparison();
@@ -109,7 +111,7 @@ async function saveReview(finding, action, note, controls, feedback) {
   try {
     const updated = await jsonRequest(`/api/cases/${caseId}/findings/${finding.id}`, {
       method: 'PATCH', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({action, note, expected_revision: finding.human_review?.revision || 0})
+      body: JSON.stringify({action, note, expected_revision: finding.human_review?.revision || 0, expected_case_version: report.report_version})
     });
     if (report?.id !== caseId) return;
     report = updated; render();
@@ -167,8 +169,10 @@ function render() {
     $('findings').append(card);
   }
   $('calculations').replaceChildren();
+  $('calculations-title').textContent = report.calculations.some(item => item.provisional) ? 'Calculator checks · OCR candidates require review' : 'Verified calculations';
   for (const calculation of report.calculations) {
     const card = el('div', undefined, 'panel');
+    if (calculation.provisional) card.append(el('strong', 'Provisional OCR arithmetic: verify recognized values against the PDF.'));
     card.append(el('p', `${calculation.operands.join(' + ')} = ${calculation.computed}`), el('p', `Statement says ${calculation.stated}`), sources(calculation.sources));
     $('calculations').append(card);
   }
@@ -178,7 +182,7 @@ function render() {
     $('agent').append(el('p', report.agent.summary));
     const list = el('ul'); for (const item of report.agent.checklist) list.append(el('li', item));
     $('agent').append(list, sources(report.agent.sources));
-  } else $('agent').append(el('p', report.agent_error || 'Local mode: model investigation was not run.'));
+  } else $('agent').append(el('p', report.agent_error || report.agent_status || 'Local mode: model investigation was not run.'));
   $('trace').replaceChildren();
   $('trace').append(el('p', 'Ordered execution events. Model calls show metadata; tool calls show inputs and outputs with supported personal-data patterns redacted. Token usage and cost estimates, when available, are shown separately. Shared investigation events appear here.', 'note'), traceTimeline(report.trace || []));
   if (report.metrics) {
@@ -193,6 +197,69 @@ function render() {
   showDoc(report.documents.some(doc => doc.id === selectedDoc) ? selectedDoc : report.documents[0].id);
   $('json').href = `/api/cases/${report.id}/export?format=json`;
   $('checklist').href = `/api/cases/${report.id}/export?format=md`;
+  renderOCR();
+}
+
+async function renderOCR() {
+  const generation = ++ocrRenderGeneration;
+  const panel = $('ocr-panel'); panel.replaceChildren();
+  const current = report; if (!current) { panel.hidden = true; return; }
+  const pages = current.documents.reduce((count, doc) => count + new Set((doc.issues || []).filter(issue => issue.type === 'ocr_required').map(issue => issue.page)).size, 0);
+  const scanned = current.documents.filter(doc => doc.ocr?.performed);
+  panel.hidden = !pages && !scanned.length;
+  if (panel.hidden) return;
+  panel.append(el('h2', 'OCR review workflow'));
+  panel.append(el('p', 'OCR recognizes candidate text. Scores are uncalibrated; every OCR result needs human verification. Approval of a finding does not verify all recognized fields.', 'note'));
+  if (current.derived_from?.kind === 'ocr') {
+    panel.append(el('p', `Report version ${current.report_version}; derived from version ${current.derived_from.version}. Previous reviews remain in that immutable version. New findings start pending.`));
+    const previous = el('a', `Export prior report · version ${current.derived_from.version}`);
+    previous.href = `/api/cases/${current.id}/export?format=json&version=${current.derived_from.version}`; panel.append(previous);
+  }
+  for (const doc of scanned) {
+    panel.append(el('h3', doc.name), el('p', `${doc.ocr.usable_lines}/${doc.ocr.total_lines} recognized lines meet the score threshold. Recognizer score threshold ${Math.round(doc.ocr.threshold * 100)}%; this is not a probability of financial correctness.`));
+    const list = el('ul');
+    for (const field of doc.ocr.field_candidates || []) {
+      const item = el('li', `${field.field.replaceAll('.', ' · ')}: ${field.value} · score ${(field.confidence * 100).toFixed(1)}% · unverified`);
+      item.append(sources([field.source])); list.append(item);
+    }
+    panel.append(list);
+  }
+  const message = el('p', '', 'note'); message.setAttribute('role', 'status'); panel.append(message);
+  if (!serviceEnabled) { message.textContent = 'OCR jobs require an authenticated database workspace. Review this scan manually in local mode.'; return; }
+  if (currentRole === 'demo') { message.textContent = 'The public synthetic demo requests manual review; it cannot queue OCR jobs.'; return; }
+  try {
+    const info = await jsonRequest(`/api/platform/cases/${current.id}/ocr`);
+    if (report?.id !== current.id || generation !== ocrRenderGeneration) return;
+    const job = info.latest_job;
+    message.textContent = job ? `OCR job: ${job.state}${job.result?.error ? ' · ' + job.result.error : ''}` : `${pages} image-only page${pages === 1 ? '' : 's'} awaiting review.`;
+    const refresh = el('button', 'Refresh OCR status', 'secondary'); refresh.type = 'button'; refresh.onclick = () => renderOCR(); panel.append(refresh);
+    if (info.version !== current.report_version) {
+      const open = el('button', 'Open latest report', 'secondary'); open.type = 'button';
+      open.onclick = async () => {
+        open.disabled = true;
+        try { const latest = await jsonRequest(`/api/cases/${current.id}`); if (report?.id === current.id) { report = latest; render(); loadHistory(); } }
+        catch (error) { message.textContent = error.message; }
+        finally { open.disabled = false; }
+      };
+      panel.append(el('p', 'The case changed. Open the latest report before reviewing or requesting OCR.'), open);
+      return;
+    }
+    if (!pages) return;
+    if (pages > 5) { panel.append(el('p', 'This case exceeds the five image-only page OCR limit. Review it manually.')); return; }
+    if (!info.worker_available) panel.append(el('p', 'OCR worker is offline. The original PDF remains available for manual review.'));
+    if (!['admin', 'reviewer'].includes(currentRole)) { panel.append(el('p', 'A workspace reviewer must request OCR.')); return; }
+    const request = el('button', 'Request OCR · new report version', 'secondary'); request.type = 'button';
+    request.disabled = !info.worker_available || ['queued', 'running'].includes(job?.state);
+    panel.append(el('p', 'OCR creates a new report version. Previous findings and review history remain in the prior version; newly calculated findings start pending.'));
+    request.onclick = async () => {
+      request.disabled = true; message.textContent = 'Queuing OCR…';
+      try {
+        await jsonRequest(`/api/platform/cases/${current.id}/ocr`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({expected_version: current.report_version})});
+        if (report?.id === current.id) renderOCR();
+      } catch (error) { message.textContent = error.message; request.disabled = false; }
+    };
+    panel.append(request);
+  } catch (error) { if (report?.id === current.id && generation === ocrRenderGeneration) message.textContent = 'OCR status unavailable: ' + error.message; }
 }
 $('document').onchange = () => showDoc($('document').value);
 $('compare-enabled').onchange = renderComparison;
@@ -282,6 +349,7 @@ function updateAccess(actor) {
 async function configureService() {
   try {
     const config = await jsonRequest('/api/platform/config');
+    serviceEnabled = config.authentication_required;
     $('service-auth').hidden = !config.authentication_required;
     $('public-demo').hidden = !config.public_demo;
     if (config.authentication_required) {
