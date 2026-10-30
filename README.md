@@ -1,5 +1,18 @@
 # Paper Trail Agent
 
+Optional offline OCR component: install `requirements-ocr.txt` in a separate
+worker environment and run `scripts/evaluate_ocr.py`. Four actual image-only
+scan cases are evaluated; recognized amounts remain unverified candidates,
+with page boxes and uncalibrated scores. A labeled scan produces a provisional
+$50 arithmetic finding; degraded/blank scans and the unsupported table scan
+request review without calculating. **Web upload and queued-job integration
+are still pending.** See [OCR component and limits](docs/OCR.md).
+
+Production setup: Neon Free is connected to Vercel and the database, encryption
+and Meta credentials are saved as Sensitive Production-only variables.
+Redeployment is awaiting the account owner's Vercel email verification;
+the public app has not yet been verified with this configuration.
+
 Submission materials: [draft](docs/SUBMISSION.md), [three-minute demo shot list](docs/DEMO-SHOT-LIST.md), and [hosting preparation](docs/DEPLOYMENT.md).
 
 Build for Your World: a solo FastAPI web app that reconciles PDF loan/bank statements using evidence-linked extraction, exact calculator tools, and Muse Spark reasoning.

@@ -1,6 +1,7 @@
 .env
 .env.*
 .venv
+.venv-ocr
 .git
 storage
 work

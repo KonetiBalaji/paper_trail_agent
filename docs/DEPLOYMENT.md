@@ -1,6 +1,14 @@
 # Vercel + Neon deployment
 
-Vercel is the selected host. The free Neon database `paper-trail-agent` was created through Vercel; app connection and deployed behavior are not yet verified. `vercel.json` selects FastAPI and a 300-second request ceiling. This is configuration, not evidence of a successful deployment.
+Vercel is the selected host. The free Neon database `paper-trail-agent` is now
+connected to the matching Vercel project. The connection was explicitly limited
+to Production, with Sensitive variables enabled. `DATABASE_URL`,
+`DATA_ENCRYPTION_KEY` and `MODEL_API_KEY` are saved as Production secrets;
+Preview and Development were excluded. The redeploy action is waiting for
+Vercel email reauthentication. Hosted behavior remains unverified.
+
+`vercel.json` selects FastAPI and a 300-second request ceiling. Configuration
+and a Ready build alone do not prove the app can access its database safely.
 
 ## Secret settings
 
@@ -28,5 +36,13 @@ The anonymous demo uses deterministic checks, not a live model. The UI says so. 
 The service accepts at most 4,000,000 total request bytes on Vercel, including multipart overhead, despite the local per-PDF limit of 10 MB. The current pipeline also limits eight PDFs, 50 pages per PDF and 100,000 extracted characters per document. Larger uploads require a future object-storage ingestion path.
 
 ## Worker and operational limits
+
+The optional OCR component and actual scan evaluation are documented in
+`docs/OCR.md`. It is not yet connected to the job worker or web UI; Vercel must
+continue to use the lightweight core dependencies. The production encryption
+key has an ignored local `.env.production` backup, separate from the local
+development environment. Keep it private and recoverable; losing it makes
+stored reports unreadable. Neither `.env` nor `.env.*` files are committed or
+included in Vercel source uploads.
 
 Run `python -m app.worker` on a separate persistent worker host for durable eval jobs. Vercel request functions do not provide a continuously running worker. OCR/ingestion handlers, hosted uptime monitoring and provider backup restoration remain pending. A Dockerfile is an optional worker packaging draft; container execution has not been verified. Do not claim production readiness for real financial documents before the remaining privacy, redaction, retention and security gates pass.

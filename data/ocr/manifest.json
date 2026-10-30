@@ -1,0 +1,38 @@
+{
+  "fictional": true,
+  "source_sha256": "68e36cc307055895b55b41e73472fb86ce18a0377e7030a87ae1f6e34065e269",
+  "cases": [
+    {
+      "name": "table_review",
+      "file": "table_review.pdf",
+      "sha256": "98255ba875f2e0c0dc72347971c1d5898cbffdf7743173d71c8692775948cfdf",
+      "expected_status": "review",
+      "expected_confirmed": 0,
+      "candidate_math_error": null
+    },
+    {
+      "name": "labeled_error",
+      "file": "labeled_error.pdf",
+      "sha256": "8b762972c369ffed9a9328e11a134c2692aaa77e37619e86b8faea4034a83397",
+      "expected_status": "review",
+      "expected_confirmed": 0,
+      "candidate_math_error": "50.00"
+    },
+    {
+      "name": "degraded",
+      "file": "degraded.pdf",
+      "sha256": "4c14b905ec346f48ed604fd7bb3b20fcee92311b7cd13617ee9fad013a388b26",
+      "expected_status": "review",
+      "expected_confirmed": 0,
+      "candidate_math_error": null
+    },
+    {
+      "name": "blank",
+      "file": "blank.pdf",
+      "sha256": "0b1584d77c181f0e263a4289d6f48329b50074707a345e052d26e7eb4c4cee8c",
+      "expected_status": "review",
+      "expected_confirmed": 0,
+      "candidate_math_error": null
+    }
+  ]
+}

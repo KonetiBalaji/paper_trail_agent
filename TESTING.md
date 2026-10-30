@@ -1,5 +1,26 @@
 # Verification record - October 28, 2026
 
+## Optional OCR component - October 29, 2026
+
+```powershell
+.venv-ocr/Scripts/python.exe -m pip install -r requirements-ocr.txt
+.venv-ocr/Scripts/python.exe scripts/evaluate_ocr.py --report work/ocr-results.json
+```
+
+The OCR Actions job uses actual bundled CPU models over four image-only
+fictional fixtures. Core tests separately verify confidence filtering,
+geometry, preservation of missing identity, conditional Decimal calculations,
+review-only findings and owned-child timeout cleanup. See `docs/OCR.md` for
+known recognition failures and pending API/UI/job integration.
+
+Verification for this component: 207 core tests pass; three PostgreSQL tests
+skip locally and run in their own CI database job. The six baseline evals,
+19-case layout benchmark and four actual OCR cases pass locally. The fresh
+`docs/live-meta-results.json` rerun matches current application source hashes:
+clean, $25 contradiction, $50 arithmetic error and messy review all pass with
+4/4/7/4 actual tool calls, within the eight-call budget. Live layout reports
+from `44d6923` remain historical; they have not been rerun for this component.
+
 ## Evals + Trace + Human Review patch
 
 - Regression suite: 80 tests passed, including offline eval failure detection, false-clean and citation metrics, review persistence/exports, stale and concurrent edits, legacy reports, malformed model messages, tool validation and total tool budget enforcement.

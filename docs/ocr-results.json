@@ -1,0 +1,597 @@
+{
+  "scope": "Fictional English scans only; uncalibrated scores; candidate arithmetic never confirmed.",
+  "runtime": {
+    "python": "3.11.9",
+    "platform": "Windows"
+  },
+  "manifest_sha256": "663d766b46e73a68fa96021c19b288c279cdb08c764d6cb96d382fbb57b5f65d",
+  "source_sha256": {
+    "app/ocr.py": "d88a952d6a4ab31e97a144a4b1c43c4f17bd505f91d9582489b9134af250e596",
+    "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
+    "app/layouts.py": "b3399c6f90dd07163f4aa65e5c350bc95697fd4703c24a6a1e4055609aea9f04",
+    "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210"
+  },
+  "model_sha256": {
+    "ch_PP-OCRv4_det_infer.onnx": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9",
+    "ch_PP-OCRv4_rec_infer.onnx": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b",
+    "ch_ppocr_mobile_v2.0_cls_infer.onnx": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+  },
+  "cases": [
+    {
+      "case": "table_review",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "no_untrusted_calculation": true
+      },
+      "passed": true,
+      "ocr": {
+        "engine": "rapidocr-onnxruntime/1.4.4",
+        "pages": [
+          1
+        ],
+        "threshold": 0.95,
+        "confidence_calibrated": false,
+        "performed": true,
+        "duration_ms": 21515,
+        "usable_lines": 9,
+        "total_lines": 10,
+        "field_candidates": []
+      },
+      "statement": {
+        "loan_id": null,
+        "currency": null,
+        "period_end": null,
+        "tranches": [],
+        "stated_total": null,
+        "total_source": null,
+        "opening_balance": null,
+        "opening_source": null,
+        "closing_balance": null,
+        "closing_source": null,
+        "transactions": []
+      },
+      "lines": [
+        {
+          "id": "doc1:p1:o1",
+          "page": 1,
+          "line": 1,
+          "text": "Arbor Lending",
+          "bbox": [
+            42.0,
+            21.6,
+            193.2,
+            46.0
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9807941684356103,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o2",
+          "page": 1,
+          "line": 2,
+          "text": "FICTIONALBENCHMARK-NOTAREALFINANCIALACCOUNT",
+          "bbox": [
+            41.2,
+            54.4,
+            337.6,
+            64.8
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9923183571460635,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o3",
+          "page": 1,
+          "line": 3,
+          "text": "Loannumber:BENCH-LOAN-001",
+          "bbox": [
+            41.2,
+            112.4,
+            192.0,
+            124.0
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9913658213615417,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o4",
+          "page": 1,
+          "line": 4,
+          "text": "Statementcurrency:USD",
+          "bbox": [
+            42.4,
+            138.4,
+            155.6,
+            149.2
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9952838931764875,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o5",
+          "page": 1,
+          "line": 5,
+          "text": "Statementdate:31Oct2026",
+          "bbox": [
+            42.0,
+            163.2,
+            170.4,
+            173.6
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9913703825162805,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o6",
+          "page": 1,
+          "line": 6,
+          "text": "Facility Outstanding principal Accruedinterest",
+          "bbox": [
+            39.6,
+            187.2,
+            512.8,
+            200.8
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9002588912844658,
+          "usable": false
+        },
+        {
+          "id": "doc1:p1:o7",
+          "page": 1,
+          "line": 7,
+          "text": "T1 1,000.00 100.00",
+          "bbox": [
+            42.0,
+            220.8,
+            475.2,
+            233.2
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9941541850566864,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o8",
+          "page": 1,
+          "line": 8,
+          "text": "T2 2,000.00 200.00",
+          "bbox": [
+            40.8,
+            255.6,
+            475.2,
+            269.2
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.999568372964859,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o9",
+          "page": 1,
+          "line": 9,
+          "text": "Totalprincipaland interest:3350.00",
+          "bbox": [
+            42.4,
+            301.6,
+            202.0,
+            313.2
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9864795681308297,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o10",
+          "page": 1,
+          "line": 10,
+          "text": "PaperTrail syntheticbenchmark|Page1of1",
+          "bbox": [
+            42.0,
+            748.4,
+            225.2,
+            760.0
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9831127218509975,
+          "usable": true
+        }
+      ],
+      "findings": [
+        {
+          "id": "F1",
+          "type": "ocr_low_confidence",
+          "message": "If OCR values are correct: table_review.pdf: OCR is empty or contains low-confidence text; verify the original page.",
+          "sources": [],
+          "severity": "review",
+          "document": "doc1",
+          "provisional": true
+        },
+        {
+          "id": "F2",
+          "type": "ocr_review",
+          "severity": "review",
+          "message": "Check OCR candidate values against the original PDF; recognizer confidence is not proof of correctness.",
+          "sources": [
+            "doc1:p1:o1",
+            "doc1:p1:o2",
+            "doc1:p1:o3",
+            "doc1:p1:o4",
+            "doc1:p1:o5",
+            "doc1:p1:o6",
+            "doc1:p1:o7",
+            "doc1:p1:o8"
+          ]
+        }
+      ],
+      "calculations": []
+    },
+    {
+      "case": "labeled_error",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "candidate_math_error": true
+      },
+      "passed": true,
+      "ocr": {
+        "engine": "rapidocr-onnxruntime/1.4.4",
+        "pages": [
+          1
+        ],
+        "threshold": 0.95,
+        "confidence_calibrated": false,
+        "performed": true,
+        "duration_ms": 5860,
+        "usable_lines": 6,
+        "total_lines": 6,
+        "field_candidates": [
+          {
+            "field": "tranches.T1.principal",
+            "value": "1000.00",
+            "source": "doc1:p1:o5",
+            "confidence": 0.973155517578125,
+            "calibrated": false,
+            "verified": false
+          },
+          {
+            "field": "tranches.T1.interest",
+            "value": "100.00",
+            "source": "doc1:p1:o5",
+            "confidence": 0.973155517578125,
+            "calibrated": false,
+            "verified": false
+          },
+          {
+            "field": "stated_total",
+            "value": "1150.00",
+            "source": "doc1:p1:o6",
+            "confidence": 0.9809196843041315,
+            "calibrated": false,
+            "verified": false
+          }
+        ]
+      },
+      "statement": {
+        "loan_id": "OCR-001",
+        "currency": "USD",
+        "period_end": null,
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00",
+            "source": "doc1:p1:o5"
+          }
+        ],
+        "stated_total": "1150.00",
+        "total_source": "doc1:p1:o6",
+        "opening_balance": null,
+        "opening_source": null,
+        "closing_balance": null,
+        "closing_source": null,
+        "transactions": []
+      },
+      "lines": [
+        {
+          "id": "doc1:p1:o1",
+          "page": 1,
+          "line": 1,
+          "text": "FICTIONALOCRTEST",
+          "bbox": [
+            30.8,
+            39.6,
+            199.2,
+            54.0
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9983694478869438,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o2",
+          "page": 1,
+          "line": 2,
+          "text": "Loan: OCR-001",
+          "bbox": [
+            30.0,
+            103.6,
+            141.6,
+            119.6
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9836648610922006,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o3",
+          "page": 1,
+          "line": 3,
+          "text": "Currency: USD",
+          "bbox": [
+            30.8,
+            168.8,
+            137.6,
+            186.4
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9667726709292486,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o4",
+          "page": 1,
+          "line": 4,
+          "text": "As 0f: 2026-10-31",
+          "bbox": [
+            30.0,
+            234.0,
+            156.0,
+            249.2
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9681455317665549,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o5",
+          "page": 1,
+          "line": 5,
+          "text": "Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+          "bbox": [
+            29.2,
+            298.0,
+            376.8,
+            315.6
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.973155517578125,
+          "usable": true
+        },
+        {
+          "id": "doc1:p1:o6",
+          "page": 1,
+          "line": 6,
+          "text": "Stated principal plus interest total: 1150.00",
+          "bbox": [
+            30.4,
+            363.6,
+            332.8,
+            381.2
+          ],
+          "page_width": 612.0,
+          "page_height": 792.0,
+          "method": "ocr",
+          "confidence": 0.9809196843041315,
+          "usable": true
+        }
+      ],
+      "findings": [
+        {
+          "id": "F1",
+          "type": "incomplete_extraction",
+          "message": "If OCR values are correct: labeled_error.pdf: required fields could not be verified.",
+          "sources": [],
+          "severity": "review",
+          "document": "doc1",
+          "provisional": true
+        },
+        {
+          "id": "F2",
+          "type": "incorrect_statement_total",
+          "message": "If OCR values are correct: Recognized stated total differs from recognized row sum by 50.00.",
+          "sources": [
+            "doc1:p1:o5",
+            "doc1:p1:o6"
+          ],
+          "difference": "50.00",
+          "computed": "1100.00",
+          "stated": "1150.00",
+          "severity": "review",
+          "provisional": true
+        },
+        {
+          "id": "F3",
+          "type": "ocr_review",
+          "severity": "review",
+          "message": "Check OCR candidate values against the original PDF; recognizer confidence is not proof of correctness.",
+          "sources": [
+            "doc1:p1:o1",
+            "doc1:p1:o2",
+            "doc1:p1:o3",
+            "doc1:p1:o4",
+            "doc1:p1:o5",
+            "doc1:p1:o6"
+          ]
+        }
+      ],
+      "calculations": [
+        {
+          "document": "doc1",
+          "operands": [
+            "1000.00",
+            "100.00"
+          ],
+          "computed": "1100.00",
+          "stated": "1150.00",
+          "sources": [
+            "doc1:p1:o5",
+            "doc1:p1:o6"
+          ],
+          "provisional": true
+        }
+      ]
+    },
+    {
+      "case": "degraded",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "no_untrusted_calculation": true
+      },
+      "passed": true,
+      "ocr": {
+        "engine": "rapidocr-onnxruntime/1.4.4",
+        "pages": [
+          1
+        ],
+        "threshold": 0.95,
+        "confidence_calibrated": false,
+        "performed": true,
+        "duration_ms": 3078,
+        "usable_lines": 0,
+        "total_lines": 0,
+        "field_candidates": []
+      },
+      "statement": {
+        "loan_id": null,
+        "currency": null,
+        "period_end": null,
+        "tranches": [],
+        "stated_total": null,
+        "total_source": null,
+        "opening_balance": null,
+        "opening_source": null,
+        "closing_balance": null,
+        "closing_source": null,
+        "transactions": []
+      },
+      "lines": [],
+      "findings": [
+        {
+          "id": "F1",
+          "type": "ocr_low_confidence",
+          "message": "If OCR values are correct: degraded.pdf: OCR is empty or contains low-confidence text; verify the original page.",
+          "sources": [],
+          "severity": "review",
+          "document": "doc1",
+          "provisional": true
+        },
+        {
+          "id": "F2",
+          "type": "ocr_review",
+          "severity": "review",
+          "message": "Check OCR candidate values against the original PDF; recognizer confidence is not proof of correctness.",
+          "sources": []
+        }
+      ],
+      "calculations": []
+    },
+    {
+      "case": "blank",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "no_untrusted_calculation": true
+      },
+      "passed": true,
+      "ocr": {
+        "engine": "rapidocr-onnxruntime/1.4.4",
+        "pages": [
+          1
+        ],
+        "threshold": 0.95,
+        "confidence_calibrated": false,
+        "performed": true,
+        "duration_ms": 3281,
+        "usable_lines": 0,
+        "total_lines": 0,
+        "field_candidates": []
+      },
+      "statement": {
+        "loan_id": null,
+        "currency": null,
+        "period_end": null,
+        "tranches": [],
+        "stated_total": null,
+        "total_source": null,
+        "opening_balance": null,
+        "opening_source": null,
+        "closing_balance": null,
+        "closing_source": null,
+        "transactions": []
+      },
+      "lines": [],
+      "findings": [
+        {
+          "id": "F1",
+          "type": "ocr_low_confidence",
+          "message": "If OCR values are correct: blank.pdf: OCR is empty or contains low-confidence text; verify the original page.",
+          "sources": [],
+          "severity": "review",
+          "document": "doc1",
+          "provisional": true
+        },
+        {
+          "id": "F2",
+          "type": "ocr_review",
+          "severity": "review",
+          "message": "Check OCR candidate values against the original PDF; recognizer confidence is not proof of correctness.",
+          "sources": []
+        }
+      ],
+      "calculations": []
+    }
+  ],
+  "passed": true
+}

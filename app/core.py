@@ -198,5 +198,5 @@ def reconcile(documents):
 def retrieve(documents, query, limit=8):
     terms = set(re.findall(r'\w+',query.lower()))
     ranked = [(len(terms & set(re.findall(r'\w+',line['text'].lower()))),line)
-              for d in documents for line in d['lines']]
+              for d in documents for line in d['lines'] if line.get('usable',True)]
     return [line for score,line in sorted(ranked,key=lambda pair:pair[0],reverse=True)[:limit] if score]

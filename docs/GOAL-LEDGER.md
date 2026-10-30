@@ -5,14 +5,14 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 
 | Item | Requirement | Current evidence / remaining gate |
 | --- | --- | --- |
-| 1 | Reliable hosted, abuse-protected judge demo | In progress: Neon Free created; Vercel config and isolated synthetic demo implemented, hosted checks pending |
+| 1 | Reliable hosted, abuse-protected judge demo | Neon Free connected; Sensitive Production-only database/encryption/Meta variables saved. Redeployment waits for Vercel email verification; hosted checks pending |
 | 2 | Three-minute actual-app video | Pending; shot plan exists, no completed video |
 | 3 | Final form and project write-up | Draft exists; final review, URLs and submission pending |
-| 4 | Sanitized live Meta evidence in repository | Published docs/live-meta-results.json: four live cases pass, source/fixture hashes included, 4/4/5/4 tool calls; hosted live smoke remains pending |
+| 4 | Sanitized live Meta evidence in repository | Fresh original four-case live evidence matches current app hashes and passes with 4/4/7/4 tool calls. Layout live evidence remains historical; hosted live smoke pending |
 | 5 | Discord linked role | Optional manual account step; not verified |
 | 6 | Realistic varied loan/bank layouts and truth | 19-case fictional corpus with strict loan/bank table schemas and independent truth passes; real anonymized layouts and calibrated field confidence remain pending |
 | 7 | Cross-page benchmark | Linked split rows, repeated headers, cross-page totals and carried balances implemented with per-field source-page checks; arbitrary unlinked continuations remain review |
-| 8 | OCR with confidence and review gates | Pending; existing behavior requests review |
+| 8 | OCR with confidence and review gates | Optional offline CPU component and four actual scan evals implemented; labeled $50 provisional error, table/degraded/blank abstentions, uncalibrated scores and original-page coordinates. API/UI/leased-job integration pending |
 | 9 | Representative prompt-injection evaluation | Prefixed-note PDF preserves financial results/export projection; model-added row rejected; live Auto note case passes. Broader adversarial coverage pending |
 | 10 | PII redaction with tests | Pattern redaction wired to traces/logs/exports; fictional-PII and legacy-read tests added. Unlabeled/international PII and host telemetry remain outside verified coverage |
 | 11 | Representative hardening PDFs | Representative duplicate/partial/reversed-column, identity/currency/date, corrupt and oversized PDFs now tested; hostile-filename HTTP test also exists |

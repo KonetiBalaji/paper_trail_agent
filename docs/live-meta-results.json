@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-29T03:56:38.872809+00:00",
+  "started_at": "2026-10-30T00:35:48.773945+00:00",
   "model": "muse-spark-1.3",
   "data": "repository synthetic PDFs only",
   "cases": [
@@ -18,7 +18,7 @@
         "calculator"
       ],
       "tool_call_count": 4,
-      "elapsed_seconds": 16.58
+      "elapsed_seconds": 36.77
     },
     {
       "case": "contradiction",
@@ -34,12 +34,12 @@
       ],
       "tools": [
         "search_evidence",
-        "search_evidence",
+        "calculator",
         "calculator",
         "calculator"
       ],
       "tool_call_count": 4,
-      "elapsed_seconds": 17.0
+      "elapsed_seconds": 50.8
     },
     {
       "case": "math_error",
@@ -57,11 +57,13 @@
         "search_evidence",
         "search_evidence",
         "search_evidence",
+        "search_evidence",
+        "search_evidence",
         "calculator",
         "calculator"
       ],
-      "tool_call_count": 5,
-      "elapsed_seconds": 22.25
+      "tool_call_count": 7,
+      "elapsed_seconds": 48.83
     },
     {
       "case": "messy",
@@ -78,7 +80,7 @@
         "calculator"
       ],
       "tool_call_count": 4,
-      "elapsed_seconds": 9.95
+      "elapsed_seconds": 26.99
     }
   ],
   "status": "passed",
@@ -87,11 +89,12 @@
   "source_sha256": {
     "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "app/benchmark.py": "76f3fc9deaf71f887e3c95c895397303de6e8186c83cef2e45092d371640bbfb",
-    "app/core.py": "4973adfcd851c2406cd4bd95e7d341a42094da032d4da2c6dd124ee2671c0892",
+    "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
     "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
     "app/layouts.py": "b3399c6f90dd07163f4aa65e5c350bc95697fd4703c24a6a1e4055609aea9f04",
     "app/main.py": "802b8f3bdca22e3392a55ec9fcac15e86e82119695a1d6edd6dbf60fa6d8d611",
-    "app/meta.py": "5bfa1e885b5accb44f5263102fb6061618f215b276e23293a644c1512aac1307",
+    "app/meta.py": "757e2630d9a9bbcd328cfea8e3beba510163a18f2c60967758dbaee1e4ce7302",
+    "app/ocr.py": "d88a952d6a4ab31e97a144a4b1c43c4f17bd505f91d9582489b9134af250e596",
     "app/platform.py": "fe85e3589416392eac45b240ace6a5ba98d7e08ba5e69eda8d4e7a875fb4bc0b",
     "app/privacy.py": "75e7cb3244ab93e65c82e64503dcac5b74967810faef68e8da0d024cc66d5344",
     "app/repository.py": "c954721dca5b603e87d16b16ee6fc7df39abdada518ef6c6157ac8de3513b017",
@@ -110,7 +113,7 @@
     "data/synthetic/messy/statement_A.pdf": "a1046e64908c11a5bc4d64ef2a8ddb792bfbbec016f4566727fb1d9e327c376e",
     "data/synthetic/messy/statement_B.pdf": "b502b0d715b73d609bdb97d4b7b30dfc64cf1d7e846f326123541076460b5285"
   },
-  "revision": "e1f40c3b6c853381f64dcc6a8bbb92f6a3862354",
+  "revision": "44d6923687529ffcbf0ce5eed2b339332ad1782c",
   "working_tree_modified": true,
-  "finished_at": "2026-10-29T03:57:44.789504+00:00"
+  "finished_at": "2026-10-30T00:38:32.362947+00:00"
 }
