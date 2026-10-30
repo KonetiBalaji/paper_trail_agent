@@ -18,6 +18,13 @@ mobile and persistent hosted OCR worker checks remain pending; native Chrome
 verification was stopped by Computer Use's URL policy. See `docs/OCR.md` and
 `docs/frontend-ocr-results.json` for commands, scope and source hashes.
 
+Actions run 40992471231 passed the final OCR integration code: core suite,
+four PostgreSQL tests (including the concurrent OCR/review race), actual scan
+evaluation, real OCR job and both frontend-to-HTTP flows. The deployed frontend
+hash matches commit `6dc0629`; 50 hosted checks pass, including guest OCR denial.
+Hosted OCR worker availability is false, so authenticated requests remain gated
+until a separate persistent worker is provisioned.
+
 Fresh live evidence for the final source passes clean/contradiction/math-error/
 messy with 3/7/4/4 actual tool calls. The initial attempt failed on API
 availability/response handling after the clean case; the sanitized failure is

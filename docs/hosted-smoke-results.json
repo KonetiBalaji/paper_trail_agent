@@ -1,8 +1,20 @@
 {
   "base_url": "https://paper-trail-agent.vercel.app",
-  "checked_at": "2026-10-30T00:41:35.972437+00:00",
+  "checked_at": "2026-10-30T02:35:39.936478+00:00",
   "scope": "Two new synthetic guest sessions; no private uploads, real customer documents or paid model calls.",
   "checks": [
+    {
+      "check": "configured_secrets_absent_from_public_responses",
+      "passed": true
+    },
+    {
+      "check": "hosted_evals_six_pass",
+      "passed": true
+    },
+    {
+      "check": "hosted_benchmark_nineteen_pass",
+      "passed": true
+    },
     {
       "check": "https_health",
       "passed": true
@@ -128,6 +140,10 @@
       "passed": true
     },
     {
+      "check": "guest_ocr_denied",
+      "passed": true
+    },
+    {
       "check": "guest_local_upload_denied",
       "passed": true
     },
@@ -186,20 +202,10 @@
     {
       "check": "logout_revoked",
       "passed": true
-    },
-    {
-      "check": "configured_secrets_absent_from_public_responses",
-      "passed": true
-    },
-    {
-      "check": "hosted_evals_six_pass",
-      "passed": true
-    },
-    {
-      "check": "hosted_benchmark_nineteen_pass",
-      "passed": true
     }
   ],
   "passed": true,
-  "application_commit": "727f6c75c5521ccf5d49a224371f453c2e89fe9f"
+  "application_commit": "6dc06291f71a5ac49a8546c9bebb2deda3393031",
+  "served_frontend_sha256": "453102602229ef4bedbd7cd87edd113e94cc15ed049047c1ac07418c963ad412",
+  "hosted_ocr_worker_available": false
 }

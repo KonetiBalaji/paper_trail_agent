@@ -10,10 +10,10 @@ deployment of `727f6c7` with the saved settings. No additional email verificatio
 is needed for that deployment.
 
 Live demo: https://paper-trail-agent.vercel.app/. The actual hosted API passes
-49 checks in `docs/hosted-smoke-results.json`: two guest sessions, all four
+50 checks in `docs/hosted-smoke-results.json`: two guest sessions, all four
 fixture outcomes, CSRF, cross-session and anonymous denial, source images,
 original PDF access, optimistic review/save/reopen, audit chain, exports,
-upload and paid-mode denial, body/quota limits and logout revocation. Known
+upload, paid-mode and OCR-job denial, body/quota limits and logout revocation. Known
 local secret values are absent from inspected public HTML, JavaScript, health
 and config responses. Browser checks also verified all four outcomes, a saved
 review, source selection, Evals 6/6 and the extended benchmark 19/19.

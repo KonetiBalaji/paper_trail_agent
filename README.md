@@ -14,9 +14,9 @@ absent. See [OCR workflow and limits](docs/OCR.md).
 Live synthetic demo: **https://paper-trail-agent.vercel.app/**. Neon Free is
 connected to Vercel; database, encryption and Meta credentials are Sensitive
 Production-only variables. Automatic Git deployment activated this setup.
-Forty-nine hosted checks pass, covering guest isolation, four case outcomes,
+Fifty hosted checks pass, covering guest isolation, four case outcomes,
 CSRF, review persistence, source PNGs, exports, upload/model-call restrictions,
-request/quota limits, logout and public-response checks for configured local
+request/quota limits, guest OCR denial, logout and public-response checks for configured local
 secret values. Hosted Evals pass 6/6 and the layout benchmark passes 19/19.
 See `docs/hosted-smoke-results.json`; this is smoke evidence, not an uptime,
 penetration-test or real-customer-data readiness claim.

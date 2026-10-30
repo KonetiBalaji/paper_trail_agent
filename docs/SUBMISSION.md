@@ -21,7 +21,7 @@ The model connects document evidence to a structured, tool-driven investigation.
 - Public code: https://github.com/KonetiBalaji/paper_trail_agent
 - Live synthetic demo: https://paper-trail-agent.vercel.app/ (public guests use deterministic checks; paid Meta calls are blocked).
 - 223 automated tests passed locally; PostgreSQL integration is a separate CI gate.
-- 49 hosted API/security checks passed, including all four outcomes, review persistence and session isolation.
+- 50 hosted API/security checks passed, including all four outcomes, review persistence, session isolation and guest OCR denial.
 - Four live Muse Spark acceptance cases passed on October 29, 2026 with 3/7/4/4 tool calls; see TESTING.md for the precise scope and retained initial API failure.
 - Six demo evals, 19 varied-layout cases and four actual OCR scan cases pass their respective gates.
 - GitHub Actions runs core/HTTP/resource checks, PostgreSQL integration, real CPU OCR and the frontend/HTTP workflow. Live Meta tests require a local key and are separate.
