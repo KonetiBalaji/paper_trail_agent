@@ -62,3 +62,14 @@ The extraction schema covers explicit tranche principal/interest totals and bank
 - Running HTTP service smoke: all four loan cases, six offline evals, redacted exports, review persistence and deletion passed on port 8770. Frontend JavaScript syntax passed.
 - Four live Muse Spark cases passed after privacy wiring. `docs/live-meta-results.json` includes source hashes normalized to UTF-8/LF and raw fixture hashes; model/tool outcomes remain grounded with no more than eight tool calls per case.
 - Browser verification of this privacy patch and provider log settings remains pending. Pattern recognition does not cover every unlabeled or international identifier; exported scope metadata makes that limit explicit.
+
+
+## Strict table layouts, extended benchmark and Auto routing
+
+- Full local regression: 188 passed, 3 PostgreSQL tests skipped locally for the dedicated CI database job.
+- Extended corpus: 19/19; 207 true-positive fields, zero false positives and two false negatives from expected partial-row abstention. Precision 100%, recall 99.04%, 98/98 grounded amount references, false clean 0/11 and review rate 6/17. The CI command fails on any case failure or false clean.
+- Cross-page tests verify both sources of a split principal/interest row and the exact interest page used in a cross-statement finding. Carried-balance checks exclude later transactions. Duplicate rows cannot be dropped by model extraction; swapped columns, forged sources and added rows are rejected.
+- Original six-case evals and HTTP smoke continue to pass. Browser verified the extended benchmark panel and the page-2 interest source for the split row. PDF pages were rendered with Poppler and checked for legibility/alignment.
+- Four original live Meta cases pass within eight tool calls. Four varied live Auto cases pass with actual Muse Spark investigation, recorded routes and provider-reported tokens. Direct Meta extraction failed a reversed-column case safely; logs preserve that failure rather than treating it as a successful extraction.
+- Five controlled Windows resource workloads passed: 50 pages/500 tranches, 999 transactions, 1000-transaction review, 51-page rejection and over-10-MB rejection. Peak process memory and analysis time are in docs/resource-results.json. These test budgets are not runtime isolation for hostile PDFs.
+- OCR, generalized layout confidence, unlinked wrapped rows, unrestricted prompt-injection resistance and a representative real-world corpus remain outside this verification.

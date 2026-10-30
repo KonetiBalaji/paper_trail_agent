@@ -1,0 +1,56 @@
+{
+  "case": "currency_guard",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "identity_mismatch"
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "c33c9c3fdcc9100e9e487819c30cf411c06611f88baab1f028d5f74b255524ae",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    },
+    {
+      "file": "statement_2.pdf",
+      "sha256": "6bb0b424cfa7cc564c24546df207d82fb01cd93523d8d61730e98bf4ade01092",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "EUR",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

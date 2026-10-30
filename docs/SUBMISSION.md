@@ -19,14 +19,14 @@ The model connects document evidence to a structured, tool-driven investigation.
 ## Evidence
 
 - Public code: https://github.com/KonetiBalaji/paper_trail_agent
-- 142 automated tests passed locally; PostgreSQL integration is a separate CI gate.
+- 188 automated tests passed locally; PostgreSQL integration is a separate CI gate.
 - Four HTTP smoke/sanity cases passed.
 - Four live Muse Spark acceptance cases passed on October 28, 2026; see TESTING.md for the precise scope.
 - GitHub Actions runs automated tests and HTTP smoke/sanity checks; live Meta tests require a local key and are separate.
 
 ## Scope to state honestly
 
-The tested benchmark consists of synthetic documents. Local parsing supports labeled loan tranches and bank transactions. This is not a universal financial PDF parser or an amortization engine. Image-only PDFs request review; OCR is not implemented. The current live benchmark covers the four loan cases; bank checks use independent in-memory PDFs in automated tests.
+The tested benchmark consists of synthetic documents. Local parsing supports labeled statements and documented strict loan/bank table layouts, including linked cross-page rows and carried balances. The extended fictional benchmark has 19 cases; it is not a real-world accuracy claim. This is not a universal financial PDF parser or an amortization engine. Image-only PDFs request review; OCR is not implemented. The current live benchmark covers the four loan cases; bank checks use independent in-memory PDFs in automated tests.
 
 ## Complete before submitting
 

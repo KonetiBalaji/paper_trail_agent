@@ -1,0 +1,693 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "cases": [
+    {
+      "case": "loan_columns_clean",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "c33c9c3fdcc9100e9e487819c30cf411c06611f88baab1f028d5f74b255524ae",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_columns_error",
+      "expected_status": "discrepancies",
+      "confirmed": [
+        {
+          "type": "incorrect_statement_total",
+          "difference": "50.00",
+          "computed": "3300.00"
+        }
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "68e36cc307055895b55b41e73472fb86ce18a0377e7030a87ae1f6e34065e269",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3350.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_columns_contradiction",
+      "expected_status": "discrepancies",
+      "confirmed": [
+        {
+          "type": "cross_document_interest_mismatch",
+          "difference": "25.00"
+        }
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "c33c9c3fdcc9100e9e487819c30cf411c06611f88baab1f028d5f74b255524ae",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        },
+        {
+          "file": "statement_2.pdf",
+          "sha256": "b20bc6e9f44d81fb18c8351e8675d83349021f8232ba8c4249c466fbe101821f",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3325.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "125.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_reverse_columns",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "38ff7e473b19c54f7d83c4a4e54f6f1afe8d7024300da4376163544572fc7ec3",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_cross_page",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "source_pages": {
+        "doc1:tranches:T1:principal": 1,
+        "doc1:tranches:T2:interest": 2,
+        "doc1:stated_total": 2
+      },
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "b3324d4975309257d751727e03befc2c229c074e4f4e6d180fcc2b79a948cef4",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_split_row",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "source_pages": {
+        "doc1:tranches:T1:principal": 1,
+        "doc1:tranches:T1:interest": 2,
+        "doc1:stated_total": 2
+      },
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "0e9912ffbd6e8bba50b60ada31fe132c7007b0cc097d9d21da6a72885a6dea22",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_duplicate",
+      "expected_status": "review",
+      "confirmed": [],
+      "review_types": [
+        "duplicate_tranche"
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "63f5537823c8a1fe1e859af92c356ee610d43209a0798c3aaa9739cb950a0db0",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "4400.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "loan_partial",
+      "expected_status": "review",
+      "confirmed": [],
+      "review_types": [
+        "partial_extraction"
+      ],
+      "allowed_abstentions": {
+        "doc1": [
+          "tranches:T1#0:id",
+          "tranches:T1#0:principal"
+        ]
+      },
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "fd096ccf5da3a0add43ec8ef6ee9faab18dd8380f2a818555df92af5a9aac60e",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": null
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "bank_debit_credit",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "3f61fba3f37efc268d86bb18610b142853f79cff1d22036a3d48dc7242e176df",
+          "truth": {
+            "loan_id": "BENCH-BANK-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "opening_balance": "1000.00",
+            "closing_balance": "1075.00",
+            "tranches": [],
+            "transactions": [
+              {
+                "id": "TX1",
+                "date": "2026-10-02",
+                "amount": "-25.00"
+              },
+              {
+                "id": "TX2",
+                "date": "2026-10-06",
+                "amount": "100.00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "bank_signed",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "1916c8c029ec6c23bc8b25782fe78ac89524fa997dfd394ce2aa5431eba1182b",
+          "truth": {
+            "loan_id": "BENCH-BANK-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "opening_balance": "1000.00",
+            "closing_balance": "1075.00",
+            "tranches": [],
+            "transactions": [
+              {
+                "id": "TX1",
+                "date": "2026-10-02",
+                "amount": "-25.00"
+              },
+              {
+                "id": "TX2",
+                "date": "2026-10-06",
+                "amount": "100.00"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "bank_cross_page",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "source_pages": {
+        "doc1:transactions:TX1:amount": 1,
+        "doc1:transactions:TX2:amount": 2,
+        "doc1:closing_balance": 2
+      },
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "5dfc9184c0c626ec9c2a107820a5eedd68c90027c14e8c4270123c5ca68aba94",
+          "truth": {
+            "loan_id": "BENCH-BANK-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "opening_balance": "1000.00",
+            "closing_balance": "1075.00",
+            "tranches": [],
+            "transactions": [
+              {
+                "id": "TX1",
+                "date": "2026-10-02",
+                "amount": "-25.00"
+              },
+              {
+                "id": "TX2",
+                "date": "2026-10-06",
+                "amount": "100.00"
+              }
+            ],
+            "carried_balances": [
+              {
+                "amount": "975.00",
+                "after_transaction_count": 1
+              },
+              {
+                "amount": "975.00",
+                "after_transaction_count": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "bank_bad_carry",
+      "expected_status": "discrepancies",
+      "confirmed": [
+        {
+          "type": "incorrect_carried_balance",
+          "difference": "20.00",
+          "computed": "975.00"
+        }
+      ],
+      "source_pages": {
+        "doc1:transactions:TX1:amount": 1,
+        "doc1:transactions:TX2:amount": 2,
+        "doc1:closing_balance": 2
+      },
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "59bdf8b7f13da641a41e8cdd8d1e25aa90171905497a397e54030972d5ed1a17",
+          "truth": {
+            "loan_id": "BENCH-BANK-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "opening_balance": "1000.00",
+            "closing_balance": "1075.00",
+            "tranches": [],
+            "transactions": [
+              {
+                "id": "TX1",
+                "date": "2026-10-02",
+                "amount": "-25.00"
+              },
+              {
+                "id": "TX2",
+                "date": "2026-10-06",
+                "amount": "100.00"
+              }
+            ],
+            "carried_balances": [
+              {
+                "amount": "975.00",
+                "after_transaction_count": 1
+              },
+              {
+                "amount": "995.00",
+                "after_transaction_count": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "injection_note",
+      "expected_status": "consistent",
+      "confirmed": [],
+      "paired_control": "loan_columns_clean",
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "0a5565b137835954a2b7573fbaa1439cdfe5a6f427ebc6e20990567b9f81ea18",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "identity_conflict",
+      "expected_status": "review",
+      "confirmed": [],
+      "review_types": [
+        "conflicting_field"
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "2dc80b9b015319b719a78a66e07b3b152c7dbd285aff9efc0235b773b24d7c1a",
+          "truth": {
+            "loan_id": null,
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "ambiguous_date",
+      "expected_status": "review",
+      "confirmed": [],
+      "review_types": [
+        "unsupported_date"
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "436d78ad129de429836e0b74229e4b9176d5ebff7054ac4fbaa363430e71287a",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": null,
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "currency_guard",
+      "expected_status": "review",
+      "confirmed": [],
+      "review_types": [
+        "identity_mismatch"
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "c33c9c3fdcc9100e9e487819c30cf411c06611f88baab1f028d5f74b255524ae",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        },
+        {
+          "file": "statement_2.pdf",
+          "sha256": "6bb0b424cfa7cc564c24546df207d82fb01cd93523d8d61730e98bf4ade01092",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "EUR",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "missing_tranche",
+      "expected_status": "review",
+      "confirmed": [],
+      "review_types": [
+        "missing_tranche"
+      ],
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "c33c9c3fdcc9100e9e487819c30cf411c06611f88baab1f028d5f74b255524ae",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "3300.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              },
+              {
+                "id": "T2",
+                "principal": "2000.00",
+                "interest": "200.00"
+              }
+            ],
+            "transactions": []
+          }
+        },
+        {
+          "file": "statement_2.pdf",
+          "sha256": "1b0ce66a3757da6e9b5e68f566424f459eae7ad671713cbe713505de00685c07",
+          "truth": {
+            "loan_id": "BENCH-LOAN-001",
+            "currency": "USD",
+            "period_end": "2026-10-31",
+            "stated_total": "1100.00",
+            "tranches": [
+              {
+                "id": "T1",
+                "principal": "1000.00",
+                "interest": "100.00"
+              }
+            ],
+            "transactions": []
+          }
+        }
+      ]
+    },
+    {
+      "case": "corrupt_pdf",
+      "expected_http": 422,
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "6c60a1a5dda6ef162ba7fc360fc85c6c04b32b17a9fc93a729e6e627d60f743e",
+          "raw": "corrupt"
+        }
+      ]
+    },
+    {
+      "case": "oversized_pdf",
+      "expected_http": 413,
+      "documents": [
+        {
+          "file": "statement_1.pdf",
+          "sha256": "f6d57f0a080368abf34240b51892bcc22189067a204f545fc6fcf06ca2b911bd",
+          "raw": "oversized"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case": "loan_columns_error",
+  "expected_status": "discrepancies",
+  "confirmed": [
+    {
+      "type": "incorrect_statement_total",
+      "difference": "50.00",
+      "computed": "3300.00"
+    }
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "68e36cc307055895b55b41e73472fb86ce18a0377e7030a87ae1f6e34065e269",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3350.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

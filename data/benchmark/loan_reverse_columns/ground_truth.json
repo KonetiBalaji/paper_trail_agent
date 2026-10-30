@@ -1,0 +1,30 @@
+{
+  "case": "loan_reverse_columns",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "38ff7e473b19c54f7d83c4a4e54f6f1afe8d7024300da4376163544572fc7ec3",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

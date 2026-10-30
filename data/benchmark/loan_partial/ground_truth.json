@@ -1,0 +1,39 @@
+{
+  "case": "loan_partial",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "partial_extraction"
+  ],
+  "allowed_abstentions": {
+    "doc1": [
+      "tranches:T1#0:id",
+      "tranches:T1#0:principal"
+    ]
+  },
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "fd096ccf5da3a0add43ec8ef6ee9faab18dd8380f2a818555df92af5a9aac60e",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": null
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

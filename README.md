@@ -40,7 +40,7 @@ Case history supports loan/period text search, status and human-decision filters
 
 Durable eval jobs can be queued through `POST /api/platform/jobs/eval`; run `python -m app.worker --once` to process one job, or omit `--once` to poll continuously on a separate worker host. OCR and ingestion job handlers are not implemented yet. SQLite backup restoration is tested; hosted PostgreSQL backups and recovery still require provider verification. A Vercel function is not a continuously running worker.
 
-Current local validation: 142 tests and 6/6 offline evaluation cases pass. These checks use SQLite for the repository and HTTPS TestClient sessions for service behavior; they do not prove PostgreSQL production behavior. Neon free database creation is confirmed, but project connection, secrets, hosted smoke tests and uptime checks remain pending. Do not expose real documents until deployment and privacy controls are verified.
+Current local validation: 188 tests and 6/6 offline evaluation cases pass. These checks use SQLite for the repository and HTTPS TestClient sessions for service behavior; they do not prove PostgreSQL production behavior. Neon free database creation is confirmed, but project connection, secrets, hosted smoke tests and uptime checks remain pending. Do not expose real documents until deployment and privacy controls are verified.
 
 ### Public synthetic demo
 
@@ -49,14 +49,14 @@ Service mode offers four fixed fixture buttons after **Start private demo sessio
 ## How it works
 
 1. pdfplumber extracts text lines and page bounding boxes; image-only pages become review items.
-2. Local mode parses conservative labeled loan-tranche and bank-transaction formats. Meta mode uses Muse Spark for structured extraction, validating extracted amounts and citations against source text.
+2. Local mode parses conservative labeled statements and documented table layouts. Auto mode uses verified local extraction for complete recognized layouts and Muse Spark extraction for unknown layouts; Muse Spark still investigates the verified results. Direct Meta mode always requests model extraction. Evidence, column semantics and row completeness are validated before numbers count.
 3. Python Decimal recomputes explicit principal-plus-interest totals. Bank statements also verify opening balance plus signed transactions against closing balance. Matching loan/account IDs, currencies and reporting periods gate cross-document comparisons.
 4. The Meta agent can search original evidence (keyword RAG) and invoke a calculator. The tool loop is bounded; final citations must have been retrieved.
 5. Findings link to the original PDF page and extracted source line. JSON and Markdown checklist exports retain the evidence. Cases can be deleted locally.
 
 ### Current supported scope
 
-The local parser supports explicit `Loan:` or `Account:`, `Currency:`, ISO period-end dates, `Tranche ... | Principal: ... | Interest: ...`, and explicitly labeled principal-plus-interest totals. Bank support includes `Opening balance:`, `Closing balance:`, and `Transaction ID | YYYY-MM-DD | Amount: signed-value`. Meta extraction supports alternative wording only when amounts and identifiers can be grounded in extracted text. This is not a general accounting engine: it does not infer amortization schedules, day-count conventions, unlabeled debit/credit table conventions, or exchange rates. No OCR is included; scanned pages request review. Multi-line tables whose fields cannot be grounded on one source line require review. Missing fields and mismatched periods are not confirmed financial contradictions.
+The local parser supports explicit `Loan:` or `Account:`, `Currency:`, ISO period-end dates, `Tranche ... | Principal: ... | Interest: ...`, and explicitly labeled principal-plus-interest totals. Bank support includes `Opening balance:`, `Closing balance:`, and `Transaction ID | YYYY-MM-DD | Amount: signed-value`. Meta extraction supports alternative wording only when amounts and identifiers can be grounded in extracted text. This is not a general accounting engine: it does not infer amortization schedules, day-count conventions, unlabeled debit/credit table conventions, or exchange rates. No OCR is included; scanned pages request review. Recognized tables support repeated headers, reordered principal/interest columns, and explicitly linked `T1 (continued)` rows across pages. Each split amount keeps its own source line. Unlinked wrapped rows and unknown column meanings require review. Missing fields and mismatched periods are not confirmed financial contradictions.
 
 An empty discrepancy list means only that supported checks found none; it is not a guarantee that a statement is correct. The default mode is local single-user use on loopback; PDFs and reports remain in ignored `storage/` until deleted. Service mode adds encrypted database storage and authenticated workspaces, but hosted security, redaction and operational verification remain pending. Use synthetic data in the public repo and demo.
 
@@ -107,7 +107,7 @@ Click **Run offline evals** to execute the same evaluator as `python scripts/eva
 
 Each new report includes a persisted `trace` array. Events have stable sequential IDs, UTC timestamps, kind/name, inputs, outputs, validation result and elapsed milliseconds where measured. Untimed events store null and display "not timed". Expand an event to inspect its inputs and outputs. Relevant deterministic checks and review events appear under each finding. The model/tool investigation is available under each finding and in the case timeline, explicitly labeled as shared rather than falsely attributed to one finding.
 
-Events cover PDF extraction, local/model extraction, grounded-schema validation, deterministic totals, model calls, search_evidence/calculator tool calls, citation validation, budget failures and human review. Model events expose request metadata, not full prompts, credentials or hidden reasoning. Tool events contain arguments and results with supported identity/contact patterns redacted. Original evidence text is retained in the private case view. Previously saved traces are redacted on read without modifying immutable database versions. Cost is unknown and displayed as unmeasured, not estimated.
+Events cover PDF extraction, local/model extraction, grounded-schema validation, deterministic totals, model calls, search_evidence/calculator tool calls, citation validation, budget failures and human review. Model events expose request metadata, not full prompts, credentials or hidden reasoning. Tool events contain arguments and results with supported identity/contact patterns redacted. Original evidence text is retained in the private case view. Previously saved traces are redacted on read without modifying immutable database versions. New reports record provider-reported token usage and measured analysis latency. Missing usage remains unreported. Cost remains unmeasured unless explicit token rates are configured; any displayed estimate is separate from actual billing.
 
 The investigation harness allows six model turns and **eight tool calls total across the run**, with a 60-second timeout per provider request. Invalid arguments and failed validation are recorded. Provider failures produce review rather than a clean result. There are no automatic provider retries. Local mode has extraction/calculator/validation events and makes no model calls. Older reports explicitly show that no trace was recorded; historical events are not invented.
 
@@ -140,3 +140,31 @@ The authenticated/private case view keeps original PDFs and source lines for ver
 Application logging redacts supported text patterns, URL query values, configured server secrets and exception text before handlers receive a record. This does not configure Vercel/Neon infrastructure logging, external telemetry or logs emitted before application startup. Never put document text or credentials in a URL or turn on body/header capture at the host.
 
 The redactor is pattern-based: unlabeled names/addresses, compact phone numbers and unsupported international formats may remain. Exports explicitly state this scope; inspect them before sharing. It is not an anonymization guarantee. Tests use fictional identities and prove redaction, unchanged calculations/citations, source-PDF preservation, legacy-version handling and logging compatibility.
+
+
+## Table layouts, cross-page checks and extended benchmark
+
+The table parser recognizes explicit Facility/Tranche principal-interest headers (including reversed order), signed Date/Reference/Amount transaction tables, and Date/Reference/Debit/Credit tables with unambiguous signs. Identity aliases include Loan/Account number and Statement currency. Dates support ISO `YYYY-MM-DD` and English `DD Mon YYYY`; ambiguous slash dates request review. No exchange rate is inferred. Currency tags must match before statements are compared.
+
+For bank pages, explicit carried/brought-forward balances are checked against the opening balance and only the preceding transactions. Repeated headers do not create rows. Conflicting metadata is cleared and sent to review with both sources. Duplicate IDs, incomplete rows, ambiguous signs and unsupported rows block a clean result. Calculation limits are 500 tranches or 999 bank transactions; larger cases request review instead of causing a calculator exception.
+
+Run the **Extended PDF benchmark** panel or:
+
+```powershell
+.venv\Scripts\python.exe scripts\benchmark.py --report work\benchmark-results.json
+.venv\Scripts\python.exe scripts\resource_benchmark.py --report work\resource-results.json
+# Paid Meta calls; fictional data only:
+.venv\Scripts\python.exe scripts\live_layout_test.py --mode auto --report work\live-layout-results.json
+```
+
+The extended corpus contains 19 fictional cases with independent field truth, fixture hashes, source-page checks and rejection expectations. Current results: 19/19 cases, 207 correct extracted fields, zero incorrect fields, and two visible fields withheld from an incomplete row. Precision is 100%; recall is 207/209 (99.04%). Expected review abstentions count as missed fields. All 98 amount references resolve and ground to evidence; false clean is 0/11 at-risk cases. Review rate is 6/17 accepted PDF cases. These are corpus results, not general real-world accuracy. The original six-case demo eval remains separate.
+
+CI runs the full corpus and fails on wrong results, fixture hash mismatches, unsafe false-cleans or missing citations. It also runs controlled fresh-process resource checks. On the recorded Windows run, a 50-page/500-tranche PDF and a 999-transaction bank PDF passed; 1000 transactions requested review, 51 pages were rejected, and input over 10 MB was rejected. All five workloads stayed below the 20-second/512-MiB test budgets; the largest measured peak working set was about 161 MiB. These measured test budgets are not a parser sandbox or a production guarantee for arbitrary PDFs. Hosted requests remain capped at 4,000,000 total bytes.
+
+## Automatic routing and reported usage
+
+Select **Auto + Muse Spark** for recognized layouts: deterministic extraction preserves column meanings, then the actual Meta agent retrieves evidence and calls tools. Unknown layouts attempt grounded Muse Spark extraction; malformed or ungrounded output becomes review. A configured key is required for Auto and direct Meta modes. Public synthetic guests remain restricted to local checks and cannot invoke either paid mode.
+
+`docs/live-layout-results.json` records four passing live Auto cases (reversed columns, split row, cross-page bank and injection note), including actual tool calls, route choices, timings and reported tokens. The direct Meta failure on a reversed-column case is retained separately; it was rejected rather than accepted as clean. Do not describe direct extraction as universally reliable. `docs/live-meta-results.json` covers the four original live acceptance cases. Source hashes are normalized to UTF-8/LF; fixture hashes use raw PDF bytes.
+
+Optional `META_INPUT_USD_PER_MILLION` and `META_OUTPUT_USD_PER_MILLION` settings enable a token-based estimate only when every attempted call has complete reported input/output usage. Set verified rates yourself; no price is invented by the app. Analysis latency excludes persistence and HTTP transport. Missing usage, failed calls and missing rates keep the cost estimate unknown.

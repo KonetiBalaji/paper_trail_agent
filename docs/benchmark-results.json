@@ -1,0 +1,1468 @@
+{
+  "mode": "offline",
+  "model_calls": 0,
+  "evaluated_at": "2026-10-30T00:12:50.300710+00:00",
+  "manifest_sha256": "c05129d82463ec6dbb6828cec502811ebe5466744e910cec8194e8f4db1ddc8b",
+  "cases": [
+    {
+      "case": "loan_columns_clean",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 15.13
+    },
+    {
+      "case": "loan_columns_error",
+      "passed": true,
+      "status": "discrepancies",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 11.59
+    },
+    {
+      "case": "loan_columns_contradiction",
+      "passed": true,
+      "status": "discrepancies",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 10,
+      "resolved_citations": 10,
+      "grounded_citations": 10,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 41.28
+    },
+    {
+      "case": "loan_reverse_columns",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 9.23
+    },
+    {
+      "case": "loan_cross_page",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 18.93
+    },
+    {
+      "case": "loan_split_row",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1",
+        "loan_linked_continuation_v1"
+      ],
+      "field_summary": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 18.9
+    },
+    {
+      "case": "loan_duplicate",
+      "passed": true,
+      "status": "review",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 7,
+      "resolved_citations": 7,
+      "grounded_citations": 7,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 10.11
+    },
+    {
+      "case": "loan_partial",
+      "passed": true,
+      "status": "review",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5
+        },
+        "interest": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 3,
+      "resolved_citations": 3,
+      "grounded_citations": 3,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 2,
+        "precision": 1.0,
+        "recall": 0.7777777777777778
+      },
+      "elapsed_ms": 12.25
+    },
+    {
+      "case": "bank_debit_credit",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "amount": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "closing_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "date": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "opening_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 4,
+      "resolved_citations": 4,
+      "grounded_citations": 4,
+      "model_calls": 0,
+      "layouts": [
+        "bank_debit_credit_v1"
+      ],
+      "field_summary": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 9.67
+    },
+    {
+      "case": "bank_signed",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "amount": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "closing_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "date": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "opening_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 4,
+      "resolved_citations": 4,
+      "grounded_citations": 4,
+      "model_calls": 0,
+      "layouts": [
+        "bank_signed_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 9.48
+    },
+    {
+      "case": "bank_cross_page",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "after_transaction_count": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "amount": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "closing_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "date": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "opening_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 6,
+      "resolved_citations": 6,
+      "grounded_citations": 6,
+      "model_calls": 0,
+      "layouts": [
+        "bank_debit_credit_v1"
+      ],
+      "field_summary": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 45.23
+    },
+    {
+      "case": "bank_bad_carry",
+      "passed": true,
+      "status": "discrepancies",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "after_transaction_count": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "amount": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "closing_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "date": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "opening_balance": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 6,
+      "resolved_citations": 6,
+      "grounded_citations": 6,
+      "model_calls": 0,
+      "layouts": [
+        "bank_debit_credit_v1"
+      ],
+      "field_summary": {
+        "tp": 15,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 16.68
+    },
+    {
+      "case": "injection_note",
+      "passed": true,
+      "status": "consistent",
+      "http_status": 200,
+      "at_risk": false,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 10,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 11.3
+    },
+    {
+      "case": "identity_conflict",
+      "passed": true,
+      "status": "review",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.73
+    },
+    {
+      "case": "ambiguous_date",
+      "passed": true,
+      "status": "review",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 5,
+      "resolved_citations": 5,
+      "grounded_citations": 5,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 8.82
+    },
+    {
+      "case": "currency_guard",
+      "passed": true,
+      "status": "review",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 10,
+      "resolved_citations": 10,
+      "grounded_citations": 10,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 15.97
+    },
+    {
+      "case": "missing_tranche",
+      "passed": true,
+      "status": "review",
+      "http_status": 200,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {
+        "currency": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "id": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "interest": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "loan_id": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "period_end": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "principal": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "stated_total": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "citation_count": 8,
+      "resolved_citations": 8,
+      "grounded_citations": 8,
+      "model_calls": 0,
+      "layouts": [
+        "loan_columns_v1"
+      ],
+      "field_summary": {
+        "tp": 17,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "elapsed_ms": 24.86
+    },
+    {
+      "case": "corrupt_pdf",
+      "passed": true,
+      "status": "rejected",
+      "http_status": 422,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {},
+      "citation_count": 0,
+      "resolved_citations": 0,
+      "grounded_citations": 0,
+      "model_calls": 0,
+      "field_summary": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": null,
+        "recall": null
+      },
+      "elapsed_ms": 1.18
+    },
+    {
+      "case": "oversized_pdf",
+      "passed": true,
+      "status": "rejected",
+      "http_status": 413,
+      "at_risk": true,
+      "false_clean": false,
+      "errors": [],
+      "fields": {},
+      "citation_count": 0,
+      "resolved_citations": 0,
+      "grounded_citations": 0,
+      "model_calls": 0,
+      "field_summary": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": null,
+        "recall": null
+      },
+      "elapsed_ms": 44.79
+    }
+  ],
+  "fields": {
+    "after_transaction_count": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "amount": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "closing_balance": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "currency": {
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "date": {
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "id": {
+      "tp": 39,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.975
+    },
+    "interest": {
+      "tp": 31,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "loan_id": {
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "opening_balance": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "period_end": {
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "principal": {
+      "tp": 31,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.96875
+    },
+    "stated_total": {
+      "tp": 16,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  },
+  "summary": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0,
+    "field_metrics": {
+      "tp": 207,
+      "fp": 0,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.9904306220095693
+    },
+    "citation_count": 98,
+    "citation_accuracy": 1.0,
+    "grounded_reference_accuracy": 1.0,
+    "at_risk_count": 11,
+    "false_clean_count": 0,
+    "false_clean_rate": 0.0,
+    "review_rate": 0.35294117647058826
+  },
+  "definitions": {
+    "fields": "Exact value micro precision/recall across known-answer identity, dates, totals, rows and carried balances. Wrong values count as both FP and FN. Expected review abstentions still count as FN, including visible fields in incomplete rows.",
+    "citations": "Resolved amount-source references / all extracted amount-source references. Grounded references also contain the amount; debit/credit sign semantics are checked against independent truth.",
+    "review_rate": "Review results / successfully analyzed PDF cases; rejected corrupt/oversized inputs are excluded.",
+    "false_clean": "At-risk cases incorrectly marked consistent / at-risk cases, including expected rejections.",
+    "scope": "Fictional, strict supported layouts and representative rejection cases. Not live-model, OCR or real-world accuracy."
+  }
+}

@@ -7,3 +7,4 @@ work/
 data/private/
 data/synthetic/bank_clean/bank.pdf
 data/synthetic/bank_error/bank.pdf
+data/benchmark/oversized_pdf/*.pdf

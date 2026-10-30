@@ -1,0 +1,33 @@
+{
+  "case": "ambiguous_date",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "unsupported_date"
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "436d78ad129de429836e0b74229e4b9176d5ebff7054ac4fbaa363430e71287a",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": null,
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

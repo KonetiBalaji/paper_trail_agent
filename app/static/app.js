@@ -180,7 +180,13 @@ function render() {
     $('agent').append(list, sources(report.agent.sources));
   } else $('agent').append(el('p', report.agent_error || 'Local mode: model investigation was not run.'));
   $('trace').replaceChildren();
-  $('trace').append(el('p', 'Ordered execution events. Model calls show metadata; tool calls show inputs and outputs with supported personal-data patterns redacted. Cost is not measured. Shared investigation events appear here.', 'note'), traceTimeline(report.trace || []));
+  $('trace').append(el('p', 'Ordered execution events. Model calls show metadata; tool calls show inputs and outputs with supported personal-data patterns redacted. Token usage and cost estimates, when available, are shown separately. Shared investigation events appear here.', 'note'), traceTimeline(report.trace || []));
+  if (report.metrics) {
+    const metrics = report.metrics; const tokens = metrics.reported_tokens;
+    const usage = tokens ? `reported tokens: input ${tokens.prompt_tokens ?? 'unreported'}, output ${tokens.completion_tokens ?? 'unreported'} (${metrics.calls_with_reported_usage}/${metrics.attempted_model_calls} calls report usage)` : 'Token usage unreported';
+    $('trace').prepend(el('p', `Analysis ${metrics.analysis_ms} ms · ${metrics.attempted_model_calls} model calls · ${usage} · Cost estimate ${metrics.estimated_cost_usd === null ? 'unmeasured' : '$' + metrics.estimated_cost_usd + ' (configured rates)'}`, 'note'));
+    $('trace').prepend(el('p', report.documents.map(doc => `${doc.name}: ${doc.routing?.selected || 'legacy'} extraction`).join(' · '), 'note'));
+  }
   if (report.harness) $('trace').prepend(el('p', `Harness: ${report.harness.max_model_turns} investigation turns · ${report.harness.max_tool_calls_total} total tool calls · ${report.harness.request_timeout_seconds}s per request`, 'note'));
   $('document').replaceChildren();
   for (const doc of report.documents) { const option = el('option', doc.name); option.value = doc.id; $('document').append(option); }
@@ -319,4 +325,23 @@ for (const button of document.querySelectorAll('[data-fixture]')) button.onclick
     $('results').scrollIntoView({behavior: 'smooth', block: 'start'});
   } catch (error) { $('demo-message').textContent = error.message; }
   finally { button.disabled = false; }
+};
+
+$('run-benchmark').onclick = async () => {
+  $('run-benchmark').disabled = true; $('benchmark-message').textContent = 'Checking the extended known-answer PDF corpus…'; $('benchmark-results').replaceChildren();
+  try {
+    const result = await jsonRequest('/api/benchmark'); const summary = result.summary;
+    $('benchmark-message').textContent = `${summary.passed}/${summary.total} passed · field precision ${percent(summary.field_metrics.precision)} · recall ${percent(summary.field_metrics.recall)} · grounded references ${percent(summary.grounded_reference_accuracy)} · false clean ${summary.false_clean_count}/${summary.at_risk_count} · review rate ${percent(summary.review_rate)} · zero model calls`;
+    const table = el('table'); const head = el('thead'); const header = el('tr');
+    for (const label of ['Case', 'Result', 'Status', 'Precision', 'Recall', 'Grounded references', 'False clean']) header.append(el('th', label));
+    head.append(header); table.append(head); const body = el('tbody');
+    for (const item of result.cases) {
+      const row = el('tr', undefined, item.passed ? 'eval-pass' : 'eval-fail');
+      for (const value of [item.case, item.passed ? 'PASS' : 'FAIL', item.status, percent(item.field_summary?.precision ?? null), percent(item.field_summary?.recall ?? null), `${item.grounded_citations}/${item.citation_count}`, item.false_clean ? 'YES' : 'No']) row.append(el('td', value));
+      body.append(row);
+      if (item.errors.length) { const errors = el('tr'); const cell = el('td', item.errors.join('; ')); cell.colSpan = 7; errors.append(cell); body.append(errors); }
+    }
+    table.append(body); $('benchmark-results').append(table, el('p', result.definitions.scope, 'note'), el('p', result.definitions.fields, 'note'), el('p', result.definitions.citations, 'note'), el('p', result.definitions.review_rate, 'note'));
+  } catch (error) { $('benchmark-message').textContent = 'Benchmark failed: ' + error.message; }
+  finally { $('run-benchmark').disabled = false; }
 };

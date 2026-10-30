@@ -1,0 +1,35 @@
+{
+  "case": "loan_cross_page",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "source_pages": {
+    "doc1:tranches:T1:principal": 1,
+    "doc1:tranches:T2:interest": 2,
+    "doc1:stated_total": 2
+  },
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "b3324d4975309257d751727e03befc2c229c074e4f4e6d180fcc2b79a948cef4",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

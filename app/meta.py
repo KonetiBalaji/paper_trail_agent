@@ -3,6 +3,7 @@ import json
 import os
 import re
 import time
+from collections import Counter
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
 from .core import money, calculate, retrieve, parse_statement
@@ -23,8 +24,9 @@ def model_call(messages,tools,trace,stage,document=None):
         record(trace,'model',stage,{'message_count':len(messages)}, {'error':'Provider request failed'},
                'failed',(time.perf_counter()-started)*1000,**context)
         raise
+    reported=msg.pop('__provider_usage',None)
     record(trace,'model',stage,{'model':os.getenv('META_MODEL','muse-spark-1.3'),'message_count':len(messages)},
-           {'tool_call_count':len(msg.get('tool_calls') or [])},'passed',(time.perf_counter()-started)*1000,**context)
+           {'tool_call_count':len(msg.get('tool_calls') or []),'usage':reported},'passed',(time.perf_counter()-started)*1000,**context)
     return msg
 
 class Tranche(BaseModel):
@@ -33,6 +35,14 @@ class Tranche(BaseModel):
     principal: str
     interest: str
     source: str
+    principal_source: str | None = None
+    interest_source: str | None = None
+
+class CarriedBalance(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    amount:str
+    source:str
+    after_transaction_count:int=Field(ge=0,le=999,strict=True)
 
 class Transaction(BaseModel):
     model_config = ConfigDict(extra='forbid')
@@ -54,8 +64,11 @@ class Statement(BaseModel):
     closing_balance: str | None = None
     closing_source: str | None = None
     transactions: list[Transaction] = Field(default_factory=list,max_length=999)
+    carried_balances:list[CarriedBalance]=Field(default_factory=list,max_length=100)
 
 class MetaError(Exception): pass
+
+class EvidenceError(ValueError):pass
 
 def configured(): return bool(os.getenv('MODEL_API_KEY','').strip())
 
@@ -68,7 +81,12 @@ def request(messages, tools=None):
             headers={'Authorization':'Bearer '+os.environ['MODEL_API_KEY']},json=body,timeout=60)
         if response.status_code >= 400:
             raise MetaError(f'Meta API returned HTTP {response.status_code}. Check key, model access, credits and Billing.')
-        return response.json()['choices'][0]['message']
+        data=response.json();message=data['choices'][0]['message']
+        reported=data.get('usage');usage=None
+        if isinstance(reported,dict):
+            usage={key:value for key,value in reported.items() if key in ('prompt_tokens','completion_tokens','total_tokens') and type(value) is int and value>=0}
+            if not usage:usage=None
+        return {**message,'__provider_usage':usage}
     except (httpx.HTTPError,KeyError,IndexError,ValueError,TypeError) as exc:
         raise MetaError('Meta API unavailable or response format invalid. Retry after checking configuration.') from exc
 
@@ -80,38 +98,70 @@ def json_content(content):
 def validate_statement(data, doc):
     parsed = Statement.model_validate(data).model_dump()
     lines = {l['id']:l['text'] for l in doc['lines']}
+    baseline_doc={'lines':doc['lines'],'issues':[]}
+    baseline=parse_statement(baseline_doc)
+    if baseline_doc['issues']:raise EvidenceError('Document has ambiguous or incomplete recognized fields')
     def grounded(value, source):
-        if source not in lines: raise ValueError('Invalid source citation')
+        if source not in lines: raise EvidenceError('Invalid source citation')
         normalized = lines[source].replace(',','').replace('$','')
         tokens=re.findall(r'(?<![\w.])(?:\(\d+\.\d{2}\)|[-+]?\d+\.\d{2})(?![\d.])',normalized)
         if money(value) not in [money(token) for token in tokens]:
-            raise ValueError('Amount is not present on cited source line')
+            raise EvidenceError('Amount is not present on cited source line')
     for t in parsed['tranches']:
-        grounded(t['principal'],t['source']); grounded(t['interest'],t['source'])
+        for field in ('principal_source','interest_source'):
+            if t[field] is None:t.pop(field)
+        grounded(t['principal'],t.get('principal_source',t['source'])); grounded(t['interest'],t.get('interest_source',t['source']))
         if not re.search(r'(?<!\w)'+re.escape(t['id'])+r'(?!\w)',lines[t['source']]):
-            raise ValueError('Ungrounded tranche identifier')
+            raise EvidenceError('Ungrounded tranche identifier')
         for field in ('principal','interest'):
-            match=re.search(field+r':\s*([-+]?\$?[\d,]+\.\d{2}|\([\d,]+\.\d{2}\))',lines[t['source']],re.I)
-            if match and money(match[1])!=money(t[field]):raise ValueError('Amount does not match field label')
+            match=re.search(field+r':\s*([-+]?\$?[\d,]+\.\d{2}|\([\d,]+\.\d{2}\))',lines[t.get(field+'_source',t['source'])],re.I)
+            if match and money(match[1])!=money(t[field]):raise EvidenceError('Amount does not match field label')
+            t[field]=format(money(t[field]),'.2f')
+        known=next((row for row in baseline['tranches'] if row['id']==t['id'] and row['source']==t['source']),None)
+        if known:
+            for field in ('principal','interest'):
+                if money(t[field])!=money(known[field]) or t.get(field+'_source',t['source'])!=known.get(field+'_source',known['source']):
+                    raise EvidenceError('Amount or source does not match validated table column')
     if parsed['stated_total'] is not None: grounded(parsed['stated_total'],parsed['total_source'])
     for field in ('opening','closing'):
         if parsed[field+'_balance'] is not None: grounded(parsed[field+'_balance'],parsed[field+'_source'])
     from datetime import date
     for transaction in parsed['transactions']:
-        grounded(transaction['amount'],transaction['source'])
+        known=next((row for row in baseline['transactions'] if row['id']==transaction['id'] and row['source']==transaction['source']),None)
+        if known:
+            if money(transaction['amount'])!=money(known['amount']) or transaction['date']!=known['date']:raise EvidenceError('Transaction does not match validated column semantics')
+        else:grounded(transaction['amount'],transaction['source'])
         date.fromisoformat(transaction['date'])
-        if transaction['date'] not in lines[transaction['source']]:raise ValueError('Ungrounded transaction date')
-        if transaction['id'] not in lines[transaction['source']]:raise ValueError('Ungrounded transaction identifier')
+        if transaction['date'] not in lines[transaction['source']]:raise EvidenceError('Ungrounded transaction date')
+        if transaction['id'] not in lines[transaction['source']]:raise EvidenceError('Ungrounded transaction identifier')
+        transaction['amount']=format(money(transaction['amount']),'.2f')
     if parsed['period_end']:
         date.fromisoformat(parsed['period_end'])
     text = '\n'.join(lines.values())
     for field in ('loan_id','currency','period_end'):
-        if parsed[field] and parsed[field] not in text: raise ValueError(f'Ungrounded {field}')
-    baseline=parse_statement({'lines':doc['lines']})
+        if parsed[field] and parsed[field] not in text and parsed[field]!=baseline.get(field):raise EvidenceError(f'Ungrounded {field}')
+    for field in ('loan_id','currency','period_end','stated_total','opening_balance','closing_balance'):
+        if field in ('stated_total','opening_balance','closing_balance') and parsed[field] is not None:parsed[field]=format(money(parsed[field]),'.2f')
+        if baseline.get(field) is not None and parsed[field]!=baseline[field]:raise EvidenceError('Model omitted or changed an explicit field')
+    for field in ('total_source','opening_source','closing_source'):
+        if baseline.get(field) is not None and parsed[field]!=baseline[field]:raise EvidenceError('Model changed the source of an explicit balance/total')
     for field in ('tranches','transactions'):
-        expected={t['id'] for t in baseline[field]}
-        if not expected <= {t['id'] for t in parsed[field]}:
-            raise ValueError('Model omitted an explicitly labeled row')
+        expected=Counter((t['id'],t['source']) for t in baseline[field]);actual=Counter((t['id'],t['source']) for t in parsed[field])
+        if any(actual[key]<count for key,count in expected.items()):
+            raise EvidenceError('Model omitted an explicitly labeled row')
+        strict_layout=bool(baseline_doc.get('layouts') or baseline['tranches'] and baseline.get('stated_total') is not None or baseline.get('transactions') and baseline.get('opening_balance') is not None and baseline.get('closing_balance') is not None)
+        if strict_layout and actual!=expected:raise EvidenceError('Model added a row outside a recognized complete layout')
+    positions={line['id']:index for index,line in enumerate(doc['lines'])}
+    parsed['transactions'].sort(key=lambda row:positions[row['source']])
+    expected_carries={row['source']:row for row in baseline.get('carried_balances',[])}
+    if set(expected_carries)!={row['source'] for row in parsed['carried_balances']}:raise EvidenceError('Model omitted or added carried balance')
+    for carry in parsed['carried_balances']:
+        grounded(carry['amount'],carry['source'])
+        count=sum(positions[row['source']]<positions[carry['source']] for row in parsed['transactions'])
+        if money(carry['amount'])!=money(expected_carries[carry['source']]['amount']) or carry['after_transaction_count']!=count:
+            raise EvidenceError('Carried balance amount or transaction position is ungrounded')
+        carry['amount']=format(money(carry['amount']),'.2f')
+    if not parsed['carried_balances']:parsed.pop('carried_balances')
     return parsed
 
 def extract(doc,trace=None):
@@ -134,7 +184,7 @@ def extract(doc,trace=None):
         return parsed
     except (ValueError,TypeError) as exc:
         record(trace,'validation','grounded_extraction',{'document':doc['id']},
-               {'error':'Schema or evidence validation failed'},'failed',document=doc['id'])
+               {'error':'Schema or evidence validation failed','reason':str(exc) if isinstance(exc,EvidenceError) else 'Malformed schema, JSON or amount'},'failed',document=doc['id'])
         raise MetaError('Model extraction failed evidence validation; manual review required.') from exc
 
 TOOLS = [

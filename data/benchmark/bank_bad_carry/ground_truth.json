@@ -1,0 +1,52 @@
+{
+  "case": "bank_bad_carry",
+  "expected_status": "discrepancies",
+  "confirmed": [
+    {
+      "type": "incorrect_carried_balance",
+      "difference": "20.00",
+      "computed": "975.00"
+    }
+  ],
+  "source_pages": {
+    "doc1:transactions:TX1:amount": 1,
+    "doc1:transactions:TX2:amount": 2,
+    "doc1:closing_balance": 2
+  },
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "59bdf8b7f13da641a41e8cdd8d1e25aa90171905497a397e54030972d5ed1a17",
+      "truth": {
+        "loan_id": "BENCH-BANK-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "opening_balance": "1000.00",
+        "closing_balance": "1075.00",
+        "tranches": [],
+        "transactions": [
+          {
+            "id": "TX1",
+            "date": "2026-10-02",
+            "amount": "-25.00"
+          },
+          {
+            "id": "TX2",
+            "date": "2026-10-06",
+            "amount": "100.00"
+          }
+        ],
+        "carried_balances": [
+          {
+            "amount": "975.00",
+            "after_transaction_count": 1
+          },
+          {
+            "amount": "995.00",
+            "after_transaction_count": 1
+          }
+        ]
+      }
+    }
+  ]
+}

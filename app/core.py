@@ -67,29 +67,29 @@ def parse_statement(doc):
               'stated_total':None,'total_source':None,'opening_balance':None,
               'opening_source':None,'closing_balance':None,'closing_source':None,'transactions':[]}
     for line in doc['lines']:
-        text, source = line['text'], line['id']
-        m = re.search(r'(?:Loan|Account):\s*([\w-]+)', text, re.I)
+        text, source = re.sub(r'^L\d+\s+','',line['text']), line['id']
+        m = re.search(r'^(?:Document:\s*[\w-]+\s*\|\s*)?(?:Loan|Account):\s*([\w-]+)', text, re.I)
         if m: result['loan_id'] = m[1]
-        m = re.search(r'Currency:\s*([A-Z]{3})', text)
+        m = re.search(r'^(?:(?:Document:\s*[\w-]+\s*\|\s*)?(?:Loan|Account):\s*[\w-]+\s*(?:\|\s*)?)?Currency:\s*([A-Z]{3})', text)
         if m: result['currency'] = m[1]
-        m = re.search(r'(?:period end|as of):\s*(\d{4}-\d{2}-\d{2})', text, re.I)
+        m = re.search(r'^(?:Statement\s+)?(?:period end|as of):\s*(\d{4}-\d{2}-\d{2})', text, re.I)
         if m:
             try: result['period_end'] = date.fromisoformat(m[1]).isoformat()
             except ValueError: pass
-        m = re.search(r'Tranche\s+([\w-]+)\s*\|\s*Principal:\s*'+AMOUNT+r'\s*\|\s*Interest:\s*'+AMOUNT, text, re.I)
+        m = re.search(r'^Tranche\s+([\w-]+)\s*\|\s*Principal:\s*'+AMOUNT+r'\s*\|\s*Interest:\s*'+AMOUNT, text, re.I)
         if m:
             result['tranches'].append({'id':m[1], 'principal':format(money(m[2]),'.2f'),
                 'interest':format(money(m[3]),'.2f'),'source':source})
-        elif re.search(r'\bTranche\s+[\w-]+\s*\|',text,re.I):
+        elif re.search(r'^Tranche\s+[\w-]+\s*\|',text,re.I):
             doc.setdefault('issues',[]).append({'type':'partial_extraction','message':'A tranche row could not be fully extracted; review required.'})
-        m = re.search(r'Stated principal plus interest total:\s*'+AMOUNT,text,re.I)
+        m = re.search(r'^Stated principal plus interest total:\s*'+AMOUNT,text,re.I)
         if m: result.update(stated_total=format(money(m[1]),'.2f'),total_source=source)
         for field in ('opening','closing'):
-            m = re.search(field+r' balance:\s*'+AMOUNT,text,re.I)
+            m = re.search('^'+field+r' balance:\s*'+AMOUNT,text,re.I)
             if m:
                 result[field+'_balance']=format(money(m[1]),'.2f')
                 result[field+'_source']=source
-        m = re.search(r'Transaction\s+([\w-]+)\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*Amount:\s*'+AMOUNT,text,re.I)
+        m = re.search(r'^Transaction\s+([\w-]+)\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*Amount:\s*'+AMOUNT,text,re.I)
         if m:
             try: transaction_date=date.fromisoformat(m[2]).isoformat()
             except ValueError:
@@ -97,20 +97,27 @@ def parse_statement(doc):
                 continue
             result['transactions'].append({'id':m[1],'date':transaction_date,
                 'amount':format(money(m[3]),'.2f'),'source':source})
-        elif re.search(r'\bTransaction\s+[\w-]+\s*\|',text,re.I):
+        elif re.search(r'^Transaction\s+[\w-]+\s*\|',text,re.I):
             doc.setdefault('issues',[]).append({'type':'partial_extraction','message':'A transaction row could not be fully extracted; review required.'})
-    return result
+    from .layouts import augment
+    return augment(doc,result)
 
 def reconcile(documents):
-    findings, calculations = [], []
+    findings, calculations,blocked = [], [],set()
+    def tranche_source(row,field):return row.get(field+'_source') or row['source']
     def add(kind, message, sources, severity='confirmed', **extra):
         findings.append({'id':f'F{len(findings)+1}','type':kind,'message':message,
                          'sources':sources,'severity':severity,**extra})
     for doc in documents:
         s = doc['statement']
         for issue in doc['issues']:
-            add(issue['type'],f"{doc['name']}: {issue['message']}",[], 'review',document=doc['id'])
+            candidates=issue.get('sources') or ([issue['source']] if issue.get('source') else [])
+            sources=[source for source in candidates if any(line['id']==source for line in doc['lines'])]
+            add(issue['type'],f"{doc['name']}: {issue['message']}",sources, 'review',document=doc['id'])
         identity = all([s['loan_id'],s['currency'],s['period_end']])
+        if len(s['tranches'])>500 or len(s.get('transactions',[]))>999:
+            add('calculation_limit',f"{doc['name']}: supported calculation limit is 500 tranches or 999 transactions; review required.",[], 'review',document=doc['id'])
+            blocked.add(doc['id'])
         complete = identity and bool(s['tranches']) and s['stated_total'] is not None
         bank_complete = identity and s.get('opening_balance') is not None and s.get('closing_balance') is not None and bool(s.get('transactions'))
         if not (complete or bank_complete) and not doc['issues']:
@@ -119,16 +126,17 @@ def reconcile(documents):
         duplicate = len(ids) != len(set(ids))
         if duplicate:
             add('duplicate_tranche',f"{doc['name']}: repeated tranche identifiers require review.",[t['source'] for t in s['tranches']],'review')
-        if complete and not doc['issues'] and not duplicate:
+        if complete and not doc['issues'] and not duplicate and doc['id'] not in blocked:
             values = [t[k] for t in s['tranches'] for k in ('principal','interest')]
             total = calculate(values)
+            sources=list(dict.fromkeys([tranche_source(t,field) for t in s['tranches'] for field in ('principal','interest')]+[s['total_source']]))
             calculations.append({'document':doc['id'],'operands':values,'computed':total,'stated':s['stated_total'],
-                                 'sources':[t['source'] for t in s['tranches']]+[s['total_source']]})
+                                 'sources':sources})
             if money(total) != money(s['stated_total']):
                 delta = money(s['stated_total'])-money(total)
                 add('incorrect_statement_total',f"{doc['name']}: stated total is {abs(delta):.2f} {s['currency']} too {'high' if delta>0 else 'low'}.",
                     calculations[-1]['sources'],difference=format(abs(delta),'.2f'),computed=total,stated=s['stated_total'])
-        if bank_complete and not doc['issues']:
+        if bank_complete and not doc['issues'] and doc['id'] not in blocked:
             tx=s['transactions'];tx_ids=[t['id'] for t in tx]
             if len(tx_ids)!=len(set(tx_ids)):
                 add('duplicate_transaction',f"{doc['name']}: duplicate transaction IDs require review.",[t['source'] for t in tx],'review')
@@ -142,9 +150,20 @@ def reconcile(documents):
                 if delta:
                     add('incorrect_closing_balance',f"{doc['name']}: closing balance is {abs(delta):.2f} {s['currency']} too {'high' if delta>0 else 'low'}.",sources,
                         difference=format(abs(delta),'.2f'),computed=computed,stated=s['closing_balance'])
+                for carry in s.get('carried_balances',[]):
+                    count=carry['after_transaction_count']
+                    if not isinstance(count,int) or not 0<=count<=len(tx):
+                        add('partial_extraction',f"{doc['name']}: carried balance position could not be verified.",[], 'review');continue
+                    operands=[s['opening_balance']]+[t['amount'] for t in tx[:count]]
+                    computed=calculate(operands)
+                    sources=list(dict.fromkeys([s['opening_source']]+[t['source'] for t in tx[:count]]+[carry['source']]))
+                    calculations.append({'document':doc['id'],'kind':'carried_balance','operands':operands,'computed':computed,'stated':carry['amount'],'sources':sources})
+                    delta=money(carry['amount'])-money(computed)
+                    if delta:add('incorrect_carried_balance',f"{doc['name']}: carried balance differs by {abs(delta):.2f} {s['currency']} from verified preceding transactions.",sources,
+                        difference=format(abs(delta),'.2f'),computed=computed,stated=carry['amount'])
     for a,b in combinations(documents,2):
         x,y = a['statement'],b['statement']
-        if a['issues'] or b['issues']:
+        if a['issues'] or b['issues'] or a['id'] in blocked or b['id'] in blocked:
             add('comparison_skipped',f"{a['name']} and {b['name']}: comparison blocked because a document requires review.",[], 'review')
             continue
         if not all([x['loan_id'],y['loan_id'],x['period_end'],y['period_end'],x['currency'],y['currency']]):
@@ -173,7 +192,7 @@ def reconcile(documents):
                 if money(v[field]) != money(w[field]):
                     diff = format(abs(money(v[field])-money(w[field])),'.2f')
                     add(f'cross_document_{field}_mismatch',f'{tranche} {field} differs by {diff} {x["currency"]}.',
-                        [v['source'],w['source']],field=field,tranche=tranche,difference=diff)
+                        [tranche_source(v,field),tranche_source(w,field)],field=field,tranche=tranche,difference=diff)
     return findings, calculations
 
 def retrieve(documents, query, limit=8):

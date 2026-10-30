@@ -19,6 +19,7 @@ from .trace import record
 from .evals import evaluate_suite
 from .privacy import report_for_export,private_report_view,install_log_redaction,markdown_text
 from .platform import HistoryQuery
+from .telemetry import usage
 
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT/'.env')
@@ -36,6 +37,12 @@ def health(): return {'status':'ok','meta_configured':meta.configured(),'model':
 
 @app.get('/api/evals')
 def evals():return evaluate_suite()
+
+@app.get('/api/benchmark')
+def benchmark():
+    from .benchmark import evaluate_suite as extended_suite
+    try:return extended_suite()
+    except (OSError,ValueError):raise HTTPException(503,'Benchmark fixtures or manifest unavailable.') from None
 
 def save_report(path,report):
     temporary=path/('report-'+uuid.uuid4().hex+'.tmp')
@@ -87,9 +94,10 @@ def analyze(files: list[UploadFile] = File(...), mode: str = Form('local')):
     return analyze_files(files,mode)
 
 def analyze_files(files,mode='local',persist=True):
-    if mode not in ('local','meta'): raise HTTPException(422,'Choose local or meta mode')
+    analysis_started=time.perf_counter()
+    if mode not in ('local','meta','auto'): raise HTTPException(422,'Choose local, meta or auto mode')
     if not 1<=len(files)<=8: raise HTTPException(422,'Upload 1 to 8 PDFs')
-    if mode=='meta' and not meta.configured(): raise HTTPException(503,'Set MODEL_API_KEY in .env and restart before using Meta mode.')
+    if mode in ('meta','auto') and not meta.configured(): raise HTTPException(503,'Set MODEL_API_KEY in .env and restart before using Meta or auto mode.')
     docs, blobs,events = [], [],[]
     for i,file in enumerate(files):
         raw=file.file.read(10*1024*1024+1)
@@ -102,13 +110,20 @@ def analyze_files(files,mode='local',persist=True):
                {'line_count':len(doc['lines']),'issues':[x['type'] for x in doc['issues']]},
                'review' if doc['issues'] else 'passed',(time.perf_counter()-started)*1000,document=doc['id'])
         if sum(len(l['text']) for l in doc['lines'])>100000: raise HTTPException(413,'Document text exceeds 100,000 characters')
-        if mode=='meta' and not doc['issues']:
+        started=time.perf_counter();local=parse_statement(doc) if mode in ('local','auto') else None
+        complete=local and all(local.get(field) for field in ('loan_id','currency','period_end')) and (
+            bool(local['tranches']) and local['stated_total'] is not None or bool(local.get('transactions')) and local.get('opening_balance') is not None and local.get('closing_balance') is not None)
+        use_model=mode=='meta' or mode=='auto' and not complete
+        selected='blocked' if doc['issues'] else ('meta' if use_model else 'local')
+        doc['routing']={'requested':mode,'selected':selected,'reason':'document_requires_review' if doc['issues'] else ('needs_model_extraction' if use_model else ('recognized_complete_fields' if complete else 'local_checks_only'))}
+        if mode=='auto':record(events,'routing','extraction_choice',{'document':doc['id'],'mode':mode},doc['routing'],document=doc['id'])
+        if use_model and not doc['issues']:
             try: doc['statement']=meta.extract(doc,trace=events)
             except meta.MetaError as exc:
                 doc['statement']=parse_statement({'lines':[]})
                 doc['issues'].append({'type':'model_extraction_failed','message':str(exc)})
         else:
-            started=time.perf_counter();doc['statement']=parse_statement(doc)
+            doc['statement']=local if local is not None else parse_statement(doc)
             record(events,'extraction','local_fields',{'document':doc['id']},
                    {'tranches':len(doc['statement']['tranches']),'transactions':len(doc['statement']['transactions'])},
                    'review' if doc['issues'] else 'passed',(time.perf_counter()-started)*1000,document=doc['id'])
@@ -128,12 +143,13 @@ def analyze_files(files,mode='local',persist=True):
         'status':'review' if any(f['severity']=='review' for f in findings) else ('discrepancies' if findings else 'consistent'),
         'trace':events,'harness':{'max_model_turns':meta.MAX_TURNS,'max_tool_calls_total':meta.MAX_TOOL_CALLS,
                                 'request_timeout_seconds':60,'cost':None},
-        'agent':None,'limitations':['No OCR: image-only pages require review.','Local mode supports labeled statements only.']}
-    if mode=='meta':
+        'agent':None,'limitations':['No OCR: image-only pages require review.','Local mode supports labeled statements and documented strict table layouts; unsupported or ambiguous rows require review.']}
+    if mode in ('meta','auto'):
         try: report['agent']=meta.reason(docs,findings,calculations,trace=events)
         except meta.MetaError as exc:
             report['agent_error']=str(exc)
             report['status']='review'
+    report['metrics']=usage(events,(time.perf_counter()-analysis_started)*1000)
     report=private_report_view(report)
     if persist:
         path=STORE/report['id']; path.mkdir(parents=True)
@@ -236,8 +252,9 @@ async def database_handler(request,exc):return JSONResponse({'detail':'Database 
 @app.middleware('http')
 async def service_boundary(request,call_next):
     if platform.service_mode() and request.url.path.startswith('/api/'):
-        if request.url.path=='/api/evals':
-            try:platform.runtime(STORE)[0].consume('public-evaluation',120,3600)
+        if request.url.path in ('/api/evals','/api/benchmark'):
+            extended=request.url.path=='/api/benchmark'
+            try:platform.runtime(STORE)[0].consume('public-benchmark' if extended else 'public-evaluation',60 if extended else 120,3600)
             except HTTPException as exc:return JSONResponse({'detail':exc.detail},status_code=exc.status_code)
             except LimitExceeded:return JSONResponse({'detail':'Evaluation usage limit reached'},status_code=429,headers={'Retry-After':'60'})
             except SQLAlchemyError:return JSONResponse({'detail':'Database unavailable'},status_code=503)

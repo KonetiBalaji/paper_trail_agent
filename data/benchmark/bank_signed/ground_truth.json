@@ -1,0 +1,31 @@
+{
+  "case": "bank_signed",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "1916c8c029ec6c23bc8b25782fe78ac89524fa997dfd394ce2aa5431eba1182b",
+      "truth": {
+        "loan_id": "BENCH-BANK-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "opening_balance": "1000.00",
+        "closing_balance": "1075.00",
+        "tranches": [],
+        "transactions": [
+          {
+            "id": "TX1",
+            "date": "2026-10-02",
+            "amount": "-25.00"
+          },
+          {
+            "id": "TX2",
+            "date": "2026-10-06",
+            "amount": "100.00"
+          }
+        ]
+      }
+    }
+  ]
+}

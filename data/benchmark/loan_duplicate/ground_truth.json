@@ -1,0 +1,38 @@
+{
+  "case": "loan_duplicate",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "duplicate_tranche"
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "63f5537823c8a1fe1e859af92c356ee610d43209a0798c3aaa9739cb950a0db0",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "4400.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

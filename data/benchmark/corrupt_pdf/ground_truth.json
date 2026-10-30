@@ -1,0 +1,11 @@
+{
+  "case": "corrupt_pdf",
+  "expected_http": 422,
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "6c60a1a5dda6ef162ba7fc360fc85c6c04b32b17a9fc93a729e6e627d60f743e",
+      "raw": "corrupt"
+    }
+  ]
+}

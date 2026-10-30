@@ -188,7 +188,7 @@ def create_router(root_provider,analyze_files):
     def analyze(files:list[UploadFile]=File(...),mode:str=Form('local'),actor=Depends(write_principal)):
         if actor.role=='demo':raise HTTPException(403,'Public demo accepts fixed synthetic cases only; no uploads or model calls')
         repo,_=resources();repo.consume('analysis:'+actor.workspace,20,3600)
-        if mode=='meta':repo.consume('meta:'+actor.workspace,10,3600)
+        if mode in ('meta','auto'):repo.consume('meta:'+actor.workspace,10,3600)
         # The pipeline still enforces byte/page/text limits before model use.
         blobs=[]
         if not 1<=len(files)<=8:raise HTTPException(422,'Upload 1 to 8 PDFs')

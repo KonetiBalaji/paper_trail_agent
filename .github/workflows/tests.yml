@@ -42,6 +42,8 @@ jobs:
       - run: python -m pytest -q
       - run: node --check app/static/app.js
       - run: python scripts/evaluate.py
+      - run: python scripts/benchmark.py --report work/benchmark-results.json
+      - run: python scripts/resource_benchmark.py --report work/resource-results.json
       - name: HTTP smoke and sanity tests
         shell: bash
         run: |

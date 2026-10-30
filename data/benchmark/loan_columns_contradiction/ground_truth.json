@@ -1,0 +1,58 @@
+{
+  "case": "loan_columns_contradiction",
+  "expected_status": "discrepancies",
+  "confirmed": [
+    {
+      "type": "cross_document_interest_mismatch",
+      "difference": "25.00"
+    }
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "c33c9c3fdcc9100e9e487819c30cf411c06611f88baab1f028d5f74b255524ae",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    },
+    {
+      "file": "statement_2.pdf",
+      "sha256": "b20bc6e9f44d81fb18c8351e8675d83349021f8232ba8c4249c466fbe101821f",
+      "truth": {
+        "loan_id": "BENCH-LOAN-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3325.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "125.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

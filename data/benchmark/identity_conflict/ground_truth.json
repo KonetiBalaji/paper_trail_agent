@@ -1,0 +1,33 @@
+{
+  "case": "identity_conflict",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "conflicting_field"
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "2dc80b9b015319b719a78a66e07b3b152c7dbd285aff9efc0235b773b24d7c1a",
+      "truth": {
+        "loan_id": null,
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.00",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ],
+        "transactions": []
+      }
+    }
+  ]
+}

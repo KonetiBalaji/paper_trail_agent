@@ -1,0 +1,46 @@
+{
+  "case": "bank_cross_page",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "source_pages": {
+    "doc1:transactions:TX1:amount": 1,
+    "doc1:transactions:TX2:amount": 2,
+    "doc1:closing_balance": 2
+  },
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "5dfc9184c0c626ec9c2a107820a5eedd68c90027c14e8c4270123c5ca68aba94",
+      "truth": {
+        "loan_id": "BENCH-BANK-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "opening_balance": "1000.00",
+        "closing_balance": "1075.00",
+        "tranches": [],
+        "transactions": [
+          {
+            "id": "TX1",
+            "date": "2026-10-02",
+            "amount": "-25.00"
+          },
+          {
+            "id": "TX2",
+            "date": "2026-10-06",
+            "amount": "100.00"
+          }
+        ],
+        "carried_balances": [
+          {
+            "amount": "975.00",
+            "after_transaction_count": 1
+          },
+          {
+            "amount": "975.00",
+            "after_transaction_count": 1
+          }
+        ]
+      }
+    }
+  ]
+}
