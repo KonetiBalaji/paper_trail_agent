@@ -8,10 +8,15 @@ $50 arithmetic finding; degraded/blank scans and the unsupported table scan
 request review without calculating. **Web upload and queued-job integration
 are still pending.** See [OCR component and limits](docs/OCR.md).
 
-Production setup: Neon Free is connected to Vercel and the database, encryption
-and Meta credentials are saved as Sensitive Production-only variables.
-Redeployment is awaiting the account owner's Vercel email verification;
-the public app has not yet been verified with this configuration.
+Live synthetic demo: **https://paper-trail-agent.vercel.app/**. Neon Free is
+connected to Vercel; database, encryption and Meta credentials are Sensitive
+Production-only variables. Automatic Git deployment activated this setup.
+Forty-nine hosted checks pass, covering guest isolation, four case outcomes,
+CSRF, review persistence, source PNGs, exports, upload/model-call restrictions,
+request/quota limits, logout and public-response checks for configured local
+secret values. Hosted Evals pass 6/6 and the layout benchmark passes 19/19.
+See `docs/hosted-smoke-results.json`; this is smoke evidence, not an uptime,
+penetration-test or real-customer-data readiness claim.
 
 Submission materials: [draft](docs/SUBMISSION.md), [three-minute demo shot list](docs/DEMO-SHOT-LIST.md), and [hosting preparation](docs/DEPLOYMENT.md).
 

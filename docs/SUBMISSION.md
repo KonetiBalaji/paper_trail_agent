@@ -19,18 +19,20 @@ The model connects document evidence to a structured, tool-driven investigation.
 ## Evidence
 
 - Public code: https://github.com/KonetiBalaji/paper_trail_agent
-- 188 automated tests passed locally; PostgreSQL integration is a separate CI gate.
-- Four HTTP smoke/sanity cases passed.
-- Four live Muse Spark acceptance cases passed on October 28, 2026; see TESTING.md for the precise scope.
-- GitHub Actions runs automated tests and HTTP smoke/sanity checks; live Meta tests require a local key and are separate.
+- Live synthetic demo: https://paper-trail-agent.vercel.app/ (public guests use deterministic checks; paid Meta calls are blocked).
+- 207 automated tests passed locally; PostgreSQL integration is a separate CI gate.
+- 49 hosted API/security checks passed, including all four outcomes, review persistence and session isolation.
+- Four live Muse Spark acceptance cases passed on October 29, 2026 with 4/4/7/4 tool calls; see TESTING.md for the precise scope.
+- Six demo evals, 19 varied-layout cases and four actual OCR scan cases pass their respective gates.
+- GitHub Actions run 40981008757 passed core/HTTP/resource checks, PostgreSQL integration and real CPU OCR. Live Meta tests require a local key and are separate.
 
 ## Scope to state honestly
 
-The tested benchmark consists of synthetic documents. Local parsing supports labeled statements and documented strict loan/bank table layouts, including linked cross-page rows and carried balances. The extended fictional benchmark has 19 cases; it is not a real-world accuracy claim. This is not a universal financial PDF parser or an amortization engine. Image-only PDFs request review; OCR is not implemented. The current live benchmark covers the four loan cases; bank checks use independent in-memory PDFs in automated tests.
+The tested benchmark consists of synthetic documents. Local parsing supports labeled statements and documented strict loan/bank table layouts, including linked cross-page rows and carried balances. The extended fictional benchmark has 19 cases; it is not a real-world accuracy claim. This is not a universal financial PDF parser or an amortization engine. Image-only PDFs request review in the web app. An optional offline OCR component has four real scan evaluations, uncalibrated confidence and review-only candidate arithmetic; web/job integration remains pending. The current live Meta benchmark covers the four loan cases. Public hosted guests use local checks; the live Meta evidence is a separate real-model test.
 
 ## Complete before submitting
 
-- Add the deployed application URL once verified.
+- Keep the deployed application URL and public guest flow available through judging.
 - Add the accessible three-minute demo video URL after recording and review.
 - Confirm track and contributor details in the actual submission form.
 - Write personal feedback on Meta products and any partner technologies actually used. Do not invent feedback or claim unused services.

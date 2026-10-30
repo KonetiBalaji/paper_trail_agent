@@ -1,0 +1,205 @@
+{
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "checked_at": "2026-10-30T00:41:35.972437+00:00",
+  "scope": "Two new synthetic guest sessions; no private uploads, real customer documents or paid model calls.",
+  "checks": [
+    {
+      "check": "https_health",
+      "passed": true
+    },
+    {
+      "check": "service_mode",
+      "passed": true
+    },
+    {
+      "check": "public_meta_disabled",
+      "passed": true
+    },
+    {
+      "check": "anonymous_history_denied",
+      "passed": true
+    },
+    {
+      "check": "isolated_guest_start",
+      "passed": true
+    },
+    {
+      "check": "secure_session_cookie",
+      "passed": true
+    },
+    {
+      "check": "isolated_guest_start",
+      "passed": true
+    },
+    {
+      "check": "secure_session_cookie",
+      "passed": true
+    },
+    {
+      "check": "csrf_required",
+      "passed": true
+    },
+    {
+      "check": "clean_outcome",
+      "passed": true
+    },
+    {
+      "check": "clean_no_paid_calls",
+      "passed": true
+    },
+    {
+      "check": "contradiction_outcome",
+      "passed": true
+    },
+    {
+      "check": "contradiction_no_paid_calls",
+      "passed": true
+    },
+    {
+      "check": "contradiction_difference",
+      "passed": true
+    },
+    {
+      "check": "math_error_outcome",
+      "passed": true
+    },
+    {
+      "check": "math_error_no_paid_calls",
+      "passed": true
+    },
+    {
+      "check": "math_error_difference",
+      "passed": true
+    },
+    {
+      "check": "messy_outcome",
+      "passed": true
+    },
+    {
+      "check": "messy_no_paid_calls",
+      "passed": true
+    },
+    {
+      "check": "cross_session_read_denied",
+      "passed": true
+    },
+    {
+      "check": "anonymous_case_read_denied",
+      "passed": true
+    },
+    {
+      "check": "highlighted_png",
+      "passed": true
+    },
+    {
+      "check": "original_pdf",
+      "passed": true
+    },
+    {
+      "check": "review_saved",
+      "passed": true
+    },
+    {
+      "check": "review_reopened",
+      "passed": true
+    },
+    {
+      "check": "machine_finding_preserved",
+      "passed": true
+    },
+    {
+      "check": "stale_review_rejected",
+      "passed": true
+    },
+    {
+      "check": "audit_chain",
+      "passed": true
+    },
+    {
+      "check": "json_export",
+      "passed": true
+    },
+    {
+      "check": "md_export",
+      "passed": true
+    },
+    {
+      "check": "guest_jobs_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_local_upload_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_meta_upload_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_auto_upload_denied",
+      "passed": true
+    },
+    {
+      "check": "hosted_body_limit",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "within_guest_quota",
+      "passed": true
+    },
+    {
+      "check": "guest_quota_enforced",
+      "passed": true
+    },
+    {
+      "check": "logout",
+      "passed": true
+    },
+    {
+      "check": "logout_revoked",
+      "passed": true
+    },
+    {
+      "check": "configured_secrets_absent_from_public_responses",
+      "passed": true
+    },
+    {
+      "check": "hosted_evals_six_pass",
+      "passed": true
+    },
+    {
+      "check": "hosted_benchmark_nineteen_pass",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "application_commit": "727f6c75c5521ccf5d49a224371f453c2e89fe9f"
+}

@@ -4,8 +4,25 @@ Vercel is the selected host. The free Neon database `paper-trail-agent` is now
 connected to the matching Vercel project. The connection was explicitly limited
 to Production, with Sensitive variables enabled. `DATABASE_URL`,
 `DATA_ENCRYPTION_KEY` and `MODEL_API_KEY` are saved as Production secrets;
-Preview and Development were excluded. The redeploy action is waiting for
-Vercel email reauthentication. Hosted behavior remains unverified.
+Preview and Development were excluded. The manual redeploy requested email
+reauthentication, but the authorized Git push subsequently triggered automatic
+deployment of `727f6c7` with the saved settings. No additional email verification
+is needed for that deployment.
+
+Live demo: https://paper-trail-agent.vercel.app/. The actual hosted API passes
+49 checks in `docs/hosted-smoke-results.json`: two guest sessions, all four
+fixture outcomes, CSRF, cross-session and anonymous denial, source images,
+original PDF access, optimistic review/save/reopen, audit chain, exports,
+upload and paid-mode denial, body/quota limits and logout revocation. Known
+local secret values are absent from inspected public HTML, JavaScript, health
+and config responses. Browser checks also verified all four outcomes, a saved
+review, source selection, Evals 6/6 and the extended benchmark 19/19.
+
+Reproduce against this authorized production origin with
+`python scripts/hosted_smoke.py --base-url https://paper-trail-agent.vercel.app`.
+It creates two synthetic sessions and consumes a full 12-analysis guest quota;
+do not loop it, because demo-start limits are shared. It makes no paid calls.
+The result is smoke coverage, not a security audit or uptime guarantee.
 
 `vercel.json` selects FastAPI and a 300-second request ceiling. Configuration
 and a Ready build alone do not prove the app can access its database safely.

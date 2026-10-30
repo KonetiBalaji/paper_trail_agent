@@ -2,6 +2,14 @@
 
 ## Optional OCR component - October 29, 2026
 
+Hosted application commit `727f6c7` is verified at
+https://paper-trail-agent.vercel.app/. `docs/hosted-smoke-results.json` contains
+49 actual hosted checks. The browser independently ran the four cases, saved
+and reopened a review note, selected a source line, and ran Evals (6/6) and the
+layout benchmark (19/19). Anonymous visitors cannot upload or invoke paid Meta
+modes. Authenticated hosted live Meta, hosted report-version replay, provider
+backup restoration and uptime remain unverified.
+
 ```powershell
 .venv-ocr/Scripts/python.exe -m pip install -r requirements-ocr.txt
 .venv-ocr/Scripts/python.exe scripts/evaluate_ocr.py --report work/ocr-results.json

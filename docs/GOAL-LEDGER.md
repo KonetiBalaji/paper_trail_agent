@@ -5,7 +5,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 
 | Item | Requirement | Current evidence / remaining gate |
 | --- | --- | --- |
-| 1 | Reliable hosted, abuse-protected judge demo | Neon Free connected; Sensitive Production-only database/encryption/Meta variables saved. Redeployment waits for Vercel email verification; hosted checks pending |
+| 1 | Reliable hosted, abuse-protected judge demo | Public Vercel/Neon demo deployed; 49 hosted checks pass, including isolation, limits, CSRF, four outcomes, review, exports and paid-call/upload denial. Browser Evals 6/6 and benchmark 19/19 pass; uptime monitoring remains pending |
 | 2 | Three-minute actual-app video | Pending; shot plan exists, no completed video |
 | 3 | Final form and project write-up | Draft exists; final review, URLs and submission pending |
 | 4 | Sanitized live Meta evidence in repository | Fresh original four-case live evidence matches current app hashes and passes with 4/4/7/4 tool calls. Layout live evidence remains historical; hosted live smoke pending |
