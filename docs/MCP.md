@@ -7,6 +7,12 @@ no direct-call fallback: transport or result validation failure makes the case
 request review. Deterministic extraction/verifier/critic checks remain separate
 from the protocol transport; MCP itself is not an accuracy improvement.
 
+`requirements.txt` is a flat, pinned Vercel deployment manifest matching the
+portable entries in `requirements-lock.txt`. Vercel rejected the attempted pip
+constraint include; `scripts/check_deployment_requirements.py` prevents manifest
+drift and unsupported pip include/options. The Windows-only pywin32 pin stays in
+the cross-platform lock; MCP resolves that platform dependency on Windows.
+
 Official references: [client transports](https://py.sdk.modelcontextprotocol.io/client/transports/),
 [structured outputs](https://py.sdk.modelcontextprotocol.io/servers/structured-output/),
 [running a server](https://py.sdk.modelcontextprotocol.io/run/), and

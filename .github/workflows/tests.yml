@@ -109,6 +109,7 @@ jobs:
       - run: python scripts/benchmark.py --report work/benchmark-results.json
       - run: python scripts/resource_benchmark.py --report work/resource-results.json
       - run: python scripts/evaluate_mcp.py --report work/mcp-results.json
+      - run: python scripts/check_deployment_requirements.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
