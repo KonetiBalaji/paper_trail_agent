@@ -19,6 +19,10 @@
 - No production retention policy is enabled by this patch. Hosted worker/cron
   scheduling, provider backup expiration/restoration and infrastructure logging
   remain outside this verification. Logical deletion is not forensic erasure.
+- PostgreSQL CI's review/deletion race passed in run 41159797433. The hosted
+  smoke passed 28 checks, including the public notice and denial of retention
+  read/change/run to synthetic guests. No authorized production retention policy
+  was changed. Evidence is in `docs/hosted-retention-results.json`.
 
 ## CSV and scoped integration keys - October 30, 2026
 
