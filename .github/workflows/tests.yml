@@ -5,6 +5,43 @@ on:
 permissions:
   contents: read
 jobs:
+  worker-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r tests/requirements-tools.txt
+      - run: python scripts/validate_worker_config.py
+      - name: Seed non-secret build-context probes
+        run: |
+          mkdir -p data/private
+          printf 'SYNTHETIC_BUILD_CONTEXT_PROBE' > .env.worker-build-probe
+          printf 'SYNTHETIC_BUILD_CONTEXT_PROBE' > app/.env.worker-build-probe
+          printf 'SYNTHETIC_BUILD_CONTEXT_PROBE' > data/private/build-probe.txt
+      - name: Build pinned amd64 OCR worker image
+        run: docker build --platform linux/amd64 --file Dockerfile.worker --tag paper-trail-worker:ci .
+      - name: Offline, resource-bounded container and shutdown verification
+        run: |
+          mkdir -p work
+          docker run --rm --network none --read-only --memory 1g --cpus 1 --pids-limit 128 --cap-drop ALL --security-opt no-new-privileges --tmpfs /tmp:rw,noexec,nosuid,size=256m --entrypoint python paper-trail-worker:ci scripts/container_worker_smoke.py | tee work/container-worker-results.json
+          python - <<'PY'
+          import json,subprocess,os,hashlib
+          from pathlib import Path
+          path=Path('work/container-worker-results.json');report=json.loads(path.read_text())
+          assert report['passed'] and all(check['passed'] for check in report['checks'])
+          report['image_id']=subprocess.check_output(['docker','image','inspect','paper-trail-worker:ci','--format','{{.Id}}'],text=True).strip()
+          report['source_commit']=os.environ['GITHUB_SHA']
+          report['dockerfile_sha256']=hashlib.sha256(Path('Dockerfile.worker').read_bytes()).hexdigest()
+          path.write_text(json.dumps(report,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: worker-image-evaluation
+          path: work/container-worker-results.json
   ocr:
     runs-on: ubuntu-latest
     steps:

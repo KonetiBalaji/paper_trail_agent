@@ -1,0 +1,2 @@
+# CI-only configuration contract validation; never a runtime dependency.
+jsonschema==4.26.0

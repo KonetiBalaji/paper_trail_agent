@@ -1,0 +1,24 @@
+# Default deny: the image build never receives local secrets or private data.
+**
+!Dockerfile.worker
+!Dockerfile.worker.dockerignore
+!requirements-lock.txt
+!requirements-ocr-lock.txt
+!requirements-ocr.txt
+!app/
+!app/**
+!data/
+!data/synthetic/
+!data/synthetic/**
+!data/ocr/
+!data/ocr/**
+!scripts/
+!scripts/worker_entrypoint.py
+!scripts/container_worker_smoke.py
+!scripts/evaluate_ocr.py
+**/__pycache__/
+**/*.pyc
+**/.env
+**/.env.*
+**/*.key
+**/*.pem

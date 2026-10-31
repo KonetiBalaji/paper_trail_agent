@@ -184,6 +184,12 @@ CI runs the full corpus and fails on wrong results, fixture hash mismatches, uns
 
 ## Automatic routing and reported usage
 
+OCR worker deployment preparation is documented in [Worker hosting](docs/WORKER-HOSTING.md).
+The container gate tests real OCR and graceful shutdown; the separate Vercel daemon
+proposal has zero instances. Production OCR remains unavailable until a worker is
+explicitly enabled after checking free-tier capacity. The current web deployment
+configuration is unchanged.
+
 Select **Auto + Muse Spark** for recognized layouts: deterministic extraction preserves column meanings, then the actual Meta agent retrieves evidence and calls tools. Unknown layouts attempt grounded Muse Spark extraction; malformed or ungrounded output becomes review. A configured key is required for Auto and direct Meta modes. Public synthetic guests remain restricted to local checks and cannot invoke either paid mode.
 
 `docs/live-layout-results.json` records four passing live Auto cases (reversed columns, split row, cross-page bank and injection note), including actual tool calls, route choices, timings and reported tokens. The direct Meta failure on a reversed-column case is retained separately; it was rejected rather than accepted as clean. Do not describe direct extraction as universally reliable. `docs/live-meta-results.json` covers the four original live acceptance cases. Source hashes are normalized to UTF-8/LF; fixture hashes use raw PDF bytes.

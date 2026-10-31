@@ -1,0 +1,16 @@
+FROM python:3.11-slim-bookworm@sha256:94a8fee35252d06ab75856f15f12c7bae67b10e8a6da93c7fded82b2610926cd
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PAPER_TRAIL_MODE=service \
+    OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENCV_FOR_THREADS_NUM=1
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 libgomp1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --uid 10001 --create-home --shell /usr/sbin/nologin worker
+COPY requirements-lock.txt requirements-ocr-lock.txt requirements-ocr.txt ./
+RUN python -m pip install --no-cache-dir -r requirements-ocr.txt && python -m pip check
+COPY --chown=10001:10001 app ./app
+COPY --chown=10001:10001 data/synthetic ./data/synthetic
+COPY --chown=10001:10001 data/ocr ./data/ocr
+COPY --chown=10001:10001 scripts/worker_entrypoint.py scripts/container_worker_smoke.py scripts/evaluate_ocr.py ./scripts/
+USER 10001:10001
+ENTRYPOINT ["python", "scripts/worker_entrypoint.py"]
+CMD ["--poll-seconds", "15"]
