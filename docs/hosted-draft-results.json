@@ -1,0 +1,87 @@
+{
+  "passed": true,
+  "checked_at": "2026-10-31T02:01:25.200146+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "scope": "One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.",
+  "application_commit": "ec42cdffbb60434cd329845f6d71e18038fdcfd2",
+  "source_sha256": {
+    "app/main.py": "033db712e19c3009082825e099d8ca392ee44fcaa5716077b1e0299ee511646d",
+    "app/platform.py": "c2e28d00879ab595215258b58b37688d7e164ca38737e3027ace1ca5f830652c",
+    "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
+    "app/static/app.js": "9d4f3fbc75be8d4bcf52a9543e287d9ea7a543ca8664a30e6114c5b265d27c8b"
+  },
+  "checks": [
+    {
+      "check": "served_frontend_matches",
+      "passed": true
+    },
+    {
+      "check": "synthetic_guest",
+      "passed": true
+    },
+    {
+      "check": "pending_draft_blocked",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_verified_total",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_manual_only",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_redacted",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_no_cache",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_verified_total",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_manual_only",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_redacted",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_no_cache",
+      "passed": true
+    },
+    {
+      "check": "stale_snapshot_blocked",
+      "passed": true
+    },
+    {
+      "check": "rejected_draft_blocked",
+      "passed": true
+    },
+    {
+      "check": "interest_difference_exact",
+      "passed": true
+    },
+    {
+      "check": "both_interest_sources",
+      "passed": true
+    },
+    {
+      "check": "both_interest_amounts",
+      "passed": true
+    }
+  ]
+}

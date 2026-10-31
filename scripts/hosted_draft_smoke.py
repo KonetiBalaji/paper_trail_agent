@@ -41,6 +41,16 @@ def run(base):
             response.raise_for_status(); rejected = response.json()
             check('stale_snapshot_blocked', client.get(path, params={'version':reviewed['report_version'],'revision':1}).status_code == 409)
             check('rejected_draft_blocked', client.get(path, params={'version':rejected['report_version'],'revision':2}).status_code == 409)
+            client.delete(case, headers=headers).raise_for_status(); case = None
+            response = client.post('/api/platform/demo/cases/contradiction', headers=headers); response.raise_for_status()
+            report = response.json(); case = '/api/cases/' + report['id']
+            response = client.patch(case+'/findings/F1', json={'action':'confirm','note':'Fictional hosted check of both interest lines.','expected_revision':0,'expected_case_version':1}, headers=headers)
+            response.raise_for_status(); reviewed = response.json()
+            response = client.get(case+'/findings/F1/draft', params={'version':reviewed['report_version'],'revision':1})
+            response.raise_for_status(); draft = response.json()
+            check('interest_difference_exact', draft['difference'] == '25.00')
+            check('both_interest_sources', len(draft['sources']) == 2 and [s['source_id'] for s in draft['sources']] == reviewed['findings'][0]['sources'])
+            check('both_interest_amounts', '100.00' in draft['text'] and '125.00' in draft['text'])
         finally:
             if case: client.delete(case, headers=headers).raise_for_status()
             client.post('/api/platform/auth/logout', headers=headers).raise_for_status()

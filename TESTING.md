@@ -1,5 +1,27 @@
 # Verification record - October 28, 2026
 
+## Reviewed lender and dispute drafts - October 30, 2026
+
+- Twelve focused tests cover exact $25/$50 evidence, deterministic fingerprints,
+  unchanged originals, stale versions/revisions, pending/rejected reviews, OCR,
+  missing citations, forged amounts/calculations, excluded review-note instructions
+  and the two supported draft purposes.
+- Local API checks cover saved approval, stale review rejection, workspace
+  isolation, unauthorized requests and read-only viewer access to approved drafts.
+- The actual DOM-to-HTTP harness prepares both purposes after approval, verifies
+  the $50 calculator text, selects all text, clears it on a purpose switch and
+  removes it after rejection. OCR online/offline flows continue to pass. This is
+  jsdom behavior with real HTTP, not a visual browser or mobile-layout proof.
+- `scripts/hosted_draft_smoke.py` passed 18 checks against the authorized Vercel
+  origin: served frontend match, both draft purposes, $50 computed/stated totals,
+  both $25 interest sources, pattern redaction, cache policy and pending/rejected/
+  stale guards. Evidence: `docs/hosted-draft-results.json`. Two disposable
+  synthetic cases were deleted and the guest signed out. No paid model calls,
+  real uploads, messages or payment actions were performed.
+- Draft preparation is read-only and is not a sent-message record. JSON binds
+  the text/evidence to the report and review revisions with a reproducible hash;
+  final review and manual delivery remain the user's responsibility.
+
 ## Worker image and shutdown gate - October 30, 2026
 
 The worker packaging patch passes the local core suite: 226 passed, five skipped
