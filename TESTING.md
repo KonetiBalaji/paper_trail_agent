@@ -25,6 +25,20 @@
 - CI now runs the independent interoperability gate and uploads its evidence.
   Production subprocess/package behavior and final CI are checked separately;
   public HTTP MCP deployment and remote authorization are not implemented.
+- The first Vercel deployment at `00b5f89` failed because its parser rejected
+  the new `-c requirements-lock.txt` include. No broken release was promoted.
+  Commit `05b20bc` replaces that with a flat manifest aligned to the portable
+  lock pins and adds a CI consistency check. The corrected deployment succeeded.
+- The corrected hosted build passes 38 checks, including actual stdio subprocess
+  startup, current protocol negotiation, both discovered schemas, two successful
+  server calls, exact 1100.00 output, redaction and CSRF denial. Evidence:
+  `docs/hosted-mcp-results.json`. This uses fixed fictional data and zero model
+  calls, not a hosted paid Meta or private-reviewer account claim.
+- All four jobs pass in [run 41206861875](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41206861875):
+  276 core tests pass (seven optional/dedicated skips), six PostgreSQL tests pass,
+  36 targeted OCR/job tests pass, the independent MCP gate passes and the real
+  DOM-to-HTTP plus isolated OCR image gates pass. `docs/mcp-results.json` and
+  `docs/frontend-ocr-results.json` contain the uploaded Linux CI evidence.
 
 ## Internal stages and independent critic - October 31, 2026
 
