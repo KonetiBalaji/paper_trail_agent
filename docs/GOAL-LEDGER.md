@@ -8,7 +8,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 1 | Reliable hosted, abuse-protected judge demo | Public Vercel/Neon demo deployed; 50 hosted checks pass, including isolation, limits, CSRF, four outcomes, review, exports and paid-call/upload/OCR denial. Browser Evals 6/6 and benchmark 19/19 pass; uptime monitoring remains pending |
 | 2 | Three-minute actual-app video | Pending; shot plan exists, no completed video |
 | 3 | Final form and project write-up | Draft exists; final review, URLs and submission pending |
-| 4 | Sanitized live Meta evidence in repository | Original four-case live evidence passes with 3/7/4/4 tool calls; initial API failure retained. It predates worker/draft changes and is historical, not a current whole-app hash match. Final release rerun and hosted live Meta smoke pending |
+| 4 | Sanitized live Meta evidence in repository | Fresh four-case live evidence passes with 3/4/4/4 tool calls, supported critic verdicts and verified calculation coverage; all recorded app hashes match the internal-stage patch. Initial API failure retained. Layout evidence remains historical; hosted live Meta smoke and final-release recheck pending |
 | 5 | Discord linked role | Optional manual account step; not verified |
 | 6 | Realistic varied loan/bank layouts and truth | 19-case fictional corpus with strict loan/bank table schemas and independent truth passes; real anonymized layouts and calibrated field confidence remain pending |
 | 7 | Cross-page benchmark | Linked split rows, repeated headers, cross-page totals and carried balances implemented with per-field source-page checks; arbitrary unlinked continuations remain review |
@@ -20,11 +20,11 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 13 | Case history, search, filters, side-by-side view | History search/filter and side-by-side UI implemented and checked in local browser; hosted/mobile verification pending |
 | 14 | Gated layout-learning promotion | Pending; must require truth and all-case regression |
 | 15 | Document/performance bounds | 50 pages/500 tranches and 999 transactions tested; over-limit review/rejection tested. Five Windows workloads pass 20s/512-MiB budgets; hosted resource behavior remains pending |
-| 16 | Extractor/Verifier/Critic orchestration | Pending; do not call internal steps A2A |
+| 16 | Extractor/Verifier/Critic orchestration | Three actual internal stages with strict Pydantic contracts implemented in native and OCR-derived paths; immutable evidence handoff, independent cents/identity/source/completeness critic and review-only failure gates. Eighteen fault/known-answer tests, actual DOM/HTTP display, resource gates and four live Meta cases pass; hosted/final CI gates pending. A2A is not claimed |
 | 17 | Standard MCP tools | Pending |
 | 18 | Actual A2A protocol | Conditional; only claim after external protocol interoperability test |
 | 19 | Routing/fallback, tokens, cost and latency | Auto routes known layouts locally and unknown layouts to Muse Spark; actual reported tokens/latency and opt-in cost estimates exposed. Four live Auto layouts pass; broad fallback reliability remains pending |
-| 20 | Agent-level evaluation | Pending |
+| 20 | Agent-level evaluation | Internal stage verdict/counts and eighteen controlled fault/known-answer tests added. Representative tool-call accuracy, critic catch rates, field/layout failure metrics and visible aggregate agent evals remain pending |
 | 21 | Upload/email/portal ingestion and deduplication | Upload baseline exists; adapters, account setup and dedup pending |
 | 22 | Continuous comparison and resolution history | Pending |
 | 23 | Historical reconciliation rules | Period guard exists; explicit carried-balance/payment rules pending |

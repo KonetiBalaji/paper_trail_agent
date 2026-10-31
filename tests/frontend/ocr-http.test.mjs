@@ -125,6 +125,9 @@ test('approved lender draft uses real backend evidence and is removed after reje
   const oldCase = ui.doc.getElementById('case-id').textContent;
   ui.doc.getElementById('upload').dispatchEvent(new ui.w.Event('submit', {bubbles: true, cancelable: true}));
   await waitFor(() => ui.doc.getElementById('case-id').textContent !== oldCase, 'Native math case did not open');
+  assert.match(ui.doc.getElementById('internal-stages').textContent, /Extractor → Verifier → Critic/);
+  assert.match(ui.doc.getElementById('internal-stages').textContent, /2\/2 required calculations verified/);
+  assert.match(ui.doc.getElementById('findings').textContent, /Verifier → Critic: passed/);
   const prepare = () => ui.doc.querySelector('[aria-label="Prepare lender draft F1"]');
   assert.ok(prepare()?.disabled, 'Draft requires human approval');
   ui.doc.querySelector('[aria-label="Approve F1"]').click();

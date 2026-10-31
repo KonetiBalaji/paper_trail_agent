@@ -198,6 +198,7 @@ function render() {
   for (const finding of report.findings) {
     const card = el('article', undefined, 'finding ' + finding.severity);
     card.append(el('span', `${finding.id} · Machine: ${finding.severity}`, 'badge'), el('p', finding.message), sources(finding.sources), reviewControls(finding));
+    if (finding.critic) card.append(el('p', `Verifier → Critic: ${finding.critic.decision}`, 'note'));
     const draft = draftControls(finding); if (draft) card.append(draft);
     const related = (report.trace || []).filter(event => (event.finding_ids || []).includes(finding.id) || (event.document && finding.sources.some(source => source.startsWith(event.document + ':'))));
     const details = el('details'); details.append(el('summary', 'Related checks and review events'), traceTimeline(related)); card.append(details);
@@ -217,7 +218,7 @@ function render() {
     card.append(el('p', `${calculation.operands.join(' + ')} = ${calculation.computed}`), el('p', `Statement says ${calculation.stated}`), sources(calculation.sources));
     $('calculations').append(card);
   }
-  if (!report.calculations.length) $('calculations').append(el('p', 'No complete statement total available to verify.'));
+  if (!report.calculations.length) $('calculations').append(el('p', 'No calculator checks were accepted for this report. Review the trace and original evidence.'));
   $('agent').replaceChildren();
   if (report.agent) {
     $('agent').append(el('p', report.agent.summary));
@@ -225,6 +226,15 @@ function render() {
     $('agent').append(list, sources(report.agent.sources));
   } else $('agent').append(el('p', report.agent_error || report.agent_status || 'Local mode: model investigation was not run.'));
   $('trace').replaceChildren();
+  if (report.orchestration) {
+    const stages = report.orchestration;
+    const details = el('details'); details.id = 'internal-stages';
+    details.append(el('summary', 'Internal stages · Extractor → Verifier → Critic'),
+      el('p', `Extractor: ${stages.extractor.documents.filter(d => d.validation === 'passed').length}/${stages.extractor.documents.length} documents passed grounded schema checks. Verifier: ${stages.verifier.candidate_findings} candidates. Critic: ${stages.critic.approved.length} confirmed candidates supported; ${stages.critic.challenges.length} challenges. ${stages.critic.verified_calculations}/${stages.critic.expected_calculations} required calculations verified.`),
+      el('p', 'The critic independently derives required checks with integer cents. Missing or unsupported results require review. OCR candidates remain provisional.'),
+      el('pre', JSON.stringify(stages, null, 2)));
+    $('trace').append(details);
+  }
   $('trace').append(el('p', 'Ordered execution events. Model calls show metadata; tool calls show inputs and outputs with supported personal-data patterns redacted. Token usage and cost estimates, when available, are shown separately. Shared investigation events appear here.', 'note'), traceTimeline(report.trace || []));
   if (report.metrics) {
     const metrics = report.metrics; const tokens = metrics.reported_tokens;

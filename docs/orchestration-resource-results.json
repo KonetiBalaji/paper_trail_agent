@@ -1,0 +1,73 @@
+{
+  "platform": "Windows",
+  "python": "3.11.9",
+  "cases": [
+    {
+      "case": "loan_500_rows_50_pages",
+      "passed": true,
+      "input_bytes": 32639,
+      "http_status": 200,
+      "status": "consistent",
+      "analysis_seconds": 0.5429,
+      "peak_process_memory_bytes": 132751360,
+      "memory_measurement": "Windows peak working set",
+      "model_calls": 0,
+      "within_budget": true
+    },
+    {
+      "case": "bank_999_transactions",
+      "passed": true,
+      "input_bytes": 24472,
+      "http_status": 200,
+      "status": "consistent",
+      "analysis_seconds": 0.8448,
+      "peak_process_memory_bytes": 170811392,
+      "memory_measurement": "Windows peak working set",
+      "model_calls": 0,
+      "within_budget": true
+    },
+    {
+      "case": "bank_1000_review",
+      "passed": true,
+      "input_bytes": 24482,
+      "http_status": 200,
+      "status": "review",
+      "analysis_seconds": 0.8091,
+      "peak_process_memory_bytes": 170504192,
+      "memory_measurement": "Windows peak working set",
+      "model_calls": 0,
+      "within_budget": true
+    },
+    {
+      "case": "pages_51_rejected",
+      "passed": true,
+      "input_bytes": 24133,
+      "http_status": 422,
+      "status": "rejected",
+      "analysis_seconds": 0.0127,
+      "peak_process_memory_bytes": 76120064,
+      "memory_measurement": "Windows peak working set",
+      "model_calls": 0,
+      "within_budget": true
+    },
+    {
+      "case": "bytes_over_10mb_rejected",
+      "passed": true,
+      "input_bytes": 10485769,
+      "http_status": 413,
+      "status": "rejected",
+      "analysis_seconds": 0.0097,
+      "peak_process_memory_bytes": 96583680,
+      "memory_measurement": "Windows peak working set",
+      "model_calls": 0,
+      "within_budget": true
+    }
+  ],
+  "budget": {
+    "peak_memory_mb": 512,
+    "analysis_seconds": 20,
+    "child_watchdog_seconds": 45
+  },
+  "scope": "Controlled fictional workloads in fresh local processes. Budgets are test gates, not a sandbox or production guarantee for arbitrary PDFs.",
+  "passed": true
+}

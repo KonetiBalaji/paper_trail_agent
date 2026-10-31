@@ -1,5 +1,35 @@
 # Verification record - October 28, 2026
 
+## Internal stages and independent critic - October 31, 2026
+
+- Eighteen tests cover the four known outcomes, source/amount tampering,
+  duplicate/omitted candidates, omitted/forged calculations and operands,
+  document-handoff mutation, unsupported message advice, extraction omissions,
+  missing identity/OCR review guards, malformed schemas and the 2,000-candidate
+  bound. Direct critic execution is tested with the verifier, calculator and
+  model functions replaced by failures, proving the critic does not call them.
+- The full local suite passed 270 tests with seven optional/dedicated database
+  skips. Targeted API/layout/routing/OCR/draft tests retain expected behavior.
+  The five controlled fresh-process resource workloads pass the 20s/512-MiB
+  budgets with the pipeline; results are measured workloads, not a parser sandbox.
+- The actual frontend-to-HTTP harness displays all three stages, two accepted
+  calculator checks and the per-finding critic verdict before human approval.
+  Existing OCR, draft, integration and retention flows also pass. This is DOM
+  behavior with real HTTP, not browser rendering or mobile-layout proof.
+- Stage schemas and trace summaries expose the pipeline's decisions. Missing
+  required checks, schema failures or unsupported candidates force review.
+  Existing review findings remain review even when critic obligations pass.
+- Agent-level tool accuracy, layout-specific failure rates and representative
+  live critic catch-rate evaluation remain open. These tests do not establish
+  general real-document accuracy or external-agent protocol interoperability.
+- Fresh original four-case live Muse Spark acceptance passed with 3/4/4/4 tool
+  calls. Confirmed findings have supported critic verdicts; expected and accepted
+  calculation counts match. Messy retains native checks where available and
+  remains review-only overall. `docs/live-meta-results.json` includes sanitized
+  stage counts, fixture hashes and app-source hashes that match this patch.
+  Its revision records the precommit working tree honestly; source hashes bind
+  the actual executed app code. Earlier provider-failure evidence is retained.
+
 ## Retention and data-use notice - October 30, 2026
 
 - Repository tests verify disabled-by-default behavior, age preview, a strict UTC

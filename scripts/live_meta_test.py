@@ -58,6 +58,11 @@ def main():
                 if case=='contradiction':assert confirmed[0]['difference']=='25.00' and len(confirmed[0]['sources'])==2
                 if case=='math_error':assert confirmed[0]['difference']=='50.00'
                 if case=='messy':assert report['status']=='review'
+                stages=report['orchestration']
+                assert stages['kind']=='internal_stages' and not stages['critic']['challenges']
+                assert len(stages['critic']['approved'])==len(confirmed)
+                assert all(f.get('critic',{}).get('decision')=='passed' for f in confirmed)
+                assert stages['critic']['expected_calculations']==stages['critic']['verified_calculations']
                 assert report['agent']['tool_trace'], 'Expected actual tool use'
                 assert len(report['agent']['tool_trace'])<=8, 'Eight total tool-call budget exceeded'
                 evidence['cases'].append({'case':case,'result':'passed','status':report['status'],
@@ -66,6 +71,10 @@ def main():
                     'source_counts':[len(f['sources']) for f in confirmed],
                     'tools':[t['tool'] for t in report['agent']['tool_trace']],
                     'tool_call_count':len(report['agent']['tool_trace']),
+                    'internal_stages':{'extractor_passed':sum(d['validation']=='passed' for d in stages['extractor']['documents']),
+                                      'critic_approved':len(stages['critic']['approved']),
+                                      'critic_challenges':len(stages['critic']['challenges']),
+                                      'verified_calculations':stages['critic']['verified_calculations']},
                     'elapsed_seconds':round(time.monotonic()-started,2)})
                 save()
                 print('PASS live Meta:',case,flush=True)

@@ -99,7 +99,7 @@ def main():
             finally:
                 if worker is not None:stop(worker)
                 stop(server);repo.close()
-    source=['app/platform.py','app/main.py','app/policies.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
+    source=['app/platform.py','app/main.py','app/orchestration.py','app/policies.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
             'app/static/index.html','tests/frontend/ocr-http.test.mjs','scripts/test_frontend.py']
     report={'passed':True,'checked_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':round(time.monotonic()-started,2),
             'scope':'Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.',
@@ -108,7 +108,8 @@ def main():
                          'prior version export','audit verification','logout revocation','offline worker disables request',
                          'approved lender draft with exact calculator evidence','draft text selection','rejection removes draft',
                          'admin API key issue and revoke','bearer PDF submission and redacted read','CSV export','shown key cleared on logout',
-                         'data notice','retention enable acknowledgement','expired case deletion and source removal','retention disable'],
+                         'data notice','retention enable acknowledgement','expired case deletion and source removal','retention disable',
+                         'internal stage timeline and critic verdict'],
             'source_sha256':{name:hashlib.sha256((ROOT/name).read_text(encoding='utf-8').encode()).hexdigest() for name in source}}
     output=Path(args.report);output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(report,indent=2)+'\n')
     print('Frontend-to-HTTP OCR scenarios passed; evidence saved to',output)

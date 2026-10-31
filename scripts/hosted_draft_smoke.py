@@ -34,6 +34,11 @@ def run(base):
         try:
             response = client.post('/api/platform/demo/cases/math_error', headers=headers); response.raise_for_status()
             report = response.json(); case = '/api/cases/' + report['id']
+            stages=report['orchestration']
+            check('three_internal_stages',stages['kind']=='internal_stages' and [stages[k]['stage'] for k in ('extractor','verifier','critic')]==['Extractor','Verifier','Critic'])
+            check('critic_total_coverage',stages['critic']['expected_calculations']==2 and stages['critic']['verified_calculations']==2 and not stages['critic']['challenges'])
+            check('finding_critic_supported',stages['critic']['approved']==['F1'] and report['findings'][0]['critic']['decision']=='passed')
+            check('stage_trace_order',[e['name'] for e in report['trace'] if e['kind']=='orchestration']==['Extractor','Verifier','Critic'])
             csv=client.get(case+'/export?format=csv');csv.raise_for_status()
             check('csv_exact_finding','3300.00,3350.00,50.00' in csv.text and 'DEMO-001' not in csv.text)
             worksheet=client.get(case+'/export?format=accounting_csv');worksheet.raise_for_status()
@@ -71,7 +76,7 @@ def run(base):
             'scope':'One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.',
             'application_commit': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256': {p:hashlib.sha256((ROOT/p).read_text(encoding='utf-8').encode()).hexdigest()
-                              for p in ('app/main.py','app/platform.py','app/policies.py','app/worker.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
+                              for p in ('app/main.py','app/orchestration.py','app/platform.py','app/policies.py','app/worker.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
             'checks': checks}
 
 

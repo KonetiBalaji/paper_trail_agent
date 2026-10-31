@@ -34,7 +34,8 @@ def build_report(repo,job):
                {'engine':doc['ocr']['engine'],'usable_lines':doc['ocr']['usable_lines'],
                 'total_lines':doc['ocr']['total_lines'],'scores_calibrated':False},
                validation='review',duration_ms=doc['ocr']['duration_ms'],document=doc['id'])
-    findings,calculations=reconcile(docs)
+    from .orchestration import run
+    findings,calculations,orchestration=run(docs,events)
     for doc in docs:
         if not doc.get('ocr',{}).get('performed'):continue
         candidates,math=candidate_checks(doc)
@@ -57,7 +58,7 @@ def build_report(repo,job):
                validation='review' if calculation.get('provisional') else 'passed',document=calculation['document'])
     record(events,'validation','ocr_review_gate',output={'status':'review','findings':len(findings),
            'prior_reviews':'Retained in the previous immutable report version; new findings start pending.'},validation='review')
-    report.update(mode='ocr',previous_mode=report['mode'],documents=docs,findings=findings,calculations=calculations,status='review',trace=events,
+    report.update(mode='ocr',previous_mode=report['mode'],documents=docs,findings=findings,calculations=calculations,orchestration=orchestration,status='review',trace=events,
                   agent=None,agent_status='OCR candidate pass: model investigation was not run. Prior analysis is retained in its report version.',
                   derived_from={'version':expected,'job_id':job['id'],'kind':'ocr'})
     report.pop('agent_error',None)

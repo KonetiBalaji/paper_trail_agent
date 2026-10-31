@@ -56,6 +56,40 @@ template is not a legal filing or a claim that the lender acted improperly.
 `kind=statement_dispute` uses the same verified evidence with a request to
 investigate the disputed figure; it invents no deadlines, fees or legal rights.
 
+## Internal Extractor, Verifier and Critic
+
+Every new analysis now passes through three schema-validated internal stages:
+
+1. **Extractor** runs the existing local/Auto/Muse Spark extraction route, then
+   checks the statement schema, grounded values, source IDs, completeness and
+   duplicate row IDs. Unsupported or incomplete documents retain review status.
+2. **Verifier** runs the deterministic reconciliation rules with exact Decimal
+   arithmetic. Its candidate findings and calculations must satisfy strict
+   Pydantic output schemas. The verifier receives a copy of the evidence handoff.
+3. **Critic** uses an untouched grounded snapshot and independent integer-cent
+   arithmetic to derive required totals and same-account/currency/period field
+   comparisons. It challenges candidate amounts, citations, duplicates, missing
+   findings, missing/wrong calculations and missing review guards. Unsupported
+   candidates become review items; incorrect calculations are withheld. It
+   generates the published explanation from the checked facts.
+
+The **Internal stages** section of the trace shows each stage's result. Confirmed
+findings carry a Critic verdict. A successful critic pass preserves any existing
+review findings; it does not turn an OCR or incomplete case into clean. Native
+parts of OCR-derived reports use the same stages; OCR candidates remain provisional.
+Historical saved reports keep their original analysis until reprocessed.
+
+Automatic confirmation is limited to 2,000 discrepancy candidates per case.
+Larger comparison graphs request review and confirm no subset. Existing limits
+of 500 tranches or 999 transactions/document still apply. Muse Spark retains its
+six-turn/eight-tool budget; the verifier and critic make no model calls. This is
+internal orchestration. A2A and a standard MCP tool server remain separate
+pending roadmap items.
+
+Eighteen stage tests challenge controlled handoff faults and known outcomes.
+They are regression checks, not real-world accuracy or a live model critic-catch
+rate. Broader agent-level field/tool/layout metrics remain an open requirement.
+
 ## Data use and retention
 
 The upload page now includes a public **Data use and terms** notice explaining

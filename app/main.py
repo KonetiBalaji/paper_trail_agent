@@ -110,38 +110,11 @@ def analyze_files(files,mode='local',persist=True):
     if mode not in ('local','meta','auto'): raise HTTPException(422,'Choose local, meta or auto mode')
     if not 1<=len(files)<=8: raise HTTPException(422,'Upload 1 to 8 PDFs')
     if mode in ('meta','auto') and not meta.configured(): raise HTTPException(503,'Set MODEL_API_KEY in .env and restart before using Meta or auto mode.')
-    docs, blobs,events = [], [],[]
-    for i,file in enumerate(files):
-        raw=file.file.read(10*1024*1024+1)
-        if len(raw)>10*1024*1024: raise HTTPException(413,'Maximum 10 MB per PDF')
-        name=(file.filename or 'statement.pdf').replace('\\','/').split('/')[-1][:150]
-        started=time.perf_counter()
-        try: doc=read_pdf(raw,name,f'doc{i+1}')
-        except ValueError as exc: raise HTTPException(422,str(exc)) from exc
-        record(events,'extraction','pdf_text',{'document':doc['id'],'bytes':len(raw)},
-               {'line_count':len(doc['lines']),'issues':[x['type'] for x in doc['issues']]},
-               'review' if doc['issues'] else 'passed',(time.perf_counter()-started)*1000,document=doc['id'])
-        if sum(len(l['text']) for l in doc['lines'])>100000: raise HTTPException(413,'Document text exceeds 100,000 characters')
-        started=time.perf_counter();local=parse_statement(doc) if mode in ('local','auto') else None
-        complete=local and all(local.get(field) for field in ('loan_id','currency','period_end')) and (
-            bool(local['tranches']) and local['stated_total'] is not None or bool(local.get('transactions')) and local.get('opening_balance') is not None and local.get('closing_balance') is not None)
-        use_model=mode=='meta' or mode=='auto' and not complete
-        selected='blocked' if doc['issues'] else ('meta' if use_model else 'local')
-        doc['routing']={'requested':mode,'selected':selected,'reason':'document_requires_review' if doc['issues'] else ('needs_model_extraction' if use_model else ('recognized_complete_fields' if complete else 'local_checks_only'))}
-        if mode=='auto':record(events,'routing','extraction_choice',{'document':doc['id'],'mode':mode},doc['routing'],document=doc['id'])
-        if use_model and not doc['issues']:
-            try: doc['statement']=meta.extract(doc,trace=events)
-            except meta.MetaError as exc:
-                doc['statement']=parse_statement({'lines':[]})
-                doc['issues'].append({'type':'model_extraction_failed','message':str(exc)})
-        else:
-            doc['statement']=local if local is not None else parse_statement(doc)
-            record(events,'extraction','local_fields',{'document':doc['id']},
-                   {'tranches':len(doc['statement']['tranches']),'transactions':len(doc['statement']['transactions'])},
-                   'review' if doc['issues'] else 'passed',(time.perf_counter()-started)*1000,document=doc['id'])
-        docs.append(doc); blobs.append(raw)
+    from .orchestration import extract_documents,run
+    events=[]
+    docs,blobs=extract_documents(files,mode,events)
     started=time.perf_counter()
-    findings, calculations = reconcile(docs)
+    findings,calculations,orchestration = run(docs,events)
     reconcile_duration=(time.perf_counter()-started)*1000
     for finding in findings:finding['human_review']={'decision':'pending','revision':0,'history':[]}
     for calculation in calculations:
@@ -151,7 +124,7 @@ def analyze_files(files,mode='local',persist=True):
     record(events,'validation','reconciliation',{'documents':len(docs)},
            {'findings':len(findings),'types':[f['type'] for f in findings]},
            'review' if any(f['severity']=='review' for f in findings) else 'passed',reconcile_duration,finding_ids=[f['id'] for f in findings])
-    report={'id':uuid.uuid4().hex,'mode':mode,'documents':docs,'findings':findings,'calculations':calculations,
+    report={'id':uuid.uuid4().hex,'mode':mode,'documents':docs,'findings':findings,'calculations':calculations,'orchestration':orchestration,
         'status':'review' if any(f['severity']=='review' for f in findings) else ('discrepancies' if findings else 'consistent'),
         'trace':events,'harness':{'max_model_turns':meta.MAX_TURNS,'max_tool_calls_total':meta.MAX_TOOL_CALLS,
                                 'request_timeout_seconds':60,'cost':None},
