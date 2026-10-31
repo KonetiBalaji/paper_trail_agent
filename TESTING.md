@@ -19,6 +19,12 @@
 - The accounting worksheet is a neutral signed-transaction export; all rows
   require review. No ledger/tax classification, FX conversion, external vendor
   connection, automatic posting, sending or payment action is implemented.
+- PostgreSQL CI passed the concurrent ten-key cap, shared revocation and audit
+  check in run 41158888422. The hosted smoke passed 23 checks including CSV
+  exactness, no invented loan transactions, guest key-administration denial and
+  cookie-only API denial. Evidence is in `docs/hosted-integrations-results.json`.
+  This does not prove a production administrator's key setup or an external
+  accounting vendor integration; those have not been exercised on the host.
 
 ## Reviewed lender and dispute drafts - October 30, 2026
 

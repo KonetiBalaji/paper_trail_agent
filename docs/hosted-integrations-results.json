@@ -1,0 +1,112 @@
+{
+  "passed": true,
+  "checked_at": "2026-10-31T02:13:00.686216+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "scope": "One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.",
+  "application_commit": "26b1dc96caaf6b23ca883a749afaa024128e34f1",
+  "source_sha256": {
+    "app/main.py": "da23719dc7f9dcb62127839014754b8851e4998e04ce4b64558da1fe00d0fdc7",
+    "app/platform.py": "7537b0aa4711052f453e3ebef8b9c30abe06e3ca834cc5781121208ed9d536dc",
+    "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
+    "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
+    "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
+    "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
+    "app/repository.py": "e98fd1f381bcc5595a43b84752b7194a64bb2ba281e462b0fcb61734a24ec5a0",
+    "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
+    "app/static/app.js": "4d5913cc3de12c805cc68589f2d53e8cf7fedc0683c2c871d48c710ed800744e"
+  },
+  "checks": [
+    {
+      "check": "served_frontend_matches",
+      "passed": true
+    },
+    {
+      "check": "synthetic_guest",
+      "passed": true
+    },
+    {
+      "check": "guest_key_list_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_key_creation_denied",
+      "passed": true
+    },
+    {
+      "check": "cookie_cannot_authorize_integration",
+      "passed": true
+    },
+    {
+      "check": "csv_exact_finding",
+      "passed": true
+    },
+    {
+      "check": "loan_accounting_has_no_invented_transactions",
+      "passed": true
+    },
+    {
+      "check": "pending_draft_blocked",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_verified_total",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_manual_only",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_redacted",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_no_cache",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_verified_total",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_manual_only",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_redacted",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_no_cache",
+      "passed": true
+    },
+    {
+      "check": "stale_snapshot_blocked",
+      "passed": true
+    },
+    {
+      "check": "rejected_draft_blocked",
+      "passed": true
+    },
+    {
+      "check": "interest_difference_exact",
+      "passed": true
+    },
+    {
+      "check": "both_interest_sources",
+      "passed": true
+    },
+    {
+      "check": "both_interest_amounts",
+      "passed": true
+    }
+  ]
+}
