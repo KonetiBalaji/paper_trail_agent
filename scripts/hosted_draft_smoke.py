@@ -21,6 +21,13 @@ def run(base):
         start = client.post('/api/platform/demo/start'); start.raise_for_status()
         check('synthetic_guest', start.json()['role'] == 'demo')
         headers = {'X-CSRF-Token': client.cookies['pta_csrf']}
+        check('mcp_csrf_enforced',client.post('/api/platform/demo/mcp-check').status_code==403)
+        response=client.post('/api/platform/demo/mcp-check',headers=headers);response.raise_for_status();mcp_result=response.json();mcp=mcp_result['mcp']
+        check('mcp_synthetic_passed',mcp_result['passed'] and mcp_result['model_calls']==0)
+        check('mcp_real_stdio',mcp['transport']=='mcp_stdio' and mcp['protocol_version']=='2026-07-28')
+        check('mcp_tools_discovered',{t['name'] for t in mcp['tools']}=={'search_evidence','calculator'} and all(t['input_schema']['additionalProperties'] is False for t in mcp['tools']))
+        check('mcp_actual_server_calls',len(mcp['server_call_log'])==2 and all(c['validation']=='passed' for c in mcp['server_call_log']) and mcp['server_call_log'][1]['output']=={'sum':'1100.00'})
+        check('mcp_case_redacted','DEMO-001' not in json.dumps(mcp))
         notice=client.get('/api/policies');notice.raise_for_status()
         check('public_data_notice',notice.json()['version']=='2026-10-30-v1' and 'disabled until' in str(notice.json()))
         check('notice_explains_deletion_boundary','backups' in str(notice.json()) and 'downloaded' in str(notice.json()))
@@ -76,7 +83,7 @@ def run(base):
             'scope':'One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.',
             'application_commit': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256': {p:hashlib.sha256((ROOT/p).read_text(encoding='utf-8').encode()).hexdigest()
-                              for p in ('app/main.py','app/orchestration.py','app/platform.py','app/policies.py','app/worker.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
+                              for p in ('app/main.py','app/meta.py','app/mcp_server.py','app/mcp_client.py','app/orchestration.py','app/platform.py','app/policies.py','app/worker.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
             'checks': checks}
 
 

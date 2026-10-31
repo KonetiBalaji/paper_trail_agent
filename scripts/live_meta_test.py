@@ -65,12 +65,20 @@ def main():
                 assert stages['critic']['expected_calculations']==stages['critic']['verified_calculations']
                 assert report['agent']['tool_trace'], 'Expected actual tool use'
                 assert len(report['agent']['tool_trace'])<=8, 'Eight total tool-call budget exceeded'
+                mcp=report['agent']['mcp']
+                assert mcp['transport']=='mcp_stdio' and mcp['server_call_log']
+                assert len(mcp['server_call_log'])<=8
+                assert all(t['transport'] in ('mcp_stdio','not_dispatched') for t in report['agent']['tool_trace'])
                 evidence['cases'].append({'case':case,'result':'passed','status':report['status'],
                     'confirmed_findings':len(confirmed),'review_items':sum(f['severity']=='review' for f in report['findings']),
                     'differences':[f['difference'] for f in confirmed if 'difference' in f],
                     'source_counts':[len(f['sources']) for f in confirmed],
                     'tools':[t['tool'] for t in report['agent']['tool_trace']],
                     'tool_call_count':len(report['agent']['tool_trace']),
+                    'mcp':{'transport':mcp['transport'],'protocol_version':mcp['protocol_version'],
+                           'actual_server_calls':len(mcp['server_call_log']),
+                           'failed_server_calls':sum(c['validation']=='failed' for c in mcp['server_call_log']),
+                           'tools':[{'tool':c['tool'],'validation':c['validation'],'sequence':c['sequence']} for c in mcp['server_call_log']]},
                     'internal_stages':{'extractor_passed':sum(d['validation']=='passed' for d in stages['extractor']['documents']),
                                       'critic_approved':len(stages['critic']['approved']),
                                       'critic_challenges':len(stages['critic']['challenges']),

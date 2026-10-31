@@ -108,6 +108,12 @@ jobs:
       - run: python scripts/evaluate.py
       - run: python scripts/benchmark.py --report work/benchmark-results.json
       - run: python scripts/resource_benchmark.py --report work/resource-results.json
+      - run: python scripts/evaluate_mcp.py --report work/mcp-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mcp-evaluation
+          path: work/mcp-results.json
       - name: HTTP smoke and sanity tests
         shell: bash
         run: |

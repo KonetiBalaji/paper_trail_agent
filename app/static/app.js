@@ -225,6 +225,7 @@ function render() {
     const list = el('ul'); for (const item of report.agent.checklist) list.append(el('li', item));
     $('agent').append(list, sources(report.agent.sources));
   } else $('agent').append(el('p', report.agent_error || report.agent_status || 'Local mode: model investigation was not run.'));
+  if (report.agent?.mcp) $('agent').append(mcpDetails(report.agent.mcp));
   $('trace').replaceChildren();
   if (report.orchestration) {
     const stages = report.orchestration;
@@ -454,6 +455,8 @@ function updateAccess(actor) {
   const canWrite = ['admin', 'reviewer', 'demo'].includes(currentRole);
   $('analyze').disabled = !canWrite || currentRole === 'demo'; $('delete').disabled = !canWrite;
   $('upload-panel').hidden = currentRole === 'demo'; $('demo-cases').hidden = currentRole !== 'demo';
+  $('mcp-demo').hidden = currentRole !== 'demo';
+  if (currentRole !== 'demo') $('mcp-demo-output').replaceChildren();
   $('login-form').hidden = !!actor; $('logout').hidden = !actor;
   $('identity-status').textContent = actor ? `${actor.workspace} · ${actor.role}` : 'Sign in to access workspace statements. Public synthetic demo is separate.';
   renderAPIKeys();
@@ -517,6 +520,34 @@ async function renderDataNotice() {
   } catch { notice.append(el('p', 'Data notice unavailable. Read the repository data-controls documentation before uploading.')); }
 }
 renderDataNotice();
+
+function mcpDetails(metadata) {
+  const details = el('details'); details.append(el('summary', `MCP tools · ${metadata.transport} · ${metadata.protocol_version}`));
+  details.append(el('p', `${metadata.server.name} ${metadata.server.version} · ${metadata.server_call_log.length} actual server calls · limit ${metadata.max_calls}`));
+  const schemas = el('details'); schemas.append(el('summary', 'Discovered input and output schemas'), el('pre', JSON.stringify(metadata.tools, null, 2))); details.append(schemas);
+  for (const call of metadata.server_call_log) {
+    const row = el('details'); row.append(el('summary', `${call.sequence}. ${call.tool} · ${call.validation} · ${call.duration_ms} ms`), el('pre', JSON.stringify({input:call.input,output:call.output},null,2))); details.append(row);
+  }
+  return details;
+}
+function setupMCPDemo() {
+  const panel = el('section', undefined, 'panel'); panel.id = 'mcp-demo'; panel.hidden = true;
+  panel.append(el('h2', 'Check the MCP tools'), el('p', 'Run evidence search and the exact calculator over a fixed fictional statement through a real case-scoped MCP process. No upload or paid model call.'));
+  const button = el('button', 'Run synthetic MCP check', 'secondary'); button.type = 'button'; button.id = 'run-mcp';
+  const feedback = el('p', '', 'note'); feedback.setAttribute('role','status'); const output = el('div'); output.id = 'mcp-demo-output';
+  button.onclick = async () => {
+    button.disabled = true; feedback.textContent = 'Connecting to the case-scoped MCP server…'; output.replaceChildren();
+    try {
+      const result = await jsonRequest('/api/platform/demo/mcp-check', {method:'POST'});
+      if (currentRole !== 'demo') return;
+      feedback.textContent = result.passed ? 'PASS · real MCP discovery, evidence search and 1100.00 calculator result · zero model calls.' : 'MCP check failed; inspect results.';
+      output.append(mcpDetails(result.mcp));
+    } catch (error) { if (currentRole === 'demo') feedback.textContent = error.message; }
+    finally { button.disabled = false; }
+  };
+  panel.append(button,feedback,output); $('public-demo').after(panel);
+}
+setupMCPDemo();
 async function configureService() {
   try {
     const config = await jsonRequest('/api/platform/config');

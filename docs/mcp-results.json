@@ -1,0 +1,123 @@
+{
+  "passed": true,
+  "checked_at": "2026-10-31T13:32:54.211618+00:00",
+  "sdk": {
+    "mcp": "2.3.0",
+    "mcp-types": "2.3.0"
+  },
+  "scope": "Official SDK clients launch real stdio subprocesses, discover tools and validate current/legacy protocol behavior. Fictional evidence, no model calls, no database, no OS sandbox or remote-host claim.",
+  "protocols": [
+    {
+      "mode": "auto",
+      "protocol_version": "2026-07-28"
+    },
+    {
+      "mode": "legacy",
+      "protocol_version": "2025-11-25"
+    }
+  ],
+  "checks": [
+    {
+      "check": "bundle_pattern_redacted",
+      "passed": true
+    },
+    {
+      "check": "auto_protocol_negotiated",
+      "passed": true
+    },
+    {
+      "check": "auto_two_tools",
+      "passed": true
+    },
+    {
+      "check": "auto_strict_schemas",
+      "passed": true
+    },
+    {
+      "check": "current_search_grounded",
+      "passed": true
+    },
+    {
+      "check": "current_exact_sum",
+      "passed": true
+    },
+    {
+      "check": "extra_arguments_rejected",
+      "passed": true
+    },
+    {
+      "check": "query_type_rejected",
+      "passed": true
+    },
+    {
+      "check": "nonfinite_rejected",
+      "passed": true
+    },
+    {
+      "check": "subcent_rejected",
+      "passed": true
+    },
+    {
+      "check": "unknown_tool_rejected",
+      "passed": true
+    },
+    {
+      "check": "case_b_not_in_case_a",
+      "passed": true
+    },
+    {
+      "check": "ninth_tool_call_rejected",
+      "passed": true
+    },
+    {
+      "check": "auto_server_audit_complete",
+      "passed": true
+    },
+    {
+      "check": "auto_audit_redacted",
+      "passed": true
+    },
+    {
+      "check": "auto_process_released_files",
+      "passed": true
+    },
+    {
+      "check": "legacy_protocol_negotiated",
+      "passed": true
+    },
+    {
+      "check": "legacy_two_tools",
+      "passed": true
+    },
+    {
+      "check": "legacy_strict_schemas",
+      "passed": true
+    },
+    {
+      "check": "legacy_separate_case",
+      "passed": true
+    },
+    {
+      "check": "legacy_exact_sum",
+      "passed": true
+    },
+    {
+      "check": "legacy_server_audit_complete",
+      "passed": true
+    },
+    {
+      "check": "legacy_audit_redacted",
+      "passed": true
+    },
+    {
+      "check": "legacy_process_released_files",
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "app/mcp_server.py": "7629ce077d032cdded5fa2a8814beacb90fe2984a4072fba69540e5f4afa2b45",
+    "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
+    "app/meta.py": "7b2b486fe5355ad01d61fd7cbc509669cbfbc0d77eede969391c8af8bf29422f",
+    "scripts/evaluate_mcp.py": "ee5717e009a503c5f75b358eae040798797afb88ea68baad3bfac33a3b96c54c"
+  }
+}

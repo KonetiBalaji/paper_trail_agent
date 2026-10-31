@@ -227,3 +227,22 @@ test('admin retention policy deletes an old case through real HTTP and clears it
   ui.doc.getElementById('retention-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
   await waitFor(() => ui.doc.getElementById('retention-panel').textContent.includes('Disabled · revision 2'), 'Disable policy did not save');
 });
+
+test('public synthetic MCP check discovers real tools and shows server call results', {skip: offline, timeout: 45000}, async t => {
+  const ui=await frontend(t);
+  assert.ok(ui.doc.getElementById('mcp-demo').hidden);
+  ui.doc.getElementById('logout').click();
+  await waitFor(() => !ui.doc.getElementById('login-form').hidden,'Reviewer sign out failed');
+  ui.doc.getElementById('start-demo').click();
+  await waitFor(() => !ui.doc.getElementById('mcp-demo').hidden,'Synthetic MCP panel missing');
+  ui.doc.getElementById('run-mcp').click();
+  await waitFor(() => ui.doc.getElementById('mcp-demo-output').textContent.includes('1100.00'),'Actual MCP tools did not return');
+  const text=ui.doc.getElementById('mcp-demo-output').textContent;
+  assert.match(text,/mcp_stdio/);assert.match(text,/2026-07-28/);assert.match(text,/2 actual server calls/);
+  assert.match(text,/search_evidence/);assert.match(text,/calculator/);assert.match(text,/additionalProperties/);
+  assert.doesNotMatch(text,/DEMO-001/);
+  assert.ok(ui.requests.some(r=>r.path==='/api/platform/demo/mcp-check' && r.status===200));
+  ui.doc.getElementById('logout').click();
+  await waitFor(()=>ui.doc.getElementById('mcp-demo').hidden,'MCP panel remained after sign out');
+  assert.equal(ui.doc.getElementById('mcp-demo-output').textContent,'');
+});

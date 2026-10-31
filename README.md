@@ -56,6 +56,26 @@ template is not a legal filing or a claim that the lender acted improperly.
 `kind=statement_dispute` uses the same verified evidence with a request to
 investigate the disputed figure; it invents no deadlines, fees or legal rights.
 
+## Standard MCP tools
+
+Muse Spark now discovers and calls **search_evidence** and **calculator** through
+a real case-scoped stdio MCP server using the pinned official Python SDK. Input
+and output schemas are validated, evidence is pattern-redacted before transport,
+and the child receives no model/database credentials. Reports retain negotiated
+protocol, discovered schemas and actual server call logs. A transport failure
+requires review; there is no direct-tool fallback.
+
+In the public synthetic demo, **Run synthetic MCP check** exercises the two tools
+without uploading data or making a paid call. Expand the returned MCP details to
+see schemas, exact `1100.00` output and the server log. This route is role/CSRF
+protected and rate limited. It does not enable public paid Meta use.
+
+The independent client gate passes 24 checks for current (`2026-07-28`) and legacy
+(`2025-11-25`) protocols. Read [MCP setup and boundaries](docs/MCP.md) for standard
+host commands, approved case export, limits and data controls. MCP supplies an
+interoperable tool interface; extraction and verification accuracy remain governed
+by the existing evidence/critic checks. A2A remains pending.
+
 ## Internal Extractor, Verifier and Critic
 
 Every new analysis now passes through three schema-validated internal stages:
@@ -83,8 +103,8 @@ Automatic confirmation is limited to 2,000 discrepancy candidates per case.
 Larger comparison graphs request review and confirm no subset. Existing limits
 of 500 tranches or 999 transactions/document still apply. Muse Spark retains its
 six-turn/eight-tool budget; the verifier and critic make no model calls. This is
-internal orchestration. A2A and a standard MCP tool server remain separate
-pending roadmap items.
+internal orchestration. The separate MCP tool transport is implemented; A2A
+remains a pending roadmap item.
 
 Eighteen stage tests challenge controlled handoff faults and known outcomes.
 They are regression checks, not real-world accuracy or a live model critic-catch

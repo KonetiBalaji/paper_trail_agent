@@ -1,5 +1,31 @@
 # Verification record - October 28, 2026
 
+## Actual MCP tool transport - October 31, 2026
+
+- `scripts/evaluate_mcp.py` uses independent official SDK clients against actual
+  stdio subprocesses. All 24 checks pass: current 2026-07-28 and legacy
+  2025-11-25 negotiation, schema discovery, grounded search, exact sums, strict
+  bad/extra argument rejection, NaN/sub-cent rejection, unknown tools, separate
+  case scope, ninth-call rejection, complete redacted audit and file release.
+  Evidence is `docs/mcp-results.json`. This does not certify an OS sandbox.
+- Six boundary tests cover redaction/bundle limits, actual Meta-tool routing,
+  transport failure without fallback, invalid peer output, standalone host
+  restart and the fixed public check's identity/CSRF/quota controls. The initial
+  local full suite passed 275 tests with seven dedicated/optional skips; the
+  standalone restart test was added afterward. Pinned dependency checks pass.
+- The actual frontend-to-HTTP harness starts a synthetic demo session, runs
+  the real MCP server and displays schemas, two calls and the exact 1100.00 sum;
+  the view clears on logout. Existing OCR, draft, integration and retention
+  flows also pass. This is not a visual browser/mobile or demo-video claim.
+- Four live Muse Spark cases pass with 4/6/7/3 tool calls and the same actual
+  MCP server call counts, zero server validation failures and supported critic
+  verdicts. `docs/live-meta-results.json` records negotiated protocols, call
+  validations, fixture hashes and current app-source hashes. The prior provider
+  failure evidence remains retained.
+- CI now runs the independent interoperability gate and uploads its evidence.
+  Production subprocess/package behavior and final CI are checked separately;
+  public HTTP MCP deployment and remote authorization are not implemented.
+
 ## Internal stages and independent critic - October 31, 2026
 
 - Eighteen tests cover the four known outcomes, source/amount tampering,

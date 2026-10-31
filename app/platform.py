@@ -181,6 +181,15 @@ def create_router(root_provider,analyze_files):
         repo.create_case(actor.workspace,actor.id,report,blobs,synthetic=True)
         return report
 
+    @router.post('/demo/mcp-check')
+    def demo_mcp(actor=Depends(write_principal)):
+        if actor.role!='demo':raise HTTPException(403,'Use an isolated synthetic demo session')
+        repo,_=resources();repo.consume('demo-mcp-global',30,3600);repo.consume('demo-mcp:'+actor.workspace,4,3600)
+        import asyncio
+        from .mcp_client import synthetic_check
+        try:return asyncio.run(synthetic_check())
+        except Exception:raise HTTPException(503,'MCP transport check unavailable; no model call was made.') from None
+
     @router.post('/auth/login')
     def login(data:Login,request:Request,response:Response):
         repo,security=resources()

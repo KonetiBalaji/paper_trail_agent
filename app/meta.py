@@ -1,12 +1,13 @@
 """Bounded Muse Spark extraction and retrieval/calculator tool loop."""
 import json
+import asyncio
 import os
 import re
 import time
 from collections import Counter
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
-from .core import money, calculate, retrieve, parse_statement
+from .core import money,parse_statement
 from .trace import record
 
 MAX_TURNS=6
@@ -188,14 +189,7 @@ def extract(doc,trace=None):
                {'error':'Schema or evidence validation failed','reason':str(exc) if isinstance(exc,EvidenceError) else 'Malformed schema, JSON or amount'},'failed',document=doc['id'])
         raise MetaError('Model extraction failed evidence validation; manual review required.') from exc
 
-TOOLS = [
-    {'type':'function','function':{'name':'search_evidence','description':'Retrieve original source lines by keyword.',
-        'parameters':{'type':'object','properties':{'query':{'type':'string'}},'required':['query'],'additionalProperties':False}}},
-    {'type':'function','function':{'name':'calculator','description':'Sum exact monetary values; never perform arithmetic mentally.',
-        'parameters':{'type':'object','properties':{'values':{'type':'array','items':{'type':'string'},'maxItems':1000}},'required':['values'],'additionalProperties':False}}},
-]
-
-def reason(documents,findings,calculations,trace=None):
+async def _reason(documents,findings,calculations,trace,session):
     from .privacy import redact
     events=[] if trace is None else trace
     messages = [{'role':'developer','content':
@@ -210,7 +204,7 @@ def reason(documents,findings,calculations,trace=None):
     tool_trace, allowed = [], set()
     used=0
     for turn in range(MAX_TURNS):
-        msg = model_call(messages,TOOLS,events,'investigation')
+        msg = await asyncio.to_thread(model_call,messages,session.model_tools,events,'investigation')
         calls = msg.get('tool_calls') or []
         if not calls:
             try:
@@ -232,24 +226,35 @@ def reason(documents,findings,calculations,trace=None):
             if not isinstance(call,dict) or not isinstance(call.get('id'),str) or not isinstance(call.get('function'),dict):
                 record(events,'validation','tool_call_schema',output={'error':'Malformed tool call'},validation='failed')
                 raise MetaError('Malformed tool call; review required.')
-            started=time.perf_counter();args=None
+            started=time.perf_counter();args=None;sequence=None
             name=call.get('function',{}).get('name','unknown')
             try:
                 args = json.loads(call['function']['arguments'])
                 name = call['function']['name']
                 if not isinstance(args,dict):raise ValueError('Arguments must be an object')
-                if name=='search_evidence':
-                    if set(args)!={'query'} or not isinstance(args['query'],str) or not 1<=len(args['query'])<=500:raise ValueError('Invalid query')
-                    result = retrieve(documents,args['query'])
-                    allowed.update(l['id'] for l in result)
-                elif name=='calculator':
-                    if set(args)!={'values'} or not isinstance(args['values'],list) or not all(isinstance(v,str) for v in args['values']):raise ValueError('Invalid values')
-                    result={'sum':calculate(args['values'])}
-                else: result={'error':'Unknown tool'}
+                result,sequence = await session.call(name,args)
+                if name=='search_evidence' and isinstance(result,list):allowed.update(l['id'] for l in result)
             except (ValueError,KeyError,TypeError): result={'error':'Invalid tool arguments'}
             validation='failed' if isinstance(result,dict) and 'error' in result else 'passed'
-            event=record(events,'tool',name,args,result,validation,(time.perf_counter()-started)*1000,turn=turn+1)
-            tool_trace.append({'tool':name,'input':event['input'],'result':event['output'],'validation':validation,'event_id':event['id']})
+            event=record(events,'tool',name,args,result,validation,(time.perf_counter()-started)*1000,turn=turn+1,transport='mcp_stdio' if sequence is not None else 'not_dispatched',protocol_version=session.metadata['protocol_version'],mcp_sequence=sequence)
+            tool_trace.append({'tool':name,'input':event['input'],'result':event['output'],'validation':validation,'event_id':event['id'],'transport':event['transport'],'mcp_sequence':sequence})
             messages.append({'role':'tool','tool_call_id':call['id'],'content':json.dumps(result)})
     record(events,'guardrail','turn_budget',output={'limit':MAX_TURNS},validation='failed')
     raise MetaError('Agent tool budget reached; review required.')
+
+
+def reason(documents,findings,calculations,trace=None):
+    from .mcp_client import CaseTools
+    from .privacy import redact
+    async def run():
+        failure=None
+        async with CaseTools(documents) as session:
+            try:result=await _reason(documents,findings,calculations,trace,session)
+            except MetaError as exc:failure=exc
+        if failure is not None:raise failure
+        result['mcp']=redact(session.metadata)
+        return result
+    try:return asyncio.run(run())
+    except MetaError:raise
+    except Exception as exc:
+        raise MetaError('MCP tool transport or validation failed; manual review required.') from exc
