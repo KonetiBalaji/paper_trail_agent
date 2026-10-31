@@ -29,6 +29,14 @@
   stage counts, fixture hashes and app-source hashes that match this patch.
   Its revision records the precommit working tree honestly; source hashes bind
   the actual executed app code. Earlier provider-failure evidence is retained.
+- The hosted smoke passed 32 checks on the deployed patch, including Extractor/
+  Verifier/Critic order, required calculation coverage, a supported confirmed
+  finding and the existing draft, CSV, retention and isolation guards. Evidence
+  is in `docs/hosted-orchestration-results.json`. This is synthetic hosted API
+  verification with a served-JS hash check, not a browser video or hosted paid
+  Meta run.
+- All four CI jobs passed in [run 41204063142](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41204063142),
+  including the real CPU OCR, frontend/API and isolated read-only container gates.
 
 ## Retention and data-use notice - October 30, 2026
 

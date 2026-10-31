@@ -1,0 +1,151 @@
+{
+  "passed": true,
+  "checked_at": "2026-10-31T13:07:04.591414+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "scope": "One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.",
+  "application_commit": "7a487fa4758630da8afad7ce8b140d41d65d200c",
+  "source_sha256": {
+    "app/main.py": "204b70090095cc8c2249072603fd5cde1eaf50c03ba09f44b62e5bf9d9ab8b0d",
+    "app/orchestration.py": "1009930063bef96e62bdd6a967282e9cee088539788078edc93e3a9c490fb5b0",
+    "app/platform.py": "dc44a6f39de5a879b2dbed7dcd62447648f350c55ffbd12063b429419d29c849",
+    "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
+    "app/worker.py": "1b1f3a66ed32a95f78b9c047e38fa027adda2110ccef31d49e6f2e60170d3ded",
+    "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
+    "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
+    "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
+    "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
+    "app/repository.py": "61fe005593348502f18befc89f65522167ccae6394f38401322705dc7eb8d51c",
+    "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
+    "app/static/app.js": "61b0eac9344a65bbd2b62e29aac78d7d9fe346d1c66e55c84dd69e504c385439"
+  },
+  "checks": [
+    {
+      "check": "served_frontend_matches",
+      "passed": true
+    },
+    {
+      "check": "synthetic_guest",
+      "passed": true
+    },
+    {
+      "check": "public_data_notice",
+      "passed": true
+    },
+    {
+      "check": "notice_explains_deletion_boundary",
+      "passed": true
+    },
+    {
+      "check": "guest_retention_read_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_retention_change_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_retention_run_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_key_list_denied",
+      "passed": true
+    },
+    {
+      "check": "guest_key_creation_denied",
+      "passed": true
+    },
+    {
+      "check": "cookie_cannot_authorize_integration",
+      "passed": true
+    },
+    {
+      "check": "three_internal_stages",
+      "passed": true
+    },
+    {
+      "check": "critic_total_coverage",
+      "passed": true
+    },
+    {
+      "check": "finding_critic_supported",
+      "passed": true
+    },
+    {
+      "check": "stage_trace_order",
+      "passed": true
+    },
+    {
+      "check": "csv_exact_finding",
+      "passed": true
+    },
+    {
+      "check": "loan_accounting_has_no_invented_transactions",
+      "passed": true
+    },
+    {
+      "check": "pending_draft_blocked",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_verified_total",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_manual_only",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_redacted",
+      "passed": true
+    },
+    {
+      "check": "lender_enquiry_no_cache",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_verified_total",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_manual_only",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_redacted",
+      "passed": true
+    },
+    {
+      "check": "statement_dispute_no_cache",
+      "passed": true
+    },
+    {
+      "check": "stale_snapshot_blocked",
+      "passed": true
+    },
+    {
+      "check": "rejected_draft_blocked",
+      "passed": true
+    },
+    {
+      "check": "interest_difference_exact",
+      "passed": true
+    },
+    {
+      "check": "both_interest_sources",
+      "passed": true
+    },
+    {
+      "check": "both_interest_amounts",
+      "passed": true
+    }
+  ]
+}

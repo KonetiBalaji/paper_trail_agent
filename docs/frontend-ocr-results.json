@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checked_at": "2026-10-31T02:24:42.361730+00:00",
-  "duration_seconds": 13.0,
+  "checked_at": "2026-10-31T13:07:38.183686+00:00",
+  "duration_seconds": 13.01,
   "scope": "Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.",
   "scenarios": [
     "reviewer login and upload",
@@ -25,22 +25,24 @@
     "data notice",
     "retention enable acknowledgement",
     "expired case deletion and source removal",
-    "retention disable"
+    "retention disable",
+    "internal stage timeline and critic verdict"
   ],
   "source_sha256": {
     "app/platform.py": "dc44a6f39de5a879b2dbed7dcd62447648f350c55ffbd12063b429419d29c849",
-    "app/main.py": "5765048eaf27787908f036892484547f3e20fc3d8b0f124f2d52291a80e66ba7",
+    "app/main.py": "204b70090095cc8c2249072603fd5cde1eaf50c03ba09f44b62e5bf9d9ab8b0d",
+    "app/orchestration.py": "1009930063bef96e62bdd6a967282e9cee088539788078edc93e3a9c490fb5b0",
     "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
     "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
     "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
     "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
     "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
     "app/repository.py": "61fe005593348502f18befc89f65522167ccae6394f38401322705dc7eb8d51c",
-    "app/ocr_case.py": "1adca2aec94600d29b8583c88f9d1ff362d02c2662b2421f5133ba4e80f27d17",
+    "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
     "app/worker.py": "1b1f3a66ed32a95f78b9c047e38fa027adda2110ccef31d49e6f2e60170d3ded",
-    "app/static/app.js": "4c6f76569dde56f32285aba3033ece5249d6c7bbae8b6284f319b6e49d11cbb1",
+    "app/static/app.js": "61b0eac9344a65bbd2b62e29aac78d7d9fe346d1c66e55c84dd69e504c385439",
     "app/static/index.html": "0c78fd20eaf81d3e4192828cf6d13daa0b7725f3405428d9d18a7cad02eb3573",
-    "tests/frontend/ocr-http.test.mjs": "16861f8fa5cee62049262f13e3879ac0c420d9a754a8a13fed640b720cba832f",
-    "scripts/test_frontend.py": "09d8f8f1166d0fd0e7d19b51dfddb1237ce989827c477a374178ca0ab88ef4e4"
+    "tests/frontend/ocr-http.test.mjs": "7c0fc7007a1f781fa07314483d6c32f072881e66e78817f3928ab6604fd47069",
+    "scripts/test_frontend.py": "c5d018cb64b18a0092b879d86148db07999901e04d963bc640a63ccce6805e5f"
   }
 }
