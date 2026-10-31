@@ -190,3 +190,37 @@ test('admin issues and revokes an API key with real PDF submission and CSV expor
   await waitFor(() => ui.doc.getElementById('api-keys-panel').hidden, 'Key panel remained after sign out');
   assert.equal(ui.doc.getElementById('api-key-secret'), null);
 });
+
+test('admin retention policy deletes an old case through real HTTP and clears its preview', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t); const old = process.env.PAPER_TRAIL_UI_RETENTION_CASE;
+  assert.match(old, /^[a-f0-9]{32}$/);
+  await waitFor(() => ui.doc.getElementById('data-notice').textContent.includes('Notice version'), 'Data notice did not load');
+  assert.match(ui.doc.getElementById('data-notice').textContent, /disabled until an administrator enables/);
+  assert.ok(ui.doc.getElementById('retention-panel').hidden);
+  ui.doc.getElementById('logout').click();
+  await waitFor(() => !ui.doc.getElementById('login-form').hidden, 'Reviewer sign out failed');
+  ui.doc.getElementById('login-email').value = 'admin@example.invalid';
+  ui.doc.getElementById('login-password').value = 'synthetic-frontend-password-123';
+  ui.doc.getElementById('login-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('retention-form'), 'Retention controls missing');
+  assert.ok(!ui.doc.getElementById('retention-enabled').checked);
+  assert.ok(ui.button('Delete expired case content now').disabled);
+  await waitFor(() => ui.button('Open ' + old.slice(0,8)), 'Old fictional case not in history');
+  ui.button('Open ' + old.slice(0,8)).click();
+  await waitFor(() => ui.doc.getElementById('case-id').textContent === old, 'Old case did not open');
+  ui.doc.getElementById('retention-enabled').checked = true;
+  ui.doc.getElementById('retention-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('retention-panel').textContent.includes('Type DELETE_EXPIRED_CASES'), 'Enable acknowledgement was not enforced');
+  ui.doc.getElementById('retention-ack').value = 'DELETE_EXPIRED_CASES';
+  ui.doc.getElementById('retention-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('retention-panel').textContent.includes('Enabled · revision 1'), 'Enabled policy did not save');
+  ui.button('Delete expired case content now').click();
+  await waitFor(() => ui.doc.getElementById('retention-panel').textContent.includes('1 expired cases deleted'), 'Expired content was not deleted');
+  assert.ok(ui.doc.getElementById('results').hidden);
+  assert.equal(ui.doc.getElementById('pdf').getAttribute('src'), null);
+  assert.equal((await ui.api('/api/cases/' + old + '/documents/doc1')).status, 404);
+  assert.equal((await ui.api('/api/cases/' + old + '/export?version=1')).status, 404);
+  ui.doc.getElementById('retention-enabled').checked = false;
+  ui.doc.getElementById('retention-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('retention-panel').textContent.includes('Disabled · revision 2'), 'Disable policy did not save');
+});

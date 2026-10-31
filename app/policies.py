@@ -1,0 +1,14 @@
+"""Product data-use facts and usage terms; no compliance certification claim."""
+NOTICE = {
+    'version': '2026-10-30-v1',
+    'title': 'Data use and terms',
+    'sections': [
+        {'title':'What is stored','text':'Cases include original PDFs, extracted source lines, amounts, model/tool traces and review notes. Database service mode encrypts PDFs, reports, report versions, job payloads and key labels with the server encryption key. Local file mode stores PDFs and reports as files on your machine; protect that folder yourself.'},
+        {'title':'Model processing','text':'Local checks do not call a model. Muse Spark and Auto modes send extracted document text and retrieved evidence to Meta. This app does not send original PDF bytes to Meta. Public synthetic guests cannot upload documents or call Meta. Separate provider processing and retention are outside this app’s deletion controls.'},
+        {'title':'Retention and deletion','text':'Private-workspace retention is disabled until an administrator enables it. Enabled policies use case creation time in UTC, delete all original PDFs and report/review versions after the chosen age, and run on worker maintenance passes or an administrator’s cleanup request. This is not a guaranteed timed deletion service. Review activity does not reset the age. Reviewers and administrators can also delete an individual case.'},
+        {'title':'What deletion does not remove','text':'Minimal actor, case-ID and job audit metadata remains. Provider backups, infrastructure logs, model-provider records and copies already downloaded or sent elsewhere are not erased by case deletion. Provider backup expiration and log retention have not been verified for real-document use.'},
+        {'title':'Sharing and redaction','text':'Exports redact supported labeled identity/contact patterns, emails, US SSNs, formatted US phone numbers, API-key patterns and original filenames. This is not universal anonymization: unlabeled or unsupported international identifiers may remain. Inspect exports and drafts before sharing. Original private PDF views remain unredacted.'},
+        {'title':'Usage terms','text':'Use only documents you are authorized to process. Check the original evidence before acting on a result. Unsupported layouts and OCR candidates require review; a clean result covers only the supported checks that ran. A finding is not proof of lender misconduct. You decide on money, lender messages and disputes. The app cannot send a message, post accounting entries or make a payment.'},
+        {'title':'Current service scope','text':'The public demo is for fictional statements. The app does not claim regulatory compliance or readiness for unrestricted real-customer documents. Do not post private documents, account numbers, passwords or keys in public repository issues. Administrators must verify host logs, backups, access and retention before enabling real-document use.'},
+    ],
+}

@@ -6,6 +6,7 @@ class RepositoryProbe:
     def __init__(self):self.events=[]
     def touch_worker(self,worker_id,kinds):self.events.append(('ready',worker_id,kinds))
     def retire_worker(self,worker_id):self.events.append(('retired',worker_id))
+    def purge_retained_cases(self):return 0
 
 
 def test_stop_after_owned_job_never_claims_another(monkeypatch):
@@ -39,3 +40,14 @@ def test_container_entrypoint_removes_model_access(monkeypatch):
     monkeypatch.setattr(worker,'main',lambda:observed.append((os.getenv('MODEL_API_KEY'),os.getenv('PAPER_TRAIL_MODE'))))
     main()
     assert observed==[('','service')]
+
+def test_retention_maintenance_is_periodic_and_respects_shutdown(monkeypatch):
+    repo=RepositoryProbe();clock=[0];passes=[]
+    class Stop:
+        def is_set(self):return clock[0]>=360
+        def wait(self,seconds):clock[0]+=seconds
+    monkeypatch.setattr(worker.time,'monotonic',lambda:clock[0])
+    monkeypatch.setattr(repo,'purge_retained_cases',lambda:passes.append(clock[0]))
+    monkeypatch.setattr(worker,'run_once',lambda *args,**kwargs:False)
+    worker.serve(repo,['eval'],Stop(),poll_seconds=60)
+    assert passes==[0,300] and repo.events[-1][0]=='retired'

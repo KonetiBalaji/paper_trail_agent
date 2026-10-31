@@ -4,6 +4,7 @@ let currentRole = 'admin';
 let serviceEnabled = false;
 let ocrRenderGeneration = 0;
 let keyRenderGeneration = 0;
+let retentionRenderGeneration = 0;
 function csrfToken() {
   return document.cookie.split('; ').find(part => part.startsWith('pta_csrf='))?.split('=').slice(1).join('=') || '';
 }
@@ -20,7 +21,7 @@ async function jsonRequest(url, options) {
   }
   const response = await fetch(url, settings);
   const body = await response.json();
-  if (!response.ok) throw Error(typeof body.detail === 'string' ? body.detail : 'Request rejected. Check the supplied values.');
+  if (!response.ok) { const error = Error(typeof body.detail === 'string' ? body.detail : 'Request rejected. Check the supplied values.'); error.status = response.status; throw error; }
   return body;
 }
 async function health() {
@@ -446,8 +447,66 @@ function updateAccess(actor) {
   $('login-form').hidden = !!actor; $('logout').hidden = !actor;
   $('identity-status').textContent = actor ? `${actor.workspace} · ${actor.role}` : 'Sign in to access workspace statements. Public synthetic demo is separate.';
   renderAPIKeys();
+  renderRetention();
   if (report) render();
 }
+async function renderRetention() {
+  const generation = ++retentionRenderGeneration;
+  let panel = $('retention-panel');
+  if (!panel) { panel = el('section', undefined, 'panel'); panel.id = 'retention-panel'; document.querySelector('main').append(panel); }
+  panel.replaceChildren(); panel.hidden = !serviceEnabled || currentRole !== 'admin';
+  if (panel.hidden) return;
+  const fresh = () => generation === retentionRenderGeneration && currentRole === 'admin';
+  panel.append(el('h2', 'Case retention'));
+  const feedback = el('p', 'Loading policy…', 'note'); feedback.setAttribute('role', 'status'); panel.append(feedback);
+  try {
+    const policy = await jsonRequest('/api/platform/retention'); if (!fresh()) return;
+    feedback.textContent = `${policy.enabled ? 'Enabled' : 'Disabled'} · revision ${policy.revision} · ${policy.eligible_cases} cases older than ${policy.days} days · batch limit 25`;
+    panel.append(el('p', 'Enabling retention permits background deletion of original PDFs and every report/review version after the selected age, measured from case creation in UTC. Reviews do not reset that age. Audit/job metadata, provider backups and downloaded copies remain. Cleanup runs on worker passes or an admin request; hosted worker scheduling is not configured.'));
+    const form = el('form', undefined, 'history-controls'); form.id = 'retention-form';
+    const ageLabel = el('label', 'Keep case content for (days)'); const days = el('input'); days.type = 'number'; days.min = 1; days.max = 365; days.value = policy.days; days.required = true; days.id = 'retention-days'; ageLabel.append(days);
+    const enabledLabel = el('label', 'Enable automatic retention'); const enabled = el('input'); enabled.type = 'checkbox'; enabled.id = 'retention-enabled'; enabled.checked = policy.enabled; enabledLabel.append(enabled);
+    const ackLabel = el('label', 'To enable, type DELETE_EXPIRED_CASES'); const ack = el('input'); ack.id = 'retention-ack'; ack.autocomplete = 'off'; ackLabel.append(ack);
+    const save = el('button', 'Save retention policy', 'secondary'); save.type = 'submit';
+    form.append(ageLabel, enabledLabel, ackLabel, save);
+    form.onsubmit = async event => {
+      event.preventDefault(); save.disabled = true;
+      try {
+        await jsonRequest('/api/platform/retention', {method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({days:Number(days.value),enabled:enabled.checked,expected_revision:policy.revision,acknowledge_deletion:ack.value})});
+        if (fresh()) renderRetention();
+      } catch (error) { if (fresh()) feedback.textContent = error.message; }
+      finally { save.disabled = false; }
+    };
+    const run = el('button', 'Delete expired case content now', 'secondary'); run.type = 'button'; run.disabled = !policy.enabled;
+    run.onclick = async () => {
+      run.disabled = true;
+      try {
+        const result = await jsonRequest('/api/platform/retention/run', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expected_revision:policy.revision})});
+        if (fresh()) {
+          const selected = report;
+          if (selected) {
+            try { await jsonRequest('/api/cases/' + selected.id); }
+            catch (error) { if (fresh() && report === selected && error.status === 404) { report = null; $('results').hidden = true; $('pdf').removeAttribute('src'); $('compare-pdf').removeAttribute('src'); location.hash = ''; } }
+          }
+          if (fresh()) { loadHistory(); await renderRetention(); if (currentRole === 'admin') $('retention-panel').append(el('p', `${result.deleted} expired cases deleted.`, 'note')); }
+        }
+      } catch (error) { if (fresh()) feedback.textContent = error.message; }
+      finally { run.disabled = false; }
+    };
+    panel.append(form, run);
+  } catch (error) { if (fresh()) feedback.textContent = error.message; }
+}
+async function renderDataNotice() {
+  const notice = el('details', undefined, 'panel'); notice.id = 'data-notice';
+  notice.append(el('summary', 'Data use and terms'));
+  $('upload-panel').before(notice);
+  try {
+    const policy = await jsonRequest('/api/policies');
+    for (const section of policy.sections) notice.append(el('h3', section.title), el('p', section.text));
+    notice.append(el('small', 'Notice version ' + policy.version));
+  } catch { notice.append(el('p', 'Data notice unavailable. Read the repository data-controls documentation before uploading.')); }
+}
+renderDataNotice();
 async function configureService() {
   try {
     const config = await jsonRequest('/api/platform/config');

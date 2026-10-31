@@ -82,6 +82,17 @@ class APIKeyCreate(BaseModel):
     scopes:list[Literal['cases:read','cases:submit']]=Field(min_length=1,max_length=2)
     days:int=Field(default=30,ge=1,le=90,strict=True)
 
+class RetentionUpdate(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    days:int=Field(ge=1,le=365,strict=True)
+    enabled:bool=Field(strict=True)
+    expected_revision:int=Field(ge=0,strict=True)
+    acknowledge_deletion:str=''
+
+class RetentionRun(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    expected_revision:int=Field(ge=0,strict=True)
+
 def render_page(raw,doc,page,source):
     import pypdfium2 as pdfium
     from PIL import ImageDraw
@@ -190,6 +201,26 @@ def create_router(root_provider,analyze_files):
     def key_admin(actor):
         if not service_mode():raise HTTPException(409,'API keys require database service mode')
         if actor.role!='admin':raise HTTPException(403,'Workspace administrator required')
+
+    def retention_admin(actor):
+        if not service_mode():raise HTTPException(409,'Retention requires database service mode')
+        if actor.role!='admin':raise HTTPException(403,'Workspace administrator required')
+
+    @router.get('/retention')
+    def retention(actor=Depends(principal)):
+        retention_admin(actor);return resources()[0].retention_info(actor.workspace)
+
+    @router.put('/retention')
+    def update_retention(data:RetentionUpdate,actor=Depends(write_principal)):
+        retention_admin(actor)
+        if data.enabled and data.acknowledge_deletion!='DELETE_EXPIRED_CASES':
+            raise HTTPException(422,'Type DELETE_EXPIRED_CASES to enable deletion of expired case content')
+        return resources()[0].set_retention(actor.workspace,actor.id,data.days,data.enabled,data.expected_revision)
+
+    @router.post('/retention/run')
+    def run_retention(data:RetentionRun,actor=Depends(write_principal)):
+        retention_admin(actor)
+        return resources()[0].purge_workspace(actor.workspace,actor.id,data.expected_revision)
 
     @router.get('/api-keys')
     def list_keys(actor=Depends(principal)):

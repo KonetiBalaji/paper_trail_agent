@@ -35,6 +35,11 @@ def home(): return FileResponse(ROOT/'app'/'static'/'index.html')
 @app.get('/api/health')
 def health(): return {'status':'ok','meta_configured':meta.configured(),'model':os.getenv('META_MODEL','muse-spark-1.3')}
 
+@app.get('/api/policies')
+def policies():
+    from .policies import NOTICE
+    return NOTICE
+
 @app.get('/api/evals')
 def evals():return evaluate_suite()
 

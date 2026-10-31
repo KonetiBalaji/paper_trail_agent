@@ -1,5 +1,25 @@
 # Verification record - October 28, 2026
 
+## Retention and data-use notice - October 30, 2026
+
+- Repository tests verify disabled-by-default behavior, age preview, a strict UTC
+  cutoff, original/all-version deletion, unchanged neighboring workspaces, minimal
+  audit preservation, stale-policy refusal, batch size and workspace rotation.
+  An in-flight OCR result cannot restore an expired/deleted case.
+- API tests cover administrator identity, CSRF, typed enable acknowledgement,
+  stale cleanup revision and viewer denial. The data-use notice is public and
+  states deletion/redaction/backup limits without claiming regulatory compliance.
+- The real DOM-to-HTTP harness opens an owned old fictional case, enforces the
+  acknowledgement, enables retention, requests cleanup, verifies original-PDF
+  and old-version 404s, clears the case preview and disables the policy again.
+  OCR, draft and integration workflows continue to pass in the same harness.
+- A periodic-worker test checks startup/five-minute maintenance and shutdown.
+  Dedicated PostgreSQL CI races a review with cleanup and requires deletion to
+  remain final after a retry of any skipped locked case, with the audit verified.
+- No production retention policy is enabled by this patch. Hosted worker/cron
+  scheduling, provider backup expiration/restoration and infrastructure logging
+  remain outside this verification. Logical deletion is not forensic erasure.
+
 ## CSV and scoped integration keys - October 30, 2026
 
 - Local core suite: 245 passed, six skipped (five dedicated PostgreSQL cases and

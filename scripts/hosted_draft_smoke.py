@@ -21,6 +21,12 @@ def run(base):
         start = client.post('/api/platform/demo/start'); start.raise_for_status()
         check('synthetic_guest', start.json()['role'] == 'demo')
         headers = {'X-CSRF-Token': client.cookies['pta_csrf']}
+        notice=client.get('/api/policies');notice.raise_for_status()
+        check('public_data_notice',notice.json()['version']=='2026-10-30-v1' and 'disabled until' in str(notice.json()))
+        check('notice_explains_deletion_boundary','backups' in str(notice.json()) and 'downloaded' in str(notice.json()))
+        check('guest_retention_read_denied',client.get('/api/platform/retention').status_code==403)
+        check('guest_retention_change_denied',client.put('/api/platform/retention',json={'days':1,'enabled':True,'expected_revision':0,'acknowledge_deletion':'DELETE_EXPIRED_CASES'},headers=headers).status_code==403)
+        check('guest_retention_run_denied',client.post('/api/platform/retention/run',json={'expected_revision':0},headers=headers).status_code==403)
         check('guest_key_list_denied',client.get('/api/platform/api-keys').status_code==403)
         check('guest_key_creation_denied',client.post('/api/platform/api-keys',json={'label':'Fictional denied request','scopes':['cases:read']},headers=headers).status_code==403)
         check('cookie_cannot_authorize_integration',client.get('/api/integrations/v1/cases/unknown').status_code==401)
@@ -65,7 +71,7 @@ def run(base):
             'scope':'One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.',
             'application_commit': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256': {p:hashlib.sha256((ROOT/p).read_text(encoding='utf-8').encode()).hexdigest()
-                              for p in ('app/main.py','app/platform.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
+                              for p in ('app/main.py','app/platform.py','app/policies.py','app/worker.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
             'checks': checks}
 
 

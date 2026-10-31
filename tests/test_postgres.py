@@ -43,6 +43,23 @@ def test_postgres_api_keys_cap_is_atomic_and_revocation_shared(postgres):
         assert repo.audit('api-team')['verified']
     finally:other.close()
 
+def test_postgres_retention_racing_review_never_restores_deleted_content(postgres):
+    from sqlalchemy import update
+    from app.repository import cases,documents,versions
+    repo,_,_=postgres;value=sample();repo.create_case('team-a','alice',value,[b'%PDF-FICTIONAL'])
+    with repo.transaction() as conn:conn.execute(update(cases).where(cases.c.id==value['id']).values(created_at='2000-01-01T00:00:00+00:00'))
+    repo.set_retention('team-a','admin',30,True,0)
+    def review():
+        try:repo.review('team-a','reviewer',value['id'],'F1','note','Fictional concurrent review',0,1);return 'reviewed'
+        except Missing:return 'deleted'
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        a=pool.submit(review);b=pool.submit(repo.purge_workspace,'team-a');a.result();b.result()
+    # A locked case may be skipped in a bounded pass; the next pass must purge it.
+    repo.purge_workspace('team-a')
+    with pytest.raises(Missing):repo.get_case('team-a',value['id'])
+    with pytest.raises(Missing):repo.get_document('team-a',value['id'],'doc1')
+    assert repo.audit('team-a')['verified']
+
 def sample():
     return {'id':uuid.uuid4().hex,'status':'review','documents':[{'id':'doc1','name':'synthetic.pdf','statement':{'loan_id':'DEMO-001','period_end':'2026-10-31'}}],
         'findings':[{'id':'F1','severity':'review','message':'Synthetic review','sources':[],

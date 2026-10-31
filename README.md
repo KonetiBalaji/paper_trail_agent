@@ -56,6 +56,18 @@ template is not a legal filing or a claim that the lender acted improperly.
 `kind=statement_dispute` uses the same verified evidence with a request to
 investigate the disputed figure; it invents no deadlines, fees or legal rights.
 
+## Data use and retention
+
+The upload page now includes a public **Data use and terms** notice explaining
+storage, Meta processing, redaction, deletion and human decisions. In service
+mode, administrators can preview and configure **Case retention**. It starts
+disabled; enabling requires typing `DELETE_EXPIRED_CASES`. Choose 1–365 days
+measured from case creation in UTC. The worker performs bounded cleanup between
+jobs, and admins can run a pass manually. Deleted cases lose original PDFs and
+every report/review version; audit/job metadata, host backups and prior downloads
+remain. No production policy or hosted scheduler was enabled by this patch.
+See [Data controls](docs/DATA-CONTROLS.md) for exact boundaries and APIs.
+
 ## CSV exports and integration API
 
 Every saved case has **Export redacted CSV** and **Accounting transaction worksheet**
@@ -127,7 +139,7 @@ META_MODEL=muse-spark-1.3
 
 Restart the server and select Muse Spark mode. The key remains on the server; it is never sent to the browser. Extracted text and evidence are sent to Meta only when Muse Spark mode is selected. No OpenAI API key is needed. Check Meta credits, billing and model access before live testing. API errors do not produce a clean result.
 
-## Service foundation (deployment verification pending)
+## Authenticated database service
 
 Set `PAPER_TRAIL_MODE=service`, `DATABASE_URL`, and `DATA_ENCRYPTION_KEY` in server secret settings. Vercel requires PostgreSQL with TLS enabled; use Neon's pooled connection string. The encryption key must be a valid Fernet key and must be backed up separately from the database. Losing it makes encrypted documents and reports unrecoverable. Missing configuration fails closed. Never commit these values or paste them into chat.
 
@@ -135,9 +147,9 @@ Service mode stores encrypted PDFs, reports and user identifiers in the database
 
 Case history supports loan/period text search, status and human-decision filters. The evidence viewer offers side-by-side pages. Service reviews preserve report versions, actor identity and a verifiable audit chain. Versioned JSON/Markdown exports are available through the case API's `version` parameter. Upload limits and shared database rate counters apply in service mode.
 
-Durable eval jobs can be queued through `POST /api/platform/jobs/eval`; run `python -m app.worker --once` to process one job, or omit `--once` to poll continuously on a separate worker host. OCR and ingestion job handlers are not implemented yet. SQLite backup restoration is tested; hosted PostgreSQL backups and recovery still require provider verification. A Vercel function is not a continuously running worker.
+Durable eval jobs can be queued through `POST /api/platform/jobs/eval`; run `python -m app.worker --once` to process one job, or omit `--once` to poll continuously on a separate worker host. Optional OCR jobs are implemented; ingestion handlers remain pending. Enabled retention policies run in bounded maintenance passes between jobs. SQLite backup restoration is tested; hosted PostgreSQL backups and recovery still require provider verification. A Vercel function is not a continuously running worker.
 
-Current local validation: 188 tests and 6/6 offline evaluation cases pass. These checks use SQLite for the repository and HTTPS TestClient sessions for service behavior; they do not prove PostgreSQL production behavior. Neon free database creation is confirmed, but project connection, secrets, hosted smoke tests and uptime checks remain pending. Do not expose real documents until deployment and privacy controls are verified.
+Current verification includes the full SQLite/local test suite, six baseline evals, the 19-case layout benchmark, dedicated PostgreSQL CI, actual OCR/container tests and DOM-to-HTTP frontend workflows. Vercel/Neon production connection and hosted synthetic smoke are verified; real production reviewer setup, PostgreSQL restore, host privacy settings and uptime monitoring remain open. See TESTING.md and docs/GOAL-LEDGER.md for scoped evidence. Real-document readiness is not established by the synthetic demo.
 
 ### Public synthetic demo
 

@@ -12,7 +12,7 @@ import time
 import uuid
 from cryptography.fernet import Fernet
 from sqlalchemy import (create_engine,MetaData,Table,Column,String,Integer,LargeBinary,
-                        Float,Text,select,update,delete,and_,text)
+                        Float,Text,select,update,delete,and_,text,func)
 
 class Conflict(Exception):pass
 class Missing(Exception):pass
@@ -62,6 +62,9 @@ api_keys=Table('api_keys',schema,Column('id',String(32),primary_key=True),
     Column('owner',String(32),nullable=False),Column('label',LargeBinary,nullable=False),
     Column('scopes',String(80),nullable=False),Column('created_at',Float,nullable=False),
     Column('expires_at',Float,nullable=False),Column('revoked',Integer,nullable=False,default=0))
+retention_policies=Table('retention_policies',schema,Column('workspace',String(80),primary_key=True),
+    Column('days',Integer,nullable=False),Column('enabled',Integer,nullable=False),
+    Column('revision',Integer,nullable=False),Column('last_run_at',Float,nullable=False,default=0))
 
 class Repository:
     def __init__(self,url,key):
@@ -269,6 +272,54 @@ class Repository:
             conn.execute(delete(versions).where(versions.c.case_id==case_id))
             conn.execute(delete(cases).where(cases.c.id==case_id))
             self._audit(conn,workspace,actor,'case_deleted',case_id,{'originals_and_versions_deleted':True})
+
+    def retention_info(self,workspace,now=None):
+        now=time.time() if now is None else now
+        with self.engine.connect() as conn:
+            row=conn.execute(select(retention_policies).where(retention_policies.c.workspace==workspace)).mappings().first()
+            policy=dict(row) if row else {'days':30,'enabled':0,'revision':0,'last_run_at':0}
+            cutoff=datetime.fromtimestamp(now-policy['days']*86400,timezone.utc).isoformat()
+            due=conn.execute(select(func.count()).select_from(cases).where(and_(cases.c.workspace==workspace,cases.c.created_at<cutoff))).scalar_one()
+        return {'days':policy['days'],'enabled':bool(policy['enabled']),'revision':policy['revision'],
+                'last_run_at':policy['last_run_at'],'cutoff':cutoff,'eligible_cases':due,
+                'basis':'case_created_at','batch_limit':25,'deletes':'original PDFs and every report/review version',
+                'retains':'minimal audit and job metadata; provider backups and previously downloaded files are outside this deletion'}
+
+    def set_retention(self,workspace,actor,days,enabled,expected_revision):
+        if type(days) is not int or not 1<=days<=365 or type(enabled) is not bool:raise ValueError('Use 1 to 365 days and an explicit enabled flag')
+        with self.transaction() as conn:
+            self._insert_once(conn,retention_policies,{'workspace':workspace,'days':30,'enabled':0,'revision':0,'last_run_at':0})
+            row=conn.execute(select(retention_policies).where(retention_policies.c.workspace==workspace).with_for_update()).mappings().one()
+            if row['revision']!=expected_revision:raise Conflict('Retention policy changed. Refresh before saving.')
+            conn.execute(update(retention_policies).where(retention_policies.c.workspace==workspace).values(days=days,enabled=int(enabled),revision=row['revision']+1))
+            self._audit(conn,workspace,actor,'retention_policy_changed',None,{'days':days,'enabled':enabled,'revision':row['revision']+1})
+        return self.retention_info(workspace)
+
+    def purge_workspace(self,workspace,actor='retention-worker',expected_revision=None,now=None):
+        now=time.time() if now is None else now
+        with self.transaction() as conn:
+            policy=conn.execute(select(retention_policies).where(retention_policies.c.workspace==workspace).with_for_update()).mappings().first()
+            revision=policy['revision'] if policy else 0
+            if expected_revision is not None and revision!=expected_revision:raise Conflict('Retention policy changed. Refresh before cleanup.')
+            if not policy or not policy['enabled']:return {'deleted':0,'enabled':False,'revision':revision}
+            cutoff=datetime.fromtimestamp(now-policy['days']*86400,timezone.utc).isoformat()
+            rows=conn.execute(select(cases.c.id).where(and_(cases.c.workspace==workspace,cases.c.created_at<cutoff))
+                              .order_by(cases.c.created_at,cases.c.id).limit(25).with_for_update(skip_locked=True)).scalars().all()
+            for case_id in rows:
+                conn.execute(delete(documents).where(documents.c.case_id==case_id))
+                conn.execute(delete(versions).where(versions.c.case_id==case_id))
+                conn.execute(delete(cases).where(cases.c.id==case_id))
+                self._audit(conn,workspace,actor,'case_retention_deleted',case_id,{'policy_revision':revision,'days':policy['days'],'originals_and_versions_deleted':True})
+            conn.execute(update(retention_policies).where(retention_policies.c.workspace==workspace).values(last_run_at=now))
+        return {'deleted':len(rows),'enabled':True,'revision':revision}
+
+    def purge_retained_cases(self,now=None):
+        # Rotate through workspace policies, including empty ones, without a
+        # perpetually empty first batch starving other workspaces.
+        with self.engine.connect() as conn:
+            workspaces=conn.execute(select(retention_policies.c.workspace).where(retention_policies.c.enabled==1)
+                .order_by(retention_policies.c.last_run_at,retention_policies.c.workspace).limit(25)).scalars().all()
+        return sum(self.purge_workspace(w,now=now)['deleted'] for w in workspaces)
 
     def consume(self,bucket,limit,seconds,now=None):
         if not 1<=limit<=100000 or seconds<1:raise ValueError('Invalid usage policy')

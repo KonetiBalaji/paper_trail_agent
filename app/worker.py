@@ -41,9 +41,11 @@ def run_once(repo,kinds=None):
 
 def serve(repo,kinds,stop,once=False,poll_seconds=1):
     """Finish an owned job on shutdown, retire readiness, and claim no new work."""
-    worker_id=uuid.uuid4().hex;last_heartbeat=float('-inf')
+    worker_id=uuid.uuid4().hex;last_heartbeat=float('-inf');last_retention=float('-inf')
     try:
         while not stop.is_set():
+            if time.monotonic()-last_retention>=300:
+                repo.purge_retained_cases();last_retention=time.monotonic()
             if time.monotonic()-last_heartbeat>=30:
                 repo.touch_worker(worker_id,kinds);last_heartbeat=time.monotonic()
             if stop.is_set():break
