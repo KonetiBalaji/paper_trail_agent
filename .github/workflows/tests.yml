@@ -24,6 +24,7 @@ jobs:
       - name: Build pinned amd64 OCR worker image
         run: docker build --platform linux/amd64 --file Dockerfile.worker --tag paper-trail-worker:ci .
       - name: Offline, resource-bounded container and shutdown verification
+        shell: bash
         run: |
           mkdir -p work
           docker run --rm --network none --read-only --memory 1g --cpus 1 --pids-limit 128 --cap-drop ALL --security-opt no-new-privileges --tmpfs /tmp:rw,noexec,nosuid,size=256m --entrypoint python paper-trail-worker:ci scripts/container_worker_smoke.py | tee work/container-worker-results.json

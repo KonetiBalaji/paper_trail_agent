@@ -10,7 +10,7 @@ RUN python -m pip install --no-cache-dir -r requirements-ocr.txt && python -m pi
 COPY --chown=10001:10001 app ./app
 COPY --chown=10001:10001 data/synthetic ./data/synthetic
 COPY --chown=10001:10001 data/ocr ./data/ocr
-COPY --chown=10001:10001 scripts/worker_entrypoint.py scripts/container_worker_smoke.py scripts/evaluate_ocr.py ./scripts/
+COPY --chown=10001:10001 scripts/worker_entrypoint.py scripts/container_worker_smoke.py scripts/evaluate_ocr.py scripts/generate_bank_fixtures.py ./scripts/
 USER 10001:10001
 ENTRYPOINT ["python", "scripts/worker_entrypoint.py"]
 CMD ["--poll-seconds", "15"]

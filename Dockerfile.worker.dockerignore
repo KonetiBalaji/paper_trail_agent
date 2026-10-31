@@ -16,6 +16,7 @@
 !scripts/worker_entrypoint.py
 !scripts/container_worker_smoke.py
 !scripts/evaluate_ocr.py
+!scripts/generate_bank_fixtures.py
 **/__pycache__/
 **/*.pyc
 **/.env
