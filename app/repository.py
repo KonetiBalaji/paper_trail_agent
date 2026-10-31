@@ -57,6 +57,11 @@ jobs=Table('jobs',schema,Column('id',String(32),primary_key=True),Column('worksp
     Column('lease_token',String(64)),Column('created_at',Float,nullable=False))
 workers=Table('worker_leases',schema,Column('id',String(32),primary_key=True),
     Column('capabilities',String(80),nullable=False),Column('expires_at',Float,nullable=False))
+api_keys=Table('api_keys',schema,Column('id',String(32),primary_key=True),
+    Column('token_hash',String(64),unique=True,nullable=False),Column('workspace',String(80),nullable=False,index=True),
+    Column('owner',String(32),nullable=False),Column('label',LargeBinary,nullable=False),
+    Column('scopes',String(80),nullable=False),Column('created_at',Float,nullable=False),
+    Column('expires_at',Float,nullable=False),Column('revoked',Integer,nullable=False,default=0))
 
 class Repository:
     def __init__(self,url,key):

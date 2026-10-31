@@ -52,6 +52,7 @@ def main():
         key=Fernet.generate_key().decode();url='sqlite:///'+(folder/'cases.db').as_posix()
         repo=Repository(url,key);security=Security(repo,key)
         security.create_user('reviewer@example.invalid','synthetic-frontend-password-123','frontend-synthetic','reviewer')
+        security.create_user('admin@example.invalid','synthetic-frontend-password-123','frontend-synthetic','admin')
         with socket.socket() as reservation:
             reservation.bind(('127.0.0.1',0));port=reservation.getsockname()[1]
         base=f'http://127.0.0.1:{port}'
@@ -88,14 +89,15 @@ def main():
             finally:
                 if worker is not None:stop(worker)
                 stop(server);repo.close()
-    source=['app/platform.py','app/main.py','app/drafts.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
+    source=['app/platform.py','app/main.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
             'app/static/index.html','tests/frontend/ocr-http.test.mjs','scripts/test_frontend.py']
     report={'passed':True,'checked_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':round(time.monotonic()-started,2),
             'scope':'Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.',
             'scenarios':['reviewer login and upload','OCR queue and status','real OCR derived version','candidate amount/score display',
                          'provisional calculator label','source selection and highlighted PNG','version-guarded saved review',
                          'prior version export','audit verification','logout revocation','offline worker disables request',
-                         'approved lender draft with exact calculator evidence','draft text selection','rejection removes draft'],
+                         'approved lender draft with exact calculator evidence','draft text selection','rejection removes draft',
+                         'admin API key issue and revoke','bearer PDF submission and redacted read','CSV export','shown key cleared on logout'],
             'source_sha256':{name:hashlib.sha256((ROOT/name).read_text(encoding='utf-8').encode()).hexdigest() for name in source}}
     output=Path(args.report);output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(report,indent=2)+'\n')
     print('Frontend-to-HTTP OCR scenarios passed; evidence saved to',output)

@@ -1,5 +1,25 @@
 # Verification record - October 28, 2026
 
+## CSV and scoped integration keys - October 30, 2026
+
+- Local core suite: 245 passed, six skipped (five dedicated PostgreSQL cases and
+  optional actual-OCR test). Five integration tests exercise scoped submit/read,
+  cookie/Bearer separation, denial of paid mode, workspace boundaries, CSRF/admin
+  controls, once-only raw keys, stored digest/encrypted labels, expiry/revocation,
+  disabled owner and shared quota denial. CSV tests verify exact $50 totals,
+  signed bank transactions, redaction and formula-safe text cells.
+- Actual DOM handlers and loopback HTTP verify admin key issue/revoke, masked
+  one-time selection, Bearer PDF submission, redacted reads, CSV content and
+  logout clearing. Existing OCR online/offline and lender-draft flows pass.
+  This does not prove mobile layout or a rendered browser walkthrough.
+- The PostgreSQL CI test issues twelve keys concurrently, requires exactly ten
+  successes, checks a second repository sees revocation, and verifies the audit
+  chain. It requires the dedicated disposable CI database; no production keys
+  or accounts are used by that test.
+- The accounting worksheet is a neutral signed-transaction export; all rows
+  require review. No ledger/tax classification, FX conversion, external vendor
+  connection, automatic posting, sending or payment action is implemented.
+
 ## Reviewed lender and dispute drafts - October 30, 2026
 
 - Twelve focused tests cover exact $25/$50 evidence, deterministic fingerprints,

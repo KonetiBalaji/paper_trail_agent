@@ -56,6 +56,53 @@ template is not a legal filing or a claim that the lender acted improperly.
 `kind=statement_dispute` uses the same verified evidence with a request to
 investigate the disputed figure; it invents no deadlines, fees or legal rights.
 
+## CSV exports and integration API
+
+Every saved case has **Export redacted CSV** and **Accounting transaction worksheet**
+links. The facts CSV includes tranche values, signed bank transactions, exact
+calculator results, findings, human decisions, currency, period and source IDs.
+The accounting worksheet contains bank transactions only: date, reference,
+signed amount, currency and provenance. Every row requires review. It supplies no
+ledger account mapping, tax treatment, debit/credit journal or automatic posting;
+loan-only cases produce a header with no transaction rows. Amounts stay decimal
+strings; no currency conversion is inferred. Text cells that could start a
+spreadsheet formula are prefixed with an apostrophe. Exports use the existing
+pattern-redaction policy and omit original PDFs.
+
+In database service mode, workspace administrators can issue, list and revoke
+keys in **Integration API keys**. Choose `cases:read`, `cases:submit`, or both.
+The raw key is shown once in a masked field and is cleared on logout/access
+changes. Store it in the calling tool's secret settings. The database stores an
+HMAC digest, encrypted label, owner and scopes, never the raw token. Keys expire
+after 1–90 days (UI choices 7/30/90), and each workspace may have ten active keys.
+Revocation, expiry and a disabled/non-admin owner block new requests. Creation
+and revocation append actor/key-ID audit events without the secret.
+
+Server-to-server callers send `Authorization: Bearer <your-key>` to:
+
+- `POST /api/integrations/v1/cases`: multipart `files`, 1–8 PDFs, and optional
+  `mode=local`; returns a case ID/status/version receipt. Requires `cases:submit`.
+- `GET /api/integrations/v1/cases/{id}`: pattern-redacted report; optional
+  `version=N`. Requires `cases:read` and the same workspace.
+- `GET /api/integrations/v1/cases/{id}/export?format=csv`: JSON, facts CSV or
+  `accounting_csv`, optionally at a saved version. Requires `cases:read`.
+
+API keys cannot use interactive session routes, approve findings, delete cases,
+read original PDFs, queue OCR or invoke paid Meta modes. Session cookies alone do
+not authorize the integration API. Writes are intended for server-to-server
+clients; cross-origin browser writes are rejected. Hosted total request size is
+4,000,000 bytes; local service total is 16 MiB, with 10 MiB/PDF and the existing
+50-page parser limit. Current shared quotas are 60 authenticated requests/key/minute,
+1,000/key/day, 5,000/workspace/day, 120 credential attempts/IP/minute and 20
+submissions/workspace/hour shared with interactive analysis. Quotas use fixed
+windows and count failed authorized requests too; excess returns 429.
+
+Key administration uses session+CSRF at `/api/platform/api-keys` (GET/POST) and
+`DELETE /api/platform/api-keys/{id}`. It is unavailable to demo/reviewer/viewer
+roles and in local file mode. Integration endpoints return 401 for invalid keys
+or missing scopes, and 404 for another workspace's case. No external accounting
+vendor has been connected; the worksheet is a manual mapping/import artifact.
+
 ## Run on Windows
 
 ```powershell

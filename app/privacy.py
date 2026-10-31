@@ -18,6 +18,7 @@ SENSITIVE={'loan_id','account_id','account_number','routing_number','iban','borr
 URL_QUERY=re.compile(r'''(?i)(https?://[^\s?"']+|/[A-Za-z0-9_./%-]+)\?[^\s"']+''')
 
 def text(value):
+    value=re.sub(r'pta_api_[A-Za-z0-9_-]{43}(?![A-Za-z0-9_-])','[REDACTED_API_KEY]',value)
     value=LABELED.sub(lambda match:match.group(1)+': [REDACTED]',value)
     value=EMAIL.sub('[REDACTED_EMAIL]',value)
     value=SSN.sub('[REDACTED_SSN]',value)

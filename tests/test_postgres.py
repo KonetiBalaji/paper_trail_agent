@@ -25,6 +25,24 @@ def postgres():
         with admin.begin() as conn:conn.execute(text('DROP SCHEMA '+name+' CASCADE'))
         admin.dispose()
 
+def test_postgres_api_keys_cap_is_atomic_and_revocation_shared(postgres):
+    repo,_,key=postgres;security=Security(repo,key)
+    security.create_user('integration-admin@example.invalid','synthetic-api-password-123','api-team','admin')
+    token,_=security.login('integration-admin@example.invalid','synthetic-api-password-123');actor=security.authenticate(token)
+    def issue(n):
+        try:return security.create_api_key(actor,'Fictional tool '+str(n),['cases:read'])
+        except LimitExceeded:return None
+    with ThreadPoolExecutor(max_workers=4) as pool:results=list(pool.map(issue,range(12)))
+    issued=[r for r in results if r is not None]
+    assert len(issued)==10 and len(security.list_api_keys(actor))==10
+    other=Repository(repo.engine.url.render_as_string(hide_password=False),key);peer=Security(other,key)
+    try:
+        assert peer.authenticate_api(issued[0]['token'],'cases:read').workspace=='api-team'
+        security.revoke_api_key(actor,issued[0]['id'])
+        with pytest.raises(Unauthorized):peer.authenticate_api(issued[0]['token'],'cases:read')
+        assert repo.audit('api-team')['verified']
+    finally:other.close()
+
 def sample():
     return {'id':uuid.uuid4().hex,'status':'review','documents':[{'id':'doc1','name':'synthetic.pdf','statement':{'loan_id':'DEMO-001','period_end':'2026-10-31'}}],
         'findings':[{'id':'F1','severity':'review','message':'Synthetic review','sources':[],

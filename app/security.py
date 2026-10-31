@@ -9,7 +9,7 @@ import uuid
 from cryptography.fernet import InvalidToken
 from dataclasses import dataclass
 from sqlalchemy import select,and_,update,delete
-from .repository import users,sessions,Missing
+from .repository import users,sessions,api_keys,audit_heads,Missing,LimitExceeded
 
 class Unauthorized(Exception):pass
 
@@ -19,6 +19,14 @@ class Principal:
     workspace:str
     role:str
     csrf_hash:str=''
+
+@dataclass(frozen=True)
+class APIPrincipal:
+    id:str
+    workspace:str
+    key_id:str
+    scopes:tuple[str,...]
+    role:str='integration'
 
 def password_hash(password):
     if not 12<=len(password)<=128:raise ValueError('Use a password of 12 to 128 characters')
@@ -41,6 +49,47 @@ class Security:
         self.dummy=password_hash('synthetic-dummy-password-no-account')
 
     def digest(self,value):return hmac.new(self.index_key,value.encode(),hashlib.sha256).hexdigest()
+
+    def create_api_key(self,actor,label,scopes,days=30):
+        if actor.role!='admin':raise Unauthorized('Workspace administrator required')
+        if not isinstance(label,str) or not 1<=len(label.strip())<=80:raise ValueError('Use a label of 1 to 80 characters')
+        if not scopes or len(scopes)!=len(set(scopes)) or not set(scopes)<={'cases:read','cases:submit'}:raise ValueError('Invalid API scopes')
+        if type(days) is not int or not 1<=days<=90:raise ValueError('Expiration must be 1 to 90 days')
+        token='pta_api_'+secrets.token_urlsafe(32);identifier=uuid.uuid4().hex;now=time.time()
+        with self.repo.transaction() as conn:
+            conn.execute(select(audit_heads).where(audit_heads.c.workspace==actor.workspace).with_for_update()).first()
+            active=conn.execute(select(api_keys.c.id).where(and_(api_keys.c.workspace==actor.workspace,api_keys.c.revoked==0,api_keys.c.expires_at>now))).all()
+            if len(active)>=10:raise LimitExceeded('Maximum ten active API keys')
+            conn.execute(api_keys.insert().values(id=identifier,token_hash=self.digest(token),workspace=actor.workspace,owner=actor.id,
+                label=self.repo.seal({'label':label.strip()}),scopes=','.join(sorted(scopes)),created_at=now,expires_at=now+days*86400,revoked=0))
+            self.repo._audit(conn,actor.workspace,actor.id,'api_key_created',None,{'key_id':identifier,'scopes':sorted(scopes),'expires_at':now+days*86400})
+        return {'id':identifier,'token':token,'scopes':sorted(scopes),'expires_at':now+days*86400}
+
+    def list_api_keys(self,actor):
+        if actor.role!='admin':raise Unauthorized('Workspace administrator required')
+        with self.repo.engine.connect() as conn:
+            rows=conn.execute(select(api_keys).where(api_keys.c.workspace==actor.workspace).order_by(api_keys.c.revoked.asc(),api_keys.c.expires_at.desc()).limit(100)).mappings().all()
+        return [{'id':r['id'],'label':self.repo.unseal(r['label'])['label'],'scopes':r['scopes'].split(','),
+                 'created_at':r['created_at'],'expires_at':r['expires_at'],'revoked':bool(r['revoked'])} for r in rows]
+
+    def revoke_api_key(self,actor,key_id):
+        if actor.role!='admin':raise Unauthorized('Workspace administrator required')
+        with self.repo.transaction() as conn:
+            row=conn.execute(select(api_keys.c.id).where(and_(api_keys.c.id==key_id,api_keys.c.workspace==actor.workspace)).with_for_update()).first()
+            if not row:raise Missing('API key not found')
+            conn.execute(update(api_keys).where(api_keys.c.id==key_id).values(revoked=1))
+            self.repo._audit(conn,actor.workspace,actor.id,'api_key_revoked',None,{'key_id':key_id})
+
+    def authenticate_api(self,token,scope):
+        import re
+        if not isinstance(token,str) or not re.fullmatch(r'pta_api_[A-Za-z0-9_-]{43}',token):raise Unauthorized('Invalid API credentials')
+        with self.repo.engine.connect() as conn:
+            row=conn.execute(select(api_keys,users.c.disabled,users.c.role).join(users,users.c.id==api_keys.c.owner)
+                .where(and_(api_keys.c.token_hash==self.digest(token),users.c.workspace==api_keys.c.workspace))).mappings().first()
+        if not row or row['revoked'] or row['disabled'] or row['role']!='admin' or row['expires_at']<=time.time():raise Unauthorized('Invalid API credentials')
+        scopes=tuple(row['scopes'].split(','))
+        if scope not in scopes:raise Unauthorized('API scope required')
+        return APIPrincipal('api-key:'+row['id'],row['workspace'],row['id'],scopes)
 
     def create_user(self,email,password,workspace,role,actor='bootstrap'):
         email=email.strip().lower()

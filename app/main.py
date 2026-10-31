@@ -212,7 +212,10 @@ def search(case_id,q:str): return retrieve(load(case_id)['documents'],q[:500])
 def export(case_id,format:str='json'):
     report=report_for_export(load(case_id))
     if format=='json': return Response(json.dumps(report,indent=2),media_type='application/json',headers={'Content-Disposition':'attachment; filename=paper-trail-report.json'})
-    if format!='md': raise HTTPException(422,'Choose json or md')
+    if format in ('csv','accounting_csv'):
+        from .exports import csv_report
+        return Response(csv_report(report,accounting=format=='accounting_csv'),media_type='text/csv',headers={'Content-Disposition':'attachment; filename=paper-trail-report.csv'})
+    if format!='md': raise HTTPException(422,'Choose json, md, csv or accounting_csv')
     text='# Paper Trail Agent\n\nStatus: '+report['status']+'\n\nPattern-redacted export. Original PDFs are excluded. Review unlabeled personal details before sharing.\n\n'
     for finding in report['findings']:
         text+=f"- [ ] [{finding['severity']}] {markdown_text(finding['message'])} Sources: {', '.join(finding['sources']) or 'manual review'}\n"
@@ -243,6 +246,8 @@ from .repository import Missing,Conflict,LimitExceeded
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.responses import JSONResponse
 app.include_router(platform.create_router(lambda:STORE,analyze_files))
+from . import integrations
+app.include_router(integrations.create_router(lambda:platform.runtime(STORE),analyze_files,platform.service_mode))
 
 @app.exception_handler(Missing)
 async def missing_handler(request,exc):return JSONResponse({'detail':'Not found'},status_code=404)

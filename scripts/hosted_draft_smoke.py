@@ -21,10 +21,17 @@ def run(base):
         start = client.post('/api/platform/demo/start'); start.raise_for_status()
         check('synthetic_guest', start.json()['role'] == 'demo')
         headers = {'X-CSRF-Token': client.cookies['pta_csrf']}
+        check('guest_key_list_denied',client.get('/api/platform/api-keys').status_code==403)
+        check('guest_key_creation_denied',client.post('/api/platform/api-keys',json={'label':'Fictional denied request','scopes':['cases:read']},headers=headers).status_code==403)
+        check('cookie_cannot_authorize_integration',client.get('/api/integrations/v1/cases/unknown').status_code==401)
         case = None
         try:
             response = client.post('/api/platform/demo/cases/math_error', headers=headers); response.raise_for_status()
             report = response.json(); case = '/api/cases/' + report['id']
+            csv=client.get(case+'/export?format=csv');csv.raise_for_status()
+            check('csv_exact_finding','3300.00,3350.00,50.00' in csv.text and 'DEMO-001' not in csv.text)
+            worksheet=client.get(case+'/export?format=accounting_csv');worksheet.raise_for_status()
+            check('loan_accounting_has_no_invented_transactions',len(worksheet.text.strip().splitlines())==1 and 'review_required' in worksheet.text)
             path = case + '/findings/F1/draft'
             check('pending_draft_blocked', client.get(path, params={'version':1,'revision':0}).status_code == 409)
             response = client.patch(case+'/findings/F1', json={'action':'confirm','note':'Fictional hosted draft smoke; checked source total.','expected_revision':0,'expected_case_version':1}, headers=headers)
@@ -58,7 +65,7 @@ def run(base):
             'scope':'One disposable synthetic guest; real hosted APIs and served JS hash. No private uploads, paid calls, sending, payments or browser-rendering proof.',
             'application_commit': subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256': {p:hashlib.sha256((ROOT/p).read_text(encoding='utf-8').encode()).hexdigest()
-                              for p in ('app/main.py','app/platform.py','app/drafts.py','app/static/app.js')},
+                              for p in ('app/main.py','app/platform.py','app/drafts.py','app/integrations.py','app/security.py','app/exports.py','app/repository.py','app/privacy.py','app/static/app.js')},
             'checks': checks}
 
 

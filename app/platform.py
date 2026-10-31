@@ -76,6 +76,12 @@ class HistoryQuery(BaseModel):
     limit:int=Field(default=50,ge=1,le=100)
     offset:int=Field(default=0,ge=0,le=10000)
 
+class APIKeyCreate(BaseModel):
+    model_config=ConfigDict(extra='forbid',str_strip_whitespace=True)
+    label:str=Field(min_length=1,max_length=80)
+    scopes:list[Literal['cases:read','cases:submit']]=Field(min_length=1,max_length=2)
+    days:int=Field(default=30,ge=1,le=90,strict=True)
+
 def render_page(raw,doc,page,source):
     import pypdfium2 as pdfium
     from PIL import ImageDraw
@@ -180,6 +186,24 @@ def create_router(root_provider,analyze_files):
 
     @router.get('/auth/me')
     def me(actor=Depends(principal)):return {'id':actor.id,'workspace':actor.workspace,'role':actor.role}
+
+    def key_admin(actor):
+        if not service_mode():raise HTTPException(409,'API keys require database service mode')
+        if actor.role!='admin':raise HTTPException(403,'Workspace administrator required')
+
+    @router.get('/api-keys')
+    def list_keys(actor=Depends(principal)):
+        key_admin(actor);return {'keys':resources()[1].list_api_keys(actor)}
+
+    @router.post('/api-keys',status_code=201)
+    def create_key(data:APIKeyCreate,actor=Depends(write_principal)):
+        key_admin(actor)
+        try:return resources()[1].create_api_key(actor,data.label,data.scopes,data.days)
+        except ValueError as exc:raise HTTPException(422,str(exc)) from None
+
+    @router.delete('/api-keys/{key_id}')
+    def revoke_key(key_id,actor=Depends(write_principal)):
+        key_admin(actor);resources()[1].revoke_api_key(actor,key_id);return {'revoked':True}
 
     @router.post('/auth/logout')
     def logout(request:Request,response:Response,actor=Depends(principal)):
@@ -293,9 +317,12 @@ def create_router(root_provider,analyze_files):
         report=report_for_export(resources()[0].get_case(actor.workspace,case_id,version))
         if format=='json':body=json.dumps(report,indent=2);media='application/json'
         elif format=='md':body=markdown_report(report);media='text/markdown'
-        else:raise HTTPException(422,'Choose json or md')
+        elif format in ('csv','accounting_csv'):
+            from .exports import csv_report
+            body=csv_report(report,accounting=format=='accounting_csv');media='text/csv'
+        else:raise HTTPException(422,'Choose json, md, csv or accounting_csv')
         return Response(body,media_type=media,headers={'Cache-Control':'no-store',
-                        'Content-Disposition':f'attachment; filename=paper-trail-report.{format}'})
+                        'Content-Disposition':f'attachment; filename=paper-trail-report.{"csv" if format=="accounting_csv" else format}'})
 
     @router.delete('/cases/{case_id}')
     def remove(case_id,actor=Depends(write_principal)):

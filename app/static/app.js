@@ -3,6 +3,7 @@ let report = null;
 let currentRole = 'admin';
 let serviceEnabled = false;
 let ocrRenderGeneration = 0;
+let keyRenderGeneration = 0;
 function csrfToken() {
   return document.cookie.split('; ').find(part => part.startsWith('pta_csrf='))?.split('=').slice(1).join('=') || '';
 }
@@ -236,6 +237,11 @@ function render() {
   showDoc(report.documents.some(doc => doc.id === selectedDoc) ? selectedDoc : report.documents[0].id);
   $('json').href = `/api/cases/${report.id}/export?format=json`;
   $('checklist').href = `/api/cases/${report.id}/export?format=md`;
+  for (const [id, format, label] of [['csv', 'csv', 'Export redacted CSV'], ['accounting-csv', 'accounting_csv', 'Accounting transaction worksheet']]) {
+    let link = $(id);
+    if (!link) { link = el('a', label, 'button secondary'); link.id = id; $('checklist').after(link); }
+    link.href = `/api/cases/${report.id}/export?format=${format}`;
+  }
   renderOCR();
 }
 
@@ -376,6 +382,62 @@ async function loadHistory() {
 }
 $('history-form').onsubmit = event => { event.preventDefault(); loadHistory(); };
 
+function renderAPIKeys() {
+  const generation = ++keyRenderGeneration;
+  let panel = $('api-keys-panel');
+  if (!panel) { panel = el('section', undefined, 'panel'); panel.id = 'api-keys-panel'; document.querySelector('main').append(panel); }
+  panel.replaceChildren(); panel.hidden = !serviceEnabled || currentRole !== 'admin';
+  if (panel.hidden) return;
+  panel.append(el('h2', 'Integration API keys'), el('p', 'Keys are shown once. Choose only the access your tool needs. Keys expire and can be revoked here. They cannot review findings, delete cases, run OCR or call Meta.'));
+  const form = el('form', undefined, 'history-controls'); form.id = 'api-key-form';
+  const label = el('label', 'Key label'); const name = el('input'); name.id = 'api-key-label'; name.required = true; name.maxLength = 80; label.append(name);
+  const scopeLabel = el('label', 'Allowed access'); const scope = el('select'); scope.id = 'api-key-scope';
+  for (const [value, text] of [['cases:read', 'Read redacted reports'], ['cases:submit', 'Submit PDFs with local checks'], ['cases:read,cases:submit', 'Submit and read reports']]) {
+    const option = el('option', text); option.value = value; scope.append(option);
+  }
+  scopeLabel.append(scope);
+  const daysLabel = el('label', 'Expires in'); const days = el('select'); days.id = 'api-key-days';
+  for (const n of [7, 30, 90]) { const option = el('option', `${n} days`); option.value = n; days.append(option); }
+  days.value = '30'; daysLabel.append(days);
+  const create = el('button', 'Create API key', 'secondary'); create.type = 'submit'; form.append(label, scopeLabel, daysLabel, create);
+  const feedback = el('p', '', 'note'); feedback.setAttribute('role', 'status');
+  const secret = el('div'); const list = el('div');
+  const fresh = () => generation === keyRenderGeneration && currentRole === 'admin';
+  async function load() {
+    try {
+      const result = await jsonRequest('/api/platform/api-keys'); if (!fresh()) return;
+      list.replaceChildren();
+      for (const key of result.keys) {
+        const row = el('div', undefined, 'panel');
+        row.append(el('p', `${key.label} · ${key.scopes.join(', ')} · expires ${new Date(key.expires_at * 1000).toISOString()} · ${key.revoked ? 'revoked' : 'not revoked'}`));
+        if (!key.revoked) {
+          const revoke = el('button', 'Revoke ' + key.label, 'secondary'); revoke.type = 'button';
+          revoke.onclick = async () => {
+            revoke.disabled = true;
+            try { await jsonRequest('/api/platform/api-keys/' + key.id, {method: 'DELETE'}); if (fresh()) { secret.replaceChildren(); feedback.textContent = 'Key revoked. New requests using it will be rejected.'; await load(); } }
+            catch (error) { if (fresh()) feedback.textContent = error.message; }
+            finally { revoke.disabled = false; }
+          }; row.append(revoke);
+        }
+        list.append(row);
+      }
+    } catch (error) { if (fresh()) feedback.textContent = error.message; }
+  }
+  form.onsubmit = async event => {
+    event.preventDefault(); create.disabled = true; secret.replaceChildren();
+    try {
+      const result = await jsonRequest('/api/platform/api-keys', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({label: name.value, scopes: scope.value.split(','), days: Number(days.value)})});
+      if (!fresh()) return;
+      const label = el('label', 'New key · copy now; it cannot be retrieved again'); const input = el('input');
+      input.id = 'api-key-secret'; input.type = 'password'; input.readOnly = true; input.autocomplete = 'off'; input.value = result.token; label.append(input);
+      const select = el('button', 'Select new key', 'secondary'); select.type = 'button'; select.onclick = () => { input.focus(); input.select(); };
+      const clear = el('button', 'Clear shown key', 'secondary'); clear.type = 'button'; clear.onclick = () => secret.replaceChildren();
+      secret.append(label, select, clear); feedback.textContent = 'Store this key in your tool’s secret settings. It is cleared here on sign out or access changes.'; await load();
+    } catch (error) { if (fresh()) feedback.textContent = error.message; }
+    finally { create.disabled = false; }
+  };
+  panel.append(form, feedback, secret, list); load();
+}
 function updateAccess(actor) {
   currentRole = actor?.role || 'anonymous';
   const canWrite = ['admin', 'reviewer', 'demo'].includes(currentRole);
@@ -383,6 +445,7 @@ function updateAccess(actor) {
   $('upload-panel').hidden = currentRole === 'demo'; $('demo-cases').hidden = currentRole !== 'demo';
   $('login-form').hidden = !!actor; $('logout').hidden = !actor;
   $('identity-status').textContent = actor ? `${actor.workspace} · ${actor.role}` : 'Sign in to access workspace statements. Public synthetic demo is separate.';
+  renderAPIKeys();
   if (report) render();
 }
 async function configureService() {

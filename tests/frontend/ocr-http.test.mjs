@@ -148,3 +148,45 @@ test('approved lender draft uses real backend evidence and is removed after reje
   ui.doc.querySelector('[aria-label="Reject F1"]').click();
   await waitFor(() => prepare()?.disabled && !ui.doc.getElementById('draft-F1'), 'Rejected finding retained an actionable draft');
 });
+
+test('admin issues and revokes an API key with real PDF submission and CSV exports', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t);
+  assert.ok(ui.doc.getElementById('api-keys-panel').hidden, 'Reviewer must not administer keys');
+  ui.doc.getElementById('logout').click();
+  await waitFor(() => !ui.doc.getElementById('login-form').hidden, 'Reviewer sign out failed');
+  ui.doc.getElementById('login-email').value = 'admin@example.invalid';
+  ui.doc.getElementById('login-password').value = 'synthetic-frontend-password-123';
+  ui.doc.getElementById('login-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => !ui.doc.getElementById('api-keys-panel').hidden, 'Admin key controls missing');
+  ui.doc.getElementById('api-key-label').value = 'Fictional CSV connector';
+  ui.doc.getElementById('api-key-scope').value = 'cases:read,cases:submit';
+  ui.doc.getElementById('api-key-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('api-key-secret'), 'One-time key missing');
+  const secret = ui.doc.getElementById('api-key-secret'); assert.equal(secret.type, 'password');
+  const token = secret.value; const auth = {Authorization: 'Bearer ' + token};
+  const form = new FormData();
+  for (const name of ['statement_A.pdf','statement_B.pdf']) {
+    const bytes = await readFile(new URL('../../data/synthetic/math_error/' + name, import.meta.url));
+    form.append('files', new File([bytes], name, {type: 'application/pdf'}));
+  }
+  const result = await ui.api('/api/integrations/v1/cases', {method: 'POST',headers: auth,body: form});
+  assert.equal(result.status, 201); const receipt = await result.json();
+  const path = '/api/integrations/v1/cases/' + receipt.id;
+  const report = await (await ui.api(path, {headers: auth})).json();
+  assert.equal(report.findings[0].difference, '50.00');
+  assert.equal(report.documents[0].statement.loan_id, '[REDACTED]');
+  assert.equal((await ui.api(path)).status, 401);
+  const exported = await ui.api(path + '/export?format=csv', {headers: auth});
+  assert.equal(exported.status, 200); assert.match(await exported.text(), /3300\.00,3350\.00,50\.00/);
+  ui.button('Select new key').click(); assert.equal(secret.selectionEnd-secret.selectionStart, token.length);
+  await waitFor(() => ui.button('Revoke Fictional CSV connector'), 'Issued key list missing');
+  ui.button('Revoke Fictional CSV connector').click();
+  await waitFor(() => !ui.doc.getElementById('api-key-secret') && !ui.button('Revoke Fictional CSV connector'), 'Revocation did not update the UI');
+  assert.equal((await ui.api(path, {headers: auth})).status, 401);
+  ui.doc.getElementById('api-key-label').value = 'Logout cleanup';
+  ui.doc.getElementById('api-key-form').dispatchEvent(new ui.w.Event('submit', {cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('api-key-secret'), 'Second one-time key missing');
+  ui.doc.getElementById('logout').click();
+  await waitFor(() => ui.doc.getElementById('api-keys-panel').hidden, 'Key panel remained after sign out');
+  assert.equal(ui.doc.getElementById('api-key-secret'), null);
+});
