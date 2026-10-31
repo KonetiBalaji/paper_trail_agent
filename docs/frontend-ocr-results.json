@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checked_at": "2026-10-30T02:31:01.705945+00:00",
-  "duration_seconds": 47.62,
+  "checked_at": "2026-10-31T01:49:40.060978+00:00",
+  "duration_seconds": 20.8,
   "scope": "Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.",
   "scenarios": [
     "reviewer login and upload",
@@ -20,7 +20,7 @@
     "app/platform.py": "25488563f48d476215448648e76acfda71198444105001e0a001b83e2fb8f0a8",
     "app/repository.py": "2cae2da314669b5c3b2003a858e47058a1cff43708c298c0c9dc0c63ed371e48",
     "app/ocr_case.py": "1adca2aec94600d29b8583c88f9d1ff362d02c2662b2421f5133ba4e80f27d17",
-    "app/worker.py": "ca4c17e57402ea4f7c131810fc1aeec1caf59c0e13fde955e15f9f6a9a9f13eb",
+    "app/worker.py": "2c2b8f8975847b9d5ec58bbb9e691c6bdf58826f796f37f8108bbd083e6606a1",
     "app/static/app.js": "453102602229ef4bedbd7cd87edd113e94cc15ed049047c1ac07418c963ad412",
     "app/static/index.html": "0c78fd20eaf81d3e4192828cf6d13daa0b7725f3405428d9d18a7cad02eb3573",
     "tests/frontend/ocr-http.test.mjs": "d27c2faec7e1a5d6ccd97dc420a1dbc023696c0a21839823327f7bcb10fe0174",

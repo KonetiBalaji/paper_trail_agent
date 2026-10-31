@@ -26,6 +26,12 @@ SIGTERM during actual OCR, verifies the next job remains queued, checks encrypte
 report lineage and audit integrity, and runs all four raster fixtures. Its JSON
 artifact records the image ID and source commit. Docker is unavailable on the
 current Windows machine; local Python tests do not prove this container passes.
+The corrected Linux image passed all 17 checks and four scan cases in
+[run 41157254054](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41157254054):
+22.16 seconds overall, 4.31 seconds to finish the owned OCR job after SIGTERM,
+and approximately 819 MiB cgroup peak memory under the 1 GiB limit. See
+`container-worker-results.json` for image ID, source commit and model hashes.
+This tested workload does not establish capacity for arbitrary PDFs.
 
 ## Free-tier availability must be checked before enabling
 

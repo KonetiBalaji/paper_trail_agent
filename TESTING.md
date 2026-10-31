@@ -1,5 +1,26 @@
 # Verification record - October 28, 2026
 
+## Worker image and shutdown gate - October 30, 2026
+
+The worker packaging patch passes the local core suite: 226 passed, five skipped
+(optional OCR and dedicated PostgreSQL coverage run separately). The real
+frontend DOM-to-HTTP OCR workflow also passes with the updated worker, including
+the offline-worker path. These checks do not prove browser layout or hosting.
+
+Actions additionally builds `Dockerfile.worker` and executes actual OCR with no
+network, a read-only root filesystem, a non-root user and resource limits. It
+tests SIGTERM during an owned job, report lineage, audit integrity and all four
+scan fixtures. See [worker hosting](docs/WORKER-HOSTING.md) for deployment limits;
+the proposal is disabled and does not establish hosted worker availability.
+
+The corrected image passed all 17 container checks and four raster fixtures in
+[Actions run 41157254054](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41157254054).
+The run took 22.16 seconds, completed an in-flight OCR job after SIGTERM in 4.31
+seconds, and recorded a cgroup memory peak of 859,099,136 bytes (about 819 MiB)
+under the 1 GiB limit. This is one CI workload, not a production capacity margin
+guarantee. The initial missing-import failure remains visible in run 41157123148.
+Machine-readable evidence is in `docs/container-worker-results.json`.
+
 ## OCR job and frontend integration - October 29, 2026
 
 The authenticated service API and frontend now queue real OCR jobs, show

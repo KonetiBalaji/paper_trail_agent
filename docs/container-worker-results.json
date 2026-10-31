@@ -1,0 +1,123 @@
+{
+  "passed": true,
+  "scope": "Offline Linux amd64 image, read-only root, non-root user, 1 CPU/1 GiB CI limit. Actual OCR, encrypted SQLite versions and in-flight SIGTERM; not a hosted PostgreSQL or Vercel daemon proof.",
+  "duration_seconds": 22.16,
+  "shutdown_seconds": 4.31,
+  "cgroup_memory_peak_bytes": 859099136,
+  "checks": [
+    {
+      "check": "linux_amd64",
+      "passed": true
+    },
+    {
+      "check": "non_root",
+      "passed": true
+    },
+    {
+      "check": "application_read_only",
+      "passed": true
+    },
+    {
+      "check": "no_private_build_context",
+      "passed": true
+    },
+    {
+      "check": "all_env_files_excluded",
+      "passed": true
+    },
+    {
+      "check": "sigterm_exit_zero",
+      "passed": true
+    },
+    {
+      "check": "no_model_marker_in_logs",
+      "passed": true
+    },
+    {
+      "check": "active_ocr_completed",
+      "passed": true
+    },
+    {
+      "check": "no_new_job_after_sigterm",
+      "passed": true
+    },
+    {
+      "check": "heartbeat_retired",
+      "passed": true
+    },
+    {
+      "check": "versioned_review",
+      "passed": true
+    },
+    {
+      "check": "fifty_candidate_difference",
+      "passed": true
+    },
+    {
+      "check": "zero_model_calls",
+      "passed": true
+    },
+    {
+      "check": "original_pdf_unchanged",
+      "passed": true
+    },
+    {
+      "check": "original_report_unchanged",
+      "passed": true
+    },
+    {
+      "check": "audit_verified",
+      "passed": true
+    },
+    {
+      "check": "four_actual_scan_cases",
+      "passed": true
+    }
+  ],
+  "ocr_cases": [
+    {
+      "case": "table_review",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "no_untrusted_calculation": true
+      }
+    },
+    {
+      "case": "labeled_error",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "candidate_math_error": true
+      }
+    },
+    {
+      "case": "degraded",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "no_untrusted_calculation": true
+      }
+    },
+    {
+      "case": "blank",
+      "checks": {
+        "requires_review": true,
+        "zero_confirmed": true,
+        "no_false_clean": true,
+        "no_untrusted_calculation": true
+      }
+    }
+  ],
+  "model_sha256": {
+    "ch_PP-OCRv4_det_infer.onnx": "d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9",
+    "ch_PP-OCRv4_rec_infer.onnx": "48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b",
+    "ch_ppocr_mobile_v2.0_cls_infer.onnx": "e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c"
+  },
+  "image_id": "sha256:9922ca318e126561a4b218a6ee2a4a3c56993b140bbb0fc17362670ef1ce29fd",
+  "source_commit": "1c3e938bb0e28b31b14a6cb8e623538428d6320c",
+  "dockerfile_sha256": "0c785f6821ef46496b9cf94aebb5e75f76a22ced89e3f71581103ce87bc3215a"
+}
