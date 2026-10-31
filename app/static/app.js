@@ -144,6 +144,44 @@ function reviewControls(finding) {
   }
   return wrapper;
 }
+function draftControls(finding) {
+  const supported = ['incorrect_statement_total', 'incorrect_closing_balance', 'incorrect_carried_balance',
+    'cross_document_principal_mismatch', 'cross_document_interest_mismatch',
+    'cross_document_opening_balance_mismatch', 'cross_document_closing_balance_mismatch'];
+  if (!supported.includes(finding.type) || finding.severity !== 'confirmed') return null;
+  const wrapper = el('section', undefined, 'draft-controls');
+  wrapper.append(el('p', 'Lender enquiry draft · approve this finding first. Review the draft and add any private account details yourself before sharing. Nothing is sent.'));
+  const kindLabel = el('label', 'Draft purpose');
+  const kind = el('select'); kind.id = 'draft-kind-' + finding.id; kindLabel.htmlFor = kind.id;
+  for (const [value, text] of [['lender_enquiry', 'Ask lender for an explanation'], ['statement_dispute', 'Dispute this statement figure']]) {
+    const option = el('option', text); option.value = value; kind.append(option);
+  }
+  kindLabel.append(kind);
+  const button = el('button', 'Prepare lender draft', 'secondary'); button.type = 'button';
+  button.setAttribute('aria-label', `Prepare lender draft ${finding.id}`);
+  button.disabled = finding.human_review?.decision !== 'confirmed';
+  const feedback = el('p', '', 'note'); feedback.setAttribute('role', 'status');
+  const output = el('div');
+  button.onclick = async () => {
+    const current = report; const revision = finding.human_review?.revision || 0; const purpose = kind.value;
+    button.disabled = true; kind.disabled = true; feedback.textContent = 'Checking approved finding and source evidence…';
+    try {
+      const draft = await jsonRequest(`/api/cases/${current.id}/findings/${finding.id}/draft?version=${current.report_version || 0}&revision=${revision}&kind=${purpose}`);
+      if (report !== current || kind.value !== purpose) return;
+      output.replaceChildren();
+      const label = el('label', `Lender draft for ${finding.id}`);
+      const text = el('textarea'); text.id = 'draft-' + finding.id; text.rows = 14; text.readOnly = true; text.value = draft.text;
+      label.htmlFor = text.id; label.append(text);
+      const select = el('button', 'Select draft text', 'secondary'); select.type = 'button';
+      select.onclick = () => { text.focus(); text.select(); feedback.textContent = 'Text selected. Copy it, review it, and choose where to send it yourself.'; };
+      output.append(label, select, el('p', `Report version ${draft.report_version} · review revision ${draft.review_revision} · draft SHA-256 ${draft.draft_sha256}`, 'note'));
+      feedback.textContent = 'Draft ready for your final review. Supported personal-data patterns are redacted; inspect any remaining details. Nothing was sent.';
+    } catch (error) { feedback.textContent = error.message; }
+    finally { if (report === current) { button.disabled = false; kind.disabled = false; } }
+  };
+  kind.onchange = () => { output.replaceChildren(); feedback.textContent = 'Prepare a new draft for the selected purpose.'; };
+  wrapper.append(kindLabel, button, feedback, output); return wrapper;
+}
 function render() {
   const selectedDoc = $('document').value;
   $('results').hidden = false;
@@ -158,6 +196,7 @@ function render() {
   for (const finding of report.findings) {
     const card = el('article', undefined, 'finding ' + finding.severity);
     card.append(el('span', `${finding.id} · Machine: ${finding.severity}`, 'badge'), el('p', finding.message), sources(finding.sources), reviewControls(finding));
+    const draft = draftControls(finding); if (draft) card.append(draft);
     const related = (report.trace || []).filter(event => (event.finding_ids || []).includes(finding.id) || (event.document && finding.sources.some(source => source.startsWith(event.document + ':'))));
     const details = el('details'); details.append(el('summary', 'Related checks and review events'), traceTimeline(related)); card.append(details);
     const shared = (report.trace || []).filter(event => event.kind === 'model' || event.kind === 'tool' || (event.kind === 'validation' && event.name === 'agent_citations'));

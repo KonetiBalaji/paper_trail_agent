@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checked_at": "2026-10-31T01:49:40.060978+00:00",
-  "duration_seconds": 20.8,
+  "checked_at": "2026-10-31T01:59:28.108025+00:00",
+  "duration_seconds": 19.23,
   "scope": "Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.",
   "scenarios": [
     "reviewer login and upload",
@@ -14,16 +14,21 @@
     "prior version export",
     "audit verification",
     "logout revocation",
-    "offline worker disables request"
+    "offline worker disables request",
+    "approved lender draft with exact calculator evidence",
+    "draft text selection",
+    "rejection removes draft"
   ],
   "source_sha256": {
-    "app/platform.py": "25488563f48d476215448648e76acfda71198444105001e0a001b83e2fb8f0a8",
+    "app/platform.py": "c2e28d00879ab595215258b58b37688d7e164ca38737e3027ace1ca5f830652c",
+    "app/main.py": "033db712e19c3009082825e099d8ca392ee44fcaa5716077b1e0299ee511646d",
+    "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
     "app/repository.py": "2cae2da314669b5c3b2003a858e47058a1cff43708c298c0c9dc0c63ed371e48",
     "app/ocr_case.py": "1adca2aec94600d29b8583c88f9d1ff362d02c2662b2421f5133ba4e80f27d17",
     "app/worker.py": "2c2b8f8975847b9d5ec58bbb9e691c6bdf58826f796f37f8108bbd083e6606a1",
-    "app/static/app.js": "453102602229ef4bedbd7cd87edd113e94cc15ed049047c1ac07418c963ad412",
+    "app/static/app.js": "9d4f3fbc75be8d4bcf52a9543e287d9ea7a543ca8664a30e6114c5b265d27c8b",
     "app/static/index.html": "0c78fd20eaf81d3e4192828cf6d13daa0b7725f3405428d9d18a7cad02eb3573",
-    "tests/frontend/ocr-http.test.mjs": "d27c2faec7e1a5d6ccd97dc420a1dbc023696c0a21839823327f7bcb10fe0174",
-    "scripts/test_frontend.py": "1b527e44050d951d0d53bd1b77eb9f19cb0f73b36a9adbaa593110c6f1da6f37"
+    "tests/frontend/ocr-http.test.mjs": "a91630d884fc8cce3dc19afde7102d963aba910ae044a81fcb48d6745f8c8b34",
+    "scripts/test_frontend.py": "a02b5ecdd0a60634c39e2733d129db63c656d40d81eafe6d86c50a21247175e8"
   }
 }

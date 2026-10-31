@@ -16,6 +16,16 @@ def upload(client,case='contradiction',mode='local'):
     return client.post('/api/analyze',files=[('files',(p.name,p.read_bytes(),'application/pdf'))
         for p in sorted((ROOT/case).glob('*.pdf'))],data={'mode':mode})
 
+def test_local_draft_requires_approval_and_rejects_stale_review(client):
+    report=upload(client,'math_error').json();base='/api/cases/'+report['id']
+    path=base+'/findings/F1/draft'
+    assert client.get(path,params={'version':0,'revision':0}).status_code==409
+    assert client.patch(base+'/findings/F1',json={'action':'confirm','note':'Verified sources','expected_revision':0}).status_code==200
+    result=client.get(path,params={'version':0,'revision':1})
+    assert result.status_code==200 and result.json()['difference']=='50.00'
+    assert result.headers['cache-control']=='no-store'
+    assert client.get(path,params={'version':0,'revision':0}).status_code==409
+
 @pytest.mark.parametrize('case,status',[('clean','consistent'),('contradiction','discrepancies'),('math_error','discrepancies'),('messy','review')])
 def test_end_to_end(client,case,status):
     r=upload(client,case);assert r.status_code==200,r.text

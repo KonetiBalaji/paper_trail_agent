@@ -88,13 +88,14 @@ def main():
             finally:
                 if worker is not None:stop(worker)
                 stop(server);repo.close()
-    source=['app/platform.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
+    source=['app/platform.py','app/main.py','app/drafts.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
             'app/static/index.html','tests/frontend/ocr-http.test.mjs','scripts/test_frontend.py']
     report={'passed':True,'checked_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':round(time.monotonic()-started,2),
             'scope':'Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.',
             'scenarios':['reviewer login and upload','OCR queue and status','real OCR derived version','candidate amount/score display',
                          'provisional calculator label','source selection and highlighted PNG','version-guarded saved review',
-                         'prior version export','audit verification','logout revocation','offline worker disables request'],
+                         'prior version export','audit verification','logout revocation','offline worker disables request',
+                         'approved lender draft with exact calculator evidence','draft text selection','rejection removes draft'],
             'source_sha256':{name:hashlib.sha256((ROOT/name).read_text(encoding='utf-8').encode()).hexdigest() for name in source}}
     output=Path(args.report);output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(report,indent=2)+'\n')
     print('Frontend-to-HTTP OCR scenarios passed; evidence saved to',output)

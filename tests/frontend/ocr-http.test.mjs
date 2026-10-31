@@ -114,3 +114,37 @@ test('offline worker is visible and cannot queue a dead OCR job', {skip: !offlin
   assert.ok(request?.disabled);
   assert.equal(ui.requests.filter(r => r.method === 'POST' && r.path.endsWith('/ocr')).length, 0);
 });
+
+test('approved lender draft uses real backend evidence and is removed after rejection', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t);
+  const files = await Promise.all(['statement_A.pdf', 'statement_B.pdf'].map(async name => {
+    const bytes = await readFile(new URL('../../data/synthetic/math_error/' + name, import.meta.url));
+    return new File([bytes], name, {type: 'application/pdf'});
+  }));
+  Object.defineProperty(ui.doc.getElementById('files'), 'files', {configurable: true, value: files});
+  const oldCase = ui.doc.getElementById('case-id').textContent;
+  ui.doc.getElementById('upload').dispatchEvent(new ui.w.Event('submit', {bubbles: true, cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('case-id').textContent !== oldCase, 'Native math case did not open');
+  const prepare = () => ui.doc.querySelector('[aria-label="Prepare lender draft F1"]');
+  assert.ok(prepare()?.disabled, 'Draft requires human approval');
+  ui.doc.querySelector('[aria-label="Approve F1"]').click();
+  await waitFor(() => prepare() && !prepare().disabled, 'Approval did not enable the draft');
+  prepare().click();
+  await waitFor(() => ui.doc.getElementById('draft-F1'), 'Backend draft did not render');
+  const text = ui.doc.getElementById('draft-F1');
+  assert.ok(text.readOnly); assert.match(text.value, /50\.00 USD/);
+  assert.match(text.value, /3300\.00 USD; statement says 3350\.00 USD/);
+  assert.match(text.value, /doc2:p1:/); assert.doesNotMatch(text.value, /DEMO-001/);
+  ui.button('Select draft text').click();
+  assert.equal(text.selectionEnd - text.selectionStart, text.value.length);
+  assert.ok(ui.requests.some(r => r.path.endsWith('/draft') && r.status === 200));
+  const purpose = ui.doc.getElementById('draft-kind-F1'); purpose.value = 'statement_dispute';
+  purpose.dispatchEvent(new ui.w.Event('change'));
+  assert.equal(ui.doc.getElementById('draft-F1'), null);
+  prepare().click();
+  await waitFor(() => ui.doc.getElementById('draft-F1'), 'Dispute draft did not render');
+  assert.match(ui.doc.getElementById('draft-F1').value, /I dispute the statement figure/);
+  assert.equal(ui.requests.filter(r => /send|payment/.test(r.path)).length, 0);
+  ui.doc.querySelector('[aria-label="Reject F1"]').click();
+  await waitFor(() => prepare()?.disabled && !ui.doc.getElementById('draft-F1'), 'Rejected finding retained an actionable draft');
+});

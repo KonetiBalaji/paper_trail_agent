@@ -32,6 +32,22 @@ def upload(client,headers=None):
     return client.post('/api/analyze',files=[('files',(p.name,p.read_bytes(),'application/pdf'))
         for p in sorted((ROOT/'contradiction').glob('*.pdf'))],headers=headers or {})
 
+def test_draft_approval_version_workspace_and_read_only_viewer(service):
+    client,repo,_=service;headers=login(client)
+    report=upload(client,headers).json();base='/api/cases/'+report['id'];path=base+'/findings/F1/draft'
+    assert client.get(path,params={'version':1,'revision':0}).status_code==409
+    reviewed=client.patch(base+'/findings/F1',json={'action':'confirm','note':'Compared both sources','expected_revision':0,'expected_case_version':1},headers=headers).json()
+    version=reviewed['report_version']
+    response=client.get(path,params={'version':version,'revision':1})
+    assert response.status_code==200 and response.json()['difference']=='25.00'
+    assert client.get(path,params={'version':1,'revision':1}).status_code==409
+    login(client,'viewer@example.invalid')
+    assert client.get(path,params={'version':version,'revision':1}).status_code==200
+    login(client,'other@example.invalid')
+    assert client.get(path,params={'version':version,'revision':1}).status_code==404
+    client.cookies.clear()
+    assert client.get(path,params={'version':version,'revision':1}).status_code==401
+
 def test_service_requires_auth_no_legacy_bypass(service):
     client,repo,_=service
     assert client.get('/api/cases').status_code==401

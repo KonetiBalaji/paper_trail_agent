@@ -8,7 +8,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 1 | Reliable hosted, abuse-protected judge demo | Public Vercel/Neon demo deployed; 50 hosted checks pass, including isolation, limits, CSRF, four outcomes, review, exports and paid-call/upload/OCR denial. Browser Evals 6/6 and benchmark 19/19 pass; uptime monitoring remains pending |
 | 2 | Three-minute actual-app video | Pending; shot plan exists, no completed video |
 | 3 | Final form and project write-up | Draft exists; final review, URLs and submission pending |
-| 4 | Sanitized live Meta evidence in repository | Fresh original four-case live evidence matches current app hashes and passes with 3/7/4/4 tool calls; initial API failure retained. Layout live evidence remains historical; hosted live Meta smoke pending |
+| 4 | Sanitized live Meta evidence in repository | Original four-case live evidence passes with 3/7/4/4 tool calls; initial API failure retained. It predates worker/draft changes and is historical, not a current whole-app hash match. Final release rerun and hosted live Meta smoke pending |
 | 5 | Discord linked role | Optional manual account step; not verified |
 | 6 | Realistic varied loan/bank layouts and truth | 19-case fictional corpus with strict loan/bank table schemas and independent truth passes; real anonymized layouts and calibrated field confidence remain pending |
 | 7 | Cross-page benchmark | Linked split rows, repeated headers, cross-page totals and carried balances implemented with per-field source-page checks; arbitrary unlinked continuations remain review |
@@ -31,7 +31,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 24 | Authenticated team roles and review | Service sessions, workspace isolation, admin/reviewer/viewer roles and CSRF covered by integration tests; live account setup pending |
 | 25 | Database, durable jobs, backup/recovery and uptime | Encrypted SQL repository, leased eval/OCR jobs, heartbeat readiness, atomic derived-report completion and SQLite backup restore tested; persistent hosted worker, PostgreSQL restore and uptime pending |
 | 26 | Immutable originals, actor audit and versioned exports | Immutable original hashes, actor audit chain, report versions and export replay implemented; hosted replay verification pending |
-| 27 | Evidence-backed lender/dispute drafts | Pending; never auto-send or perform money actions |
+| 27 | Evidence-backed lender/dispute drafts | Lender enquiry and statement-dispute API/UI implemented: human-approved native findings only, reproduced checks, exact totals/differences and both cross-statement sources; report/review version guards, PII-pattern redaction, manual text selection and no send/payment transport. Local API and actual DOM-to-HTTP tests pass; hosted walkthrough pending |
 | 28 | Retention, deletion, encryption, privacy/terms | Local delete exists; service controls pending |
 | 29 | Public-service security and incident readiness | Local controls exist; service hardening and security verification pending |
 | 30 | Accessibility, mobile and readable exports | Responsive baseline; systematic verification pending |

@@ -245,6 +245,12 @@ def create_router(root_provider,analyze_files):
         repo,_=resources();repo.get_case(actor.workspace,case_id)
         return repo.audit(actor.workspace,case_id)
 
+    @router.get('/cases/{case_id}/findings/{finding_id}/draft')
+    def lender_draft(case_id,finding_id,version:int,revision:int,kind:Literal['lender_enquiry','statement_dispute']='lender_enquiry',actor=Depends(principal)):
+        from .drafts import build_draft,DraftUnavailable
+        try:return build_draft(resources()[0].get_case(actor.workspace,case_id),finding_id,version,revision,kind)
+        except DraftUnavailable as exc:raise HTTPException(409,str(exc)) from None
+
     @router.get('/cases/{case_id}/ocr')
     def ocr_status(case_id,actor=Depends(principal)):
         repo,_=resources()

@@ -71,6 +71,13 @@ def case_path(case_id):
 
 def load(case_id): return private_report_view(json.loads((case_path(case_id)/'report.json').read_text()))
 
+@app.get('/api/cases/{case_id}/findings/{finding_id}/draft')
+def lender_draft(case_id, finding_id, version:int, revision:int, kind:Literal['lender_enquiry','statement_dispute']='lender_enquiry'):
+    from .drafts import build_draft, DraftUnavailable
+    with CASE_LOCK:
+        try:return build_draft(load(case_id),finding_id,version,revision,kind)
+        except DraftUnavailable as exc:raise HTTPException(409,str(exc)) from None
+
 @app.patch('/api/cases/{case_id}/findings/{finding_id}')
 def review_finding(case_id,finding_id,update:ReviewUpdate):
     with CASE_LOCK:

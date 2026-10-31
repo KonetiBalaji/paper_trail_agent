@@ -27,6 +27,35 @@ Build for Your World: a solo FastAPI web app that reconciles PDF loan/bank state
 
 The UI now includes **Offline Evals**, an ordered **Trace timeline**, and persisted **Human Review** with Approve, Reject and Save note controls. These are connected to the backend APIs, not static demonstrations.
 
+## Lender enquiry and statement dispute drafts
+
+On a confirmed machine discrepancy, **Approve** the finding after checking the
+sources, then choose **Prepare lender draft**. The backend reruns the exact
+deterministic check and returns the difference, cited source excerpts and, for
+an arithmetic error, its recomputed total. The $25 interest contradiction includes
+both lines; the $50 total error includes 3300.00 computed versus 3350.00 stated.
+Choose an explanation request or statement dispute using **Draft purpose**.
+Use **Select draft text** to copy the draft into your own message after final
+review. The app has no recipient field, sending endpoint or payment action.
+
+Drafts bind to the current report version and human-review revision; a changed
+report or review is rejected. A rejection removes the prepared text from the UI.
+Only supported confirmed native-text findings qualify. OCR candidates, unresolved
+review findings, missing citations and findings that cannot be reproduced are
+refused. Supported PII patterns are redacted; inspect the draft and add necessary
+account details yourself. Source text is quoted as evidence, never interpreted
+as instructions. Review notes are not inserted into lender messages.
+
+`GET /api/cases/{case_id}/findings/{finding_id}/draft?version=N&revision=N&kind=lender_enquiry`
+returns the text, evidence, exact calculator inputs, snapshot identifiers and a
+deterministic SHA-256. In service mode it requires a workspace session; viewers
+may read an already approved draft but cannot approve a finding. Preparation is
+read-only: drafts are not saved as new report versions or recorded as sent.
+Local file reports use version 0 and their saved review revision. This enquiry
+template is not a legal filing or a claim that the lender acted improperly.
+`kind=statement_dispute` uses the same verified evidence with a request to
+investigate the disputed figure; it invents no deadlines, fees or legal rights.
+
 ## Run on Windows
 
 ```powershell
