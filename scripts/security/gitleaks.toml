@@ -1,0 +1,9 @@
+title = "Paper Trail Agent: default rules plus scoped integration keys"
+[extend]
+useDefault = true
+
+[[rules]]
+id = "paper-trail-integration-key"
+description = "Paper Trail scoped bearer credential"
+regex = '''\bpta_api_[A-Za-z0-9_-]{43}\b'''
+keywords = ["pta_api_"]

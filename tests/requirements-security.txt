@@ -1,0 +1,2 @@
+# Security tooling only; never included in the deployed application.
+pip-audit==2.10.1

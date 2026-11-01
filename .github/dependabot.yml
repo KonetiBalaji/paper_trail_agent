@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      python-compatible:
+        patterns: ['*']
+        update-types: [minor, patch]
+  - package-ecosystem: pip
+    directory: /tests
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+  - package-ecosystem: npm
+    directory: /tests/frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2

@@ -1,5 +1,28 @@
 # Verification record - October 28, 2026
 
+## Public-service security gates - November 1, 2026
+
+- New disposable service probes: **22 passed**, covering all ten case-read
+  surfaces across identities, CSRF/Origin/cookie boundaries, token tampering,
+  private file paths, oversized requests and local login throttling despite
+  spoofed forwarding headers.
+- Gitleaks 8.30.1, downloaded from the official release and checksum verified,
+  passes history and tracked-file scans. A fresh synthetic scoped-key canary
+  carrying an allow comment is still detected. Public evidence contains counts
+  and rule IDs only. No scanner allowlist or vulnerability ignore was added.
+- Strict pip-audit 2.10.1 found no known vulnerabilities in 62 core/OCR inventory
+  entries on Windows; npm audit found none in the frontend test lock. These
+  are dated advisory checks, not proof against unknown or OS vulnerabilities.
+- The initial hosted probe failed at the missing Permissions-Policy header,
+  before creating any session. Vercel configuration now includes common security
+  headers, a restrictive home-document CSP and no-store on all API responses.
+  Actual deployed results and CI links will be recorded after verification.
+- GitHub secret scanning and push protection were already enabled. Repository
+  vulnerability alerts and Dependabot security updates are now enabled; weekly
+  update PR configuration has no auto-merge. Incident/private-reporting
+  procedures are documented. Independent penetration testing, provider/IAM
+  review, CSP browser execution and incident exercise remain unverified.
+
 ## Agent-level scorecard - October 31, 2026
 
 - The scorecard combines independent local MCP request oracles, controlled

@@ -157,7 +157,7 @@ rate. Broader agent-level field/tool/layout metrics remain an open requirement.
 The upload page now includes a public **Data use and terms** notice explaining
 storage, Meta processing, redaction, deletion and human decisions. In service
 mode, administrators can preview and configure **Case retention**. It starts
-disabled; enabling requires typing `DELETE_EXPIRED_CASES`. Choose 1–365 days
+disabled; enabling requires typing `DELETE_EXPIRED_CASES`. Choose 1â€“365 days
 measured from case creation in UTC. The worker performs bounded cleanup between
 jobs, and admins can run a pass manually. Deleted cases lose original PDFs and
 every report/review version; audit/job metadata, host backups and prior downloads
@@ -182,13 +182,13 @@ keys in **Integration API keys**. Choose `cases:read`, `cases:submit`, or both.
 The raw key is shown once in a masked field and is cleared on logout/access
 changes. Store it in the calling tool's secret settings. The database stores an
 HMAC digest, encrypted label, owner and scopes, never the raw token. Keys expire
-after 1–90 days (UI choices 7/30/90), and each workspace may have ten active keys.
+after 1â€“90 days (UI choices 7/30/90), and each workspace may have ten active keys.
 Revocation, expiry and a disabled/non-admin owner block new requests. Creation
 and revocation append actor/key-ID audit events without the secret.
 
 Server-to-server callers send `Authorization: Bearer <your-key>` to:
 
-- `POST /api/integrations/v1/cases`: multipart `files`, 1–8 PDFs, and optional
+- `POST /api/integrations/v1/cases`: multipart `files`, 1â€“8 PDFs, and optional
   `mode=local`; returns a case ID/status/version receipt. Requires `cases:submit`.
 - `GET /api/integrations/v1/cases/{id}`: pattern-redacted report; optional
   `version=N`. Requires `cases:read` and the same workspace.
@@ -379,3 +379,18 @@ Select **Auto + Muse Spark** for recognized layouts: deterministic extraction pr
 `docs/live-layout-results.json` records four passing live Auto cases (reversed columns, split row, cross-page bank and injection note), including actual tool calls, route choices, timings and reported tokens. The direct Meta failure on a reversed-column case is retained separately; it was rejected rather than accepted as clean. Do not describe direct extraction as universally reliable. `docs/live-meta-results.json` covers the four original live acceptance cases. Source hashes are normalized to UTF-8/LF; fixture hashes use raw PDF bytes.
 
 Optional `META_INPUT_USD_PER_MILLION` and `META_OUTPUT_USD_PER_MILLION` settings enable a token-based estimate only when every attempted call has complete reported input/output usage. Set verified rates yourself; no price is invented by the app. Analysis latency excludes persistence and HTTP transport. Missing usage, failed calls and missing rates keep the cost estimate unknown.
+
+## Public-service security checks
+
+Security CI audits the pinned Python/OCR inventories and frontend lock, scans
+full Git history and tracked files, and proves secret detection with a synthetic
+canary. Operational scan failures and known advisories fail the gate. Weekly
+Dependabot updates require review; there is no auto-merge. The deployed home
+page uses a self-only CSP, and Vercel applies security/no-store headers to
+rejections as well as successful API responses.
+
+See [security verification](docs/SECURITY-VERIFICATION.md),
+[private reporting](SECURITY.md) and the [incident procedure](docs/INCIDENT-RESPONSE.md).
+These are bounded automated checks, not independent penetration-test or
+real-document-readiness claims. The public demo continues to accept fixed
+fictional fixtures only.
