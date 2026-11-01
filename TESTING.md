@@ -36,6 +36,17 @@
   files now use LF in Git checkouts and evidence writers; the scorecard was
   regenerated against those bytes without changing the live observations.
 
+- Local core suite: **287 passed, 7 skipped**. Actual DOM/HTTP with real CPU
+  OCR passes locally and in Linux CI; refreshed evidence is in
+  `docs/frontend-ocr-results.json` (no visual-browser claim).
+- All four jobs pass in [feature CI run 41340397940](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41340397940).
+  The cross-platform JSON correction is commit `31a4fe4`; all four jobs also pass in its verification run
+  [41340543720](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41340543720).
+- Vercel deployed `31a4fe4`. **43 actual hosted API/served-JS checks pass**,
+  including current scorecard sources, fixtures and live proof, actual MCP,
+  review/draft guards, CSV, guest restrictions and cleanup. Saved evidence:
+  `docs/hosted-agent-evals-results.json`. No hosted paid call was made.
+
 ## Actual MCP tool transport - October 31, 2026
 
 - `scripts/evaluate_mcp.py` uses independent official SDK clients against actual
