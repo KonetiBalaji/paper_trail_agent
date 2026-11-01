@@ -49,6 +49,12 @@ def benchmark():
     try:return extended_suite()
     except (OSError,ValueError):raise HTTPException(503,'Benchmark fixtures or manifest unavailable.') from None
 
+@app.get('/api/agent-evals')
+def agent_evals():
+    from .agent_evals import load_report
+    try:return load_report()
+    except (OSError,ValueError,KeyError,TypeError):raise HTTPException(503,'Agent scorecard unavailable; regenerate its verified artifact.') from None
+
 def save_report(path,report):
     temporary=path/('report-'+uuid.uuid4().hex+'.tmp')
     try:
@@ -242,9 +248,10 @@ async def database_handler(request,exc):return JSONResponse({'detail':'Database 
 @app.middleware('http')
 async def service_boundary(request,call_next):
     if platform.service_mode() and request.url.path.startswith('/api/'):
-        if request.url.path in ('/api/evals','/api/benchmark'):
+        if request.url.path in ('/api/evals','/api/benchmark','/api/agent-evals'):
             extended=request.url.path=='/api/benchmark'
-            try:platform.runtime(STORE)[0].consume('public-benchmark' if extended else 'public-evaluation',60 if extended else 120,3600)
+            bucket='public-agent-evaluation' if request.url.path=='/api/agent-evals' else 'public-benchmark' if extended else 'public-evaluation'
+            try:platform.runtime(STORE)[0].consume(bucket,60 if extended else 120,3600)
             except HTTPException as exc:return JSONResponse({'detail':exc.detail},status_code=exc.status_code)
             except LimitExceeded:return JSONResponse({'detail':'Evaluation usage limit reached'},status_code=429,headers={'Retry-After':'60'})
             except SQLAlchemyError:return JSONResponse({'detail':'Database unavailable'},status_code=503)

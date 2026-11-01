@@ -242,6 +242,12 @@ test('public synthetic MCP check discovers real tools and shows server call resu
   assert.match(text,/search_evidence/);assert.match(text,/calculator/);assert.match(text,/additionalProperties/);
   assert.doesNotMatch(text,/DEMO-001/);
   assert.ok(ui.requests.some(r=>r.path==='/api/platform/demo/mcp-check' && r.status===200));
+  ui.doc.getElementById('run-agent-evals').click();
+  await waitFor(()=>ui.doc.getElementById('agent-evals-message').textContent.includes('Offline gates: PASS'),'Agent scorecard did not load');
+  const score=ui.doc.getElementById('agent-evals-results').textContent;
+  assert.match(score,/30\/30/);assert.match(score,/50% \(2\/4\)/);assert.match(score,/loan_columns/);
+  assert.match(score,/native_fields|Native model|not scored/i);
+  assert.ok(ui.requests.some(r=>r.path==='/api/agent-evals' && r.status===200));
   ui.doc.getElementById('logout').click();
   await waitFor(()=>ui.doc.getElementById('mcp-demo').hidden,'MCP panel remained after sign out');
   assert.equal(ui.doc.getElementById('mcp-demo-output').textContent,'');

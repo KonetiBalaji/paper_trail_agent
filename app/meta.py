@@ -198,9 +198,16 @@ async def _reason(documents,findings,calculations,trace,session):
         'Return JSON only with summary (string), checklist (array of strings), sources (array of exact source IDs). '
         'Explain uncertainty and missing OCR; give document-checking actions, not financial advice. Cite only retrieved source IDs. '
         'Only describe evidence as OCR when its document has ocr_performed=true; otherwise it is native PDF text. '
-        'OCR candidates and provisional calculations always require human verification.'},
+        'OCR candidates and provisional calculations always require human verification. '
+        f'You have at most {MAX_TOOL_CALLS} tool calls total and {MAX_TURNS} investigation turns. '
+        'Prefer one relevant evidence query, then only the calculator checks needed to explain the provided findings. '
+        'Do not repeat equivalent searches or speculate about missing fields. Tools cannot perform OCR or recover absent text. '
+        'A document with available_text_lines=0 has no searchable evidence: stop trying to discover its missing values and request human review. '
+        'Finish with the review checklist as soon as the available evidence is exhausted; do not exceed the tool budget.'},
         {'role':'user','content':json.dumps({'findings':findings,'calculations':calculations,
-            'documents':[{'name':d['name'],'id':d['id'],'ocr_performed':bool(d.get('ocr',{}).get('performed'))} for d in documents]})}]
+            'documents':[{'name':d['name'],'id':d['id'],'ocr_performed':bool(d.get('ocr',{}).get('performed')),
+                          'available_text_lines':sum(l.get('usable',True) for l in d['lines']),
+                          'extraction_issues':[i['type'] for i in d.get('issues',[])]} for d in documents]})}]
     tool_trace, allowed = [], set()
     used=0
     for turn in range(MAX_TURNS):

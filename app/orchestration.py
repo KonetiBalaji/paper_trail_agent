@@ -275,7 +275,7 @@ def critique_stage(documents,extraction,verification):
     return findings,accepted_calcs,result
 
 
-def run(documents,events):
+def run(documents,events,*,verifier=None):
     # Neither verifier mutation nor its returned objects can change the evidence
     # snapshot inspected by the critic or the report's original extraction.
     snapshot=copy.deepcopy(documents)
@@ -283,7 +283,7 @@ def run(documents,events):
     record(events,'orchestration','Extractor',output=extraction.model_dump(),validation='review' if any(d.validation=='review' for d in extraction.documents) else 'passed',duration_ms=(time.perf_counter()-started)*1000)
     started=time.perf_counter()
     try:
-        verification=VerificationResult.model_validate(verify_stage(copy.deepcopy(snapshot)))
+        verification=VerificationResult.model_validate((verifier or verify_stage)(copy.deepcopy(snapshot)))
         ids=[f.id for f in verification.findings]
         if len(ids)!=len(set(ids)):raise ValueError('Duplicate finding IDs')
     except (ValidationError,ValueError,TypeError,KeyError):

@@ -18,6 +18,12 @@ def run(base):
     with httpx.Client(base_url=base, timeout=30) as client:
         remote = client.get('/static/app.js'); remote.raise_for_status()
         check('served_frontend_matches', remote.text.replace('\r\n', '\n') == (ROOT/'app/static/app.js').read_text(encoding='utf-8'))
+        score_response=client.get('/api/agent-evals');score_response.raise_for_status();score=score_response.json()
+        check('agent_offline_gates',score['passed'] and score['generation_model_calls']==0)
+        check('agent_current_sources_fixtures',score['current_source_match'] and score['current_fixture_match'])
+        check('agent_current_live_proof',score['current_live_proof'] and score['live']['summary']['requests']=={'correct':12,'total':12,'rate':1.0})
+        check('agent_critic_denominators',score['critic']['catch_rate']=={'correct':30,'total':30,'rate':1.0} and score['critic']['false_alarm_rate']['correct']==0 and score['critic']['false_alarm_rate']['total']==17)
+        check('agent_mcp_contract',score['tools']['contract_correctness']=={'correct':12,'total':12,'rate':1.0})
         start = client.post('/api/platform/demo/start'); start.raise_for_status()
         check('synthetic_guest', start.json()['role'] == 'demo')
         headers = {'X-CSRF-Token': client.cookies['pta_csrf']}

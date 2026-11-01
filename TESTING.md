@@ -1,5 +1,37 @@
 # Verification record - October 28, 2026
 
+## Agent-level scorecard - October 31, 2026
+
+- The scorecard combines independent local MCP request oracles, controlled
+  Verifier handoff mutations, the known-answer field/layout corpus and separately
+  labeled live logs. It does not make model calls when generating or serving the
+  report. GET `/api/agent-evals` validates counts/gates and exposes source, PDF/
+  manifest and live-artifact freshness. Malformed artifacts return 503; stale
+  artifacts are explicitly marked historical.
+- Thirty injected verifier faults are caught across loan columns, cross-document
+  differences and bank carried balances. Seventeen unmutated controls add no
+  Critic false alarms; three unsupported messages are rewritten. These are
+  experiment denominators, not real-world model accuracy.
+- Twelve real MCP probes now pass. The first scorecard found that an extreme
+  exponent raised an unhandled Decimal arithmetic error instead of the normal
+  audited rejection; the tool server now catches that arithmetic error. The
+  initial failed offline artifact is retained separately. Gold-query retrieval
+  precision is 2/4 (50%), recall 2/2, and remains visible despite the contract gate.
+- Tests reject contradictory passed flags, altered fault/denominator/field totals
+  and false-clean claims. Freshness checks detect changed PDF bytes, not only a
+  manifest change. Oracle independence, partial model-check coverage, correct
+  arithmetic with ungrounded values, and the explicit prompt budget are tested.
+- The first enriched live attempt rejected extraction on math_error; the next
+  stopped at the messy case's eight-call budget. Both failed artifacts remain
+  visible. The prompt now states budget/available-line limits and forbids trying
+  to recover absent OCR text through repeated searches. Neither failure was
+  accepted as clean.
+- The completed fresh run passes all four cases using 2/4/4/2 tool calls.
+  Its 12 requests are grounded, seven calculator calls are exact, and native
+  field precision/recall is 100% on this fictional set. Seven image-only fields
+  remain withheld and counted separately. This is one successful run, not a
+  reliability estimate; the failed attempts remain alongside it.
+
 ## Actual MCP tool transport - October 31, 2026
 
 - `scripts/evaluate_mcp.py` uses independent official SDK clients against actual

@@ -87,7 +87,7 @@ def create_server(documents,audit=None):
                 result=SearchOutput(lines=retrieve(documents,parsed.query)).model_dump()
             else:result=CalculatorOutput(sum=calculate(parsed.values)).model_dump()
             error=False
-        except (ValueError,TypeError):
+        except (ValueError,TypeError,ArithmeticError):
             result={'error':'Tool budget reached' if used>8 else 'Unknown tool' if name not in INPUTS else 'Invalid tool arguments'};error=True
         entry=redact({'sequence':used,'tool':name,'input':args,'output':result,'validation':'failed' if error else 'passed',
                       'transport':'mcp_stdio','duration_ms':round((time.perf_counter()-started)*1000,2)})

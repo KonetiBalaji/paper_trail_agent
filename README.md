@@ -56,6 +56,48 @@ template is not a legal filing or a claim that the lender acted improperly.
 `kind=statement_dispute` uses the same verified evidence with a request to
 investigate the disputed figure; it invents no deadlines, fees or legal rights.
 
+## Agent scorecard
+
+**View agent scorecard** loads a saved, validated evaluation artifact with its
+timestamp, Python-source/fixture freshness and sample counts. It makes no model
+call. The report separates these measurements:
+
+- **Local extraction:** field TP/FP/FN, precision/recall, review reasons and
+  failures by declared layout family across the 19-case corpus. Deliberately
+  withheld partial-row fields still count as misses.
+- **Critic:** 30 controlled verifier faults across three layouts, 17 unmutated
+  corpus controls and three unsupported-message rewrites. These measure the
+  injected-fault experiment, not a population model catch rate.
+- **MCP tools:** 12 real scripted contract/adversarial requests, plus separately
+  annotated retrieval relevance. Current retrieval precision is **2/4 (50%)**
+  and recall is 2/2; broad partial-keyword results are not hidden by a PASS flag.
+- **Recorded live Muse Spark:** tool-request correctness, independent calculator
+  exactness, value grounding, repetition of native total checks, finding-source
+  retrieval/citation coverage and field accuracy. Native-only fields are separate
+  from image-only abstentions. Metrics are conditional on the displayed completed
+  run; retained failed attempts are shown alongside it, not erased.
+
+Native total-check repetition uses normalized operand multisets, preserves
+multiplicity, and ignores neutral zeros. It measures what the model repeated;
+the deterministic verifier/critic still checks the native totals independently.
+Value grounding allows original/verified amounts, negation for subtraction,
+neutral zero, and prior correctly grounded calculator results. It is not a
+proof that the model chose the best action or attributed every value to a row.
+
+Regenerate without a provider call:
+
+```powershell
+.venv\Scripts\python.exe scripts\evaluate_agents.py --report docs\agent-evals-results.json
+```
+
+CI gates false cleans, controlled Critic protection/false alarms, message rewrites
+and tool contracts. Retrieval selectivity and live model coverage remain measured
+diagnostics rather than invented perfect scores. Inconsistent counts/pass flags
+are rejected. A stale report stays labeled historical; it cannot claim current
+source or fixture coverage. Refreshing live evidence is a separate explicitly
+paid synthetic acceptance run. The live prompt now states its eight-call/six-turn
+budget and that tools cannot recover image-only text.
+
 ## Standard MCP tools
 
 Muse Spark now discovers and calls **search_evidence** and **calculator** through

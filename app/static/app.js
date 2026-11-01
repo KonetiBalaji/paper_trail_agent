@@ -548,6 +548,56 @@ function setupMCPDemo() {
   panel.append(button,feedback,output); $('public-demo').after(panel);
 }
 setupMCPDemo();
+
+function setupAgentEvals() {
+  const panel=el('section',undefined,'panel');panel.id='agent-evals-panel';
+  panel.append(el('h2','Agent scorecard'),el('p','Recorded evaluations with denominators and source freshness. Loading this report makes no model call.'));
+  const button=el('button','View agent scorecard','secondary');button.id='run-agent-evals';button.type='button';
+  const feedback=el('p','','note');feedback.id='agent-evals-message';feedback.setAttribute('role','status');
+  const output=el('div');output.id='agent-evals-results';
+  const metric=value=>value?.total ? `${percent(value.rate)} (${value.correct}/${value.total})` : 'Not measured (0 observations)';
+  const table=(labels,rows)=>{
+    const scroll=el('div',undefined,'table-scroll');const t=el('table');const head=el('tr');
+    for (const label of labels)head.append(el('th',label));const thead=el('thead');thead.append(head);t.append(thead);
+    const body=el('tbody');for(const values of rows){const row=el('tr');for(const value of values)row.append(el('td',value));body.append(row);}t.append(body);scroll.append(t);return scroll;
+  };
+  button.onclick=async()=>{
+    button.disabled=true;feedback.textContent='Loading evaluated artifact and checking freshness…';output.replaceChildren();
+    try {
+      const result=await jsonRequest('/api/agent-evals');
+      const fresh=result.current_source_match&&result.current_fixture_match;
+      feedback.textContent=`Offline gates: ${result.passed?'PASS':'FAIL'} · ${fresh?'current Python source/fixtures':'STALE source or fixtures'} · evaluated ${result.evaluated_at} · zero generation model calls`;
+      output.append(el('p',result.scope,'note'),table(['Offline component','Measured result'],[
+        ['Controlled Critic fault detection',metric(result.critic.catch_rate)],
+        ['Critic false alarms on corpus controls',metric(result.critic.false_alarm_rate)],
+        ['Unsupported-message rewrites',metric(result.critic.rewrite_rate)],
+        ['MCP contract correctness (scripted requests)',metric(result.tools.contract_correctness)],
+        ['Annotated-query retrieval precision',metric(result.tools.retrieval_precision)],
+        ['Annotated-query retrieval recall',metric(result.tools.retrieval_recall)],
+        ['False clean',`${result.extraction.summary.false_clean_count}/${result.extraction.summary.at_risk_count}`]
+      ]),el('p',result.critic.scope,'note'),el('p',result.tools.scope,'note'));
+      output.append(el('h3','Extraction by field · local parser corpus'),table(['Field','TP / FP / FN','Precision','Recall'],Object.entries(result.extraction.fields).map(([field,v])=>[field,`${v.tp} / ${v.fp} / ${v.fn}`,percent(v.precision),percent(v.recall)])));
+      output.append(el('h3','Declared layout families · local parser corpus'),table(['Layout','Cases','Failed','Review','False clean','Missed fields','Review reasons'],result.extraction.layouts.map(g=>[g.layout,g.cases,g.failed_cases,g.review_cases,g.false_clean,Object.values(g.fields).reduce((n,f)=>n+f.fn,0),Object.keys(g.review_modes).join(', ')||'None'])));
+      output.append(el('p','Missed-field counts include deliberate abstentions on incomplete rows. Those cases still require review; a passing offline gate does not mean every field was extracted.','note'));
+      output.append(el('h3','Recorded live Muse Spark requests'));
+      if(result.live.status==='scored'){
+        output.append(el('p',`${result.live.model} · ${result.current_live_proof?'current recorded source/artifact':'HISTORICAL or stale live snapshot'} · ${result.live.finished_at}`,'note'),
+          table(['Live request metric','Measured result'],Object.entries(result.live.summary).map(([key,v])=>[key.replaceAll('_',' '),metric(v)])),
+          table(['Case / layout','Requests','Native total checks repeated by model','Finding sources retrieved','Finding sources cited','Failed requests'],result.live.cases.map(c=>[`${c.case} / ${c.layout}`,metric(c.requests),metric(c.distinct_check_coverage),metric(c.finding_source_retrieval),metric(c.finding_source_final_citation),c.failures.length])));
+        output.append(el('p',`Live extraction includes ${result.live.image_abstention_fn} withheld image-only gold fields in its FN counts. Native-only model extraction is listed separately below; OCR abstention is not treated as a hallucination.`,'note'));
+        output.append(table(['Field','Native model precision','Native model recall','All-document precision','All-document recall'],Object.entries(result.live.fields).map(([field,v])=>[field,percent(result.live.native_fields[field]?.precision??null),percent(result.live.native_fields[field]?.recall??null),percent(v.precision),percent(v.recall)])),el('p',result.live.scope,'note'));
+      }else output.append(el('p',`Live metrics not scored: ${result.live.reason||result.live.status}. No zero or perfect rate is substituted.`));
+      if(result.retained_live_failures.length){
+        output.append(el('h3','Retained failed live attempts'),el('p','The successful live snapshot is conditional on that run. These retained failed attempts are shown too; this history is not an uptime or population failure-rate estimate.','note'),
+          table(['Artifact','Started','Passed before stop','Failed cases'],result.retained_live_failures.map(r=>[r.artifact,r.started_at||'Unrecorded',r.passed_cases,r.failed_cases.map(c=>c.case).join(', ')])));
+      }
+      const details=el('details');details.append(el('summary','Faults, probes and layout failure details'),el('pre',JSON.stringify({faults:result.critic.review_faults,probes:result.tools.probes,layouts:result.extraction.layouts},null,2)));output.append(details);
+    }catch(error){feedback.textContent='Agent scorecard unavailable: '+error.message;}
+    finally{button.disabled=false;}
+  };
+  panel.append(button,feedback,output);$('benchmark-panel').after(panel);
+}
+setupAgentEvals();
 async function configureService() {
   try {
     const config = await jsonRequest('/api/platform/config');

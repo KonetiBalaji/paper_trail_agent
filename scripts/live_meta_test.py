@@ -69,12 +69,34 @@ def main():
                 assert mcp['transport']=='mcp_stdio' and mcp['server_call_log']
                 assert len(mcp['server_call_log'])<=8
                 assert all(t['transport'] in ('mcp_stdio','not_dispatched') for t in report['agent']['tool_trace'])
+                # Fictional data only. Retain enough public evidence to score
+                # actual requests independently, not merely count tool names.
+                from app.mcp_server import evidence_bundle
+                from app.benchmark import field_values,scores,ratios
+                truth=json.loads((root/case/'ground_truth.json').read_text(encoding='utf-8'))
+                gold_docs={d['file']:d for d in truth['documents']};field_counts={};native_counts={};image_fn=0
+                for doc in report['documents']:
+                    gold_doc=gold_docs[doc['name']]
+                    counts=scores(field_values(gold_doc),field_values(doc['statement']))
+                    for field,values in counts.items():
+                        for target in ([field_counts,native_counts] if gold_doc['text_layer'] else [field_counts]):
+                            target.setdefault(field,{'tp':0,'fp':0,'fn':0})
+                            for k in values:target[field][k]+=values[k]
+                    if not gold_doc['text_layer']:image_fn+=sum(c['fn'] for c in counts.values())
                 evidence['cases'].append({'case':case,'result':'passed','status':report['status'],
                     'confirmed_findings':len(confirmed),'review_items':sum(f['severity']=='review' for f in report['findings']),
                     'differences':[f['difference'] for f in confirmed if 'difference' in f],
                     'source_counts':[len(f['sources']) for f in confirmed],
                     'tools':[t['tool'] for t in report['agent']['tool_trace']],
                     'tool_call_count':len(report['agent']['tool_trace']),
+                    'agent_evaluation':{'tool_requests':report['agent']['tool_trace'],
+                        'gold_lines':evidence_bundle(report['documents'])['lines'],
+                        'required_checks':[c for c in report['calculations'] if not c.get('provisional')],
+                        'required_finding_sources':sorted({s for f in confirmed for s in f['sources']}),
+                        'final_agent_sources':report['agent']['sources'],
+                        'verified_differences':[f['difference'] for f in confirmed if 'difference' in f],
+                        'fields':{k:ratios(v) for k,v in field_counts.items()},
+                        'native_fields':{k:ratios(v) for k,v in native_counts.items()},'image_abstention_fn':image_fn},
                     'mcp':{'transport':mcp['transport'],'protocol_version':mcp['protocol_version'],
                            'actual_server_calls':len(mcp['server_call_log']),
                            'failed_server_calls':sum(c['validation']=='failed' for c in mcp['server_call_log']),
@@ -88,7 +110,11 @@ def main():
                 print('PASS live Meta:',case,flush=True)
             except Exception:
                 evidence['status']='failed'
-                evidence['cases'].append({'case':case,'result':'failed'})
+                evidence['cases'].append({'case':case,'result':'failed','report_status':report.get('status'),
+                    'finding_types':[f['type'] for f in report.get('findings',[])],
+                    'failed_validations':[{'name':e['name'],'document':e.get('document'),'output':e.get('output')}
+                                          for e in report.get('trace',[]) if e['kind']=='validation' and e['validation']=='failed'],
+                    'attempted_model_calls':report.get('metrics',{}).get('attempted_model_calls')})
                 save()
                 raise
             finally:client.delete(base)

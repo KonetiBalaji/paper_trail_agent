@@ -1,0 +1,2501 @@
+{
+  "schema_version": 1,
+  "evaluated_at": "2026-10-31T17:17:35.782198+00:00",
+  "passed": true,
+  "generation_model_calls": 0,
+  "scope": "Offline corpus, controlled faults, actual local MCP probes and separately labeled recorded live evidence. Not real-world accuracy.",
+  "extraction": {
+    "fields": {
+      "after_transaction_count": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "amount": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "closing_balance": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "currency": {
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "date": {
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "id": {
+        "tp": 39,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.975
+      },
+      "interest": {
+        "tp": 31,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "loan_id": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "opening_balance": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "period_end": {
+        "tp": 19,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "principal": {
+        "tp": 31,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.96875
+      },
+      "stated_total": {
+        "tp": 16,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    },
+    "summary": {
+      "total": 19,
+      "passed": 19,
+      "failed": 0,
+      "field_metrics": {
+        "tp": 207,
+        "fp": 0,
+        "fn": 2,
+        "precision": 1.0,
+        "recall": 0.9904306220095693
+      },
+      "citation_count": 98,
+      "citation_accuracy": 1.0,
+      "grounded_reference_accuracy": 1.0,
+      "at_risk_count": 11,
+      "false_clean_count": 0,
+      "false_clean_rate": 0.0,
+      "review_rate": 0.35294117647058826
+    },
+    "layouts": [
+      {
+        "layout": "loan_columns",
+        "cases": 3,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 8,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 8,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 8,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "loan_reverse",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "loan_cross_page",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "loan_linked_split",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "loan_duplicate",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 1,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 3,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 3,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 3,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {
+          "duplicate_tranche": 1
+        }
+      },
+      {
+        "layout": "loan_partial",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 1,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "interest": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {
+          "partial_extraction": 1
+        }
+      },
+      {
+        "layout": "bank_debit_credit",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "amount": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "closing_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "date": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "opening_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "bank_signed",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "amount": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "closing_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "date": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "opening_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "bank_cross_page",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "after_transaction_count": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "amount": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "closing_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "date": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "opening_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "bank_carried_balance",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "after_transaction_count": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "amount": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "closing_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "date": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "opening_balance": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "prompt_injection_note",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "identity_conflict",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 1,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {
+          "conflicting_field": 1
+        }
+      },
+      {
+        "layout": "ambiguous_date",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 1,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {
+          "unsupported_date": 1
+        }
+      },
+      {
+        "layout": "currency_mismatch",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 1,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {
+          "identity_mismatch": 1
+        }
+      },
+      {
+        "layout": "missing_tranche",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 1,
+        "false_clean": 0,
+        "fields": {
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 3,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 3,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 3,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "failure_modes": [],
+        "review_modes": {
+          "missing_tranche": 1
+        }
+      },
+      {
+        "layout": "corrupt_pdf",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {},
+        "failure_modes": [],
+        "review_modes": {}
+      },
+      {
+        "layout": "oversized_pdf",
+        "cases": 1,
+        "failed_cases": 0,
+        "review_cases": 0,
+        "false_clean": 0,
+        "fields": {},
+        "failure_modes": [],
+        "review_modes": {}
+      }
+    ],
+    "manifest_sha256": "c05129d82463ec6dbb6828cec502811ebe5466744e910cec8194e8f4db1ddc8b"
+  },
+  "critic": {
+    "review_faults": [
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "wrong_difference",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding",
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "forged_source",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding",
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "missing_finding",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "duplicate_finding",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "missing_calculation",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "wrong_computed",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "wrong_operand",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "wrong_calculation_source",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "empty_output",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "missing_finding"
+        ]
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "fault": "invalid_schema",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "missing_finding",
+          "verifier_schema"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "wrong_difference",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding",
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "forged_source",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding",
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "missing_finding",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "duplicate_finding",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "missing_calculation",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "wrong_computed",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "wrong_operand",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "wrong_calculation_source",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "empty_output",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "missing_finding"
+        ]
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "fault": "invalid_schema",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "missing_finding",
+          "verifier_schema"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "wrong_difference",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding",
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "forged_source",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding",
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "missing_finding",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_finding"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "duplicate_finding",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "unsupported_candidate"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "missing_calculation",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "wrong_computed",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "wrong_operand",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "wrong_calculation_source",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "unverified_calculation"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "empty_output",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "missing_finding"
+        ]
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "fault": "invalid_schema",
+        "caught": true,
+        "review_result": true,
+        "unsafe_confirmed": 0,
+        "unverified_calculations": 0,
+        "reasons": [
+          "missing_calculation",
+          "missing_finding",
+          "verifier_schema"
+        ]
+      }
+    ],
+    "controls": [
+      {
+        "case": "loan_columns_clean",
+        "layout": "loan_columns",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_columns_error",
+        "layout": "loan_columns",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "layout": "loan_columns",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_reverse_columns",
+        "layout": "loan_reverse",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_cross_page",
+        "layout": "loan_cross_page",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_split_row",
+        "layout": "loan_linked_split",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_duplicate",
+        "layout": "loan_duplicate",
+        "false_alarm": false
+      },
+      {
+        "case": "loan_partial",
+        "layout": "loan_partial",
+        "false_alarm": false
+      },
+      {
+        "case": "bank_debit_credit",
+        "layout": "bank_debit_credit",
+        "false_alarm": false
+      },
+      {
+        "case": "bank_signed",
+        "layout": "bank_signed",
+        "false_alarm": false
+      },
+      {
+        "case": "bank_cross_page",
+        "layout": "bank_cross_page",
+        "false_alarm": false
+      },
+      {
+        "case": "bank_bad_carry",
+        "layout": "bank_carried_balance",
+        "false_alarm": false
+      },
+      {
+        "case": "injection_note",
+        "layout": "prompt_injection_note",
+        "false_alarm": false
+      },
+      {
+        "case": "identity_conflict",
+        "layout": "identity_conflict",
+        "false_alarm": false
+      },
+      {
+        "case": "ambiguous_date",
+        "layout": "ambiguous_date",
+        "false_alarm": false
+      },
+      {
+        "case": "currency_guard",
+        "layout": "currency_mismatch",
+        "false_alarm": false
+      },
+      {
+        "case": "missing_tranche",
+        "layout": "missing_tranche",
+        "false_alarm": false
+      }
+    ],
+    "message_rewrites": [
+      {
+        "case": "loan_columns_error",
+        "protected": true
+      },
+      {
+        "case": "loan_columns_contradiction",
+        "protected": true
+      },
+      {
+        "case": "bank_bad_carry",
+        "protected": true
+      }
+    ],
+    "catch_rate": {
+      "correct": 30,
+      "total": 30,
+      "rate": 1.0
+    },
+    "false_alarm_rate": {
+      "correct": 0,
+      "total": 17,
+      "rate": 0.0
+    },
+    "rewrite_rate": {
+      "correct": 3,
+      "total": 3,
+      "rate": 1.0
+    },
+    "scope": "Ten deliberate verifier faults across three fictional layouts, plus healthy corpus controls. Not a live-model or real-world catch rate."
+  },
+  "tools": {
+    "probes": [
+      {
+        "probe": "cents",
+        "tool": "calculator",
+        "passed": true,
+        "rejected": false,
+        "sequence": 1,
+        "returned_sources": []
+      },
+      {
+        "probe": "negative",
+        "tool": "calculator",
+        "passed": true,
+        "rejected": false,
+        "sequence": 2,
+        "returned_sources": []
+      },
+      {
+        "probe": "nonfinite",
+        "tool": "calculator",
+        "passed": true,
+        "rejected": true,
+        "sequence": 3,
+        "returned_sources": []
+      },
+      {
+        "probe": "subcent",
+        "tool": "calculator",
+        "passed": true,
+        "rejected": true,
+        "sequence": 4,
+        "returned_sources": []
+      },
+      {
+        "probe": "large_exponent",
+        "tool": "calculator",
+        "passed": true,
+        "rejected": true,
+        "sequence": 5,
+        "returned_sources": []
+      },
+      {
+        "probe": "extra_argument",
+        "tool": "calculator",
+        "passed": true,
+        "rejected": true,
+        "sequence": 6,
+        "returned_sources": []
+      },
+      {
+        "probe": "wrong_type",
+        "tool": "search_evidence",
+        "passed": true,
+        "rejected": true,
+        "sequence": 7,
+        "returned_sources": []
+      },
+      {
+        "probe": "unknown_tool",
+        "tool": "read_file",
+        "passed": true,
+        "rejected": true,
+        "sequence": 8,
+        "returned_sources": []
+      },
+      {
+        "probe": "case_switch",
+        "tool": "search_evidence",
+        "passed": true,
+        "rejected": true,
+        "sequence": 1,
+        "returned_sources": []
+      },
+      {
+        "probe": "unique_query",
+        "tool": "search_evidence",
+        "passed": true,
+        "rejected": false,
+        "sequence": 2,
+        "returned_sources": [
+          "doc1:p1:l6"
+        ]
+      },
+      {
+        "probe": "compound_query",
+        "tool": "search_evidence",
+        "passed": true,
+        "rejected": false,
+        "sequence": 3,
+        "returned_sources": [
+          "doc1:p1:l6",
+          "doc1:p1:l7",
+          "doc1:p1:l8"
+        ]
+      },
+      {
+        "probe": "unknown_query",
+        "tool": "search_evidence",
+        "passed": true,
+        "rejected": false,
+        "sequence": 4,
+        "returned_sources": []
+      }
+    ],
+    "contract_correctness": {
+      "correct": 12,
+      "total": 12,
+      "rate": 1.0
+    },
+    "retrieval_precision": {
+      "correct": 2,
+      "total": 4,
+      "rate": 0.5
+    },
+    "retrieval_recall": {
+      "correct": 2,
+      "total": 2,
+      "rate": 1.0
+    },
+    "unexpected_transport_failures": 0,
+    "scope": "Predetermined contract/adversarial requests through real MCP, not model tool-selection accuracy. Gold relevance is annotated for the T1 queries; partial keyword matches count against precision."
+  },
+  "live": {
+    "status": "scored",
+    "current_source_match": true,
+    "artifact_sha256": "0b604cafb2fef4af056c68c63119c392f2016349e7c2c1ffff78a9a06e89105b",
+    "finished_at": "2026-10-31T17:16:54.764911+00:00",
+    "fields": {
+      "stated_total": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      },
+      "loan_id": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      },
+      "id": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.9333333333333333
+      },
+      "principal": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.9333333333333333
+      },
+      "interest": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.9333333333333333
+      },
+      "currency": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      },
+      "period_end": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      }
+    },
+    "native_fields": {
+      "stated_total": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "loan_id": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "id": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "principal": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "interest": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "currency": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "period_end": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    },
+    "image_abstention_fn": 7,
+    "model": "muse-spark-1.3",
+    "cases": [
+      {
+        "case": "clean",
+        "requests": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "calculator_exactness": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "calculator_input_grounding": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "case_bound_retrieval": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "distinct_check_coverage": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "finding_source_retrieval": {
+          "correct": 0,
+          "total": 0,
+          "rate": null
+        },
+        "finding_source_final_citation": {
+          "correct": 0,
+          "total": 0,
+          "rate": null
+        },
+        "fields": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "native_fields": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "image_abstention_fn": 0,
+        "layout": "labeled_loan_pair",
+        "failures": [],
+        "elapsed_seconds": 22.75
+      },
+      {
+        "case": "contradiction",
+        "requests": {
+          "correct": 4,
+          "total": 4,
+          "rate": 1.0
+        },
+        "calculator_exactness": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "calculator_input_grounding": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "case_bound_retrieval": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "distinct_check_coverage": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "finding_source_retrieval": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "finding_source_final_citation": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "fields": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "native_fields": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "image_abstention_fn": 0,
+        "layout": "labeled_loan_pair",
+        "failures": [],
+        "elapsed_seconds": 26.97
+      },
+      {
+        "case": "math_error",
+        "requests": {
+          "correct": 4,
+          "total": 4,
+          "rate": 1.0
+        },
+        "calculator_exactness": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "calculator_input_grounding": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "case_bound_retrieval": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "distinct_check_coverage": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "finding_source_retrieval": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "finding_source_final_citation": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "fields": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "native_fields": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "image_abstention_fn": 0,
+        "layout": "labeled_loan_pair",
+        "failures": [],
+        "elapsed_seconds": 28.08
+      },
+      {
+        "case": "messy",
+        "requests": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "calculator_exactness": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "calculator_input_grounding": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "case_bound_retrieval": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "distinct_check_coverage": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "finding_source_retrieval": {
+          "correct": 0,
+          "total": 0,
+          "rate": null
+        },
+        "finding_source_final_citation": {
+          "correct": 0,
+          "total": 0,
+          "rate": null
+        },
+        "fields": {
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.6666666666666666
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.6666666666666666
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.6666666666666666
+          },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          }
+        },
+        "native_fields": {
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "image_abstention_fn": 7,
+        "layout": "native_plus_image_review",
+        "failures": [],
+        "elapsed_seconds": 21.34
+      }
+    ],
+    "summary": {
+      "requests": {
+        "correct": 12,
+        "total": 12,
+        "rate": 1.0
+      },
+      "calculator_exactness": {
+        "correct": 7,
+        "total": 7,
+        "rate": 1.0
+      },
+      "calculator_input_grounding": {
+        "correct": 7,
+        "total": 7,
+        "rate": 1.0
+      },
+      "case_bound_retrieval": {
+        "correct": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "distinct_check_coverage": {
+        "correct": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "finding_source_retrieval": {
+        "correct": 5,
+        "total": 5,
+        "rate": 1.0
+      },
+      "finding_source_final_citation": {
+        "correct": 5,
+        "total": 5,
+        "rate": 1.0
+      }
+    },
+    "scope": "Four recorded Muse Spark cases on fictional labeled statements. Request correctness is schema/result/case grounding, not a proof that the model chose the best action. Check coverage counts model repetition of native verified operand multisets, with order/format normalized and neutral zeros ignored; it is not a bypass of native checks. No model calls are made by this evaluator."
+  },
+  "retained_live_failures": [
+    {
+      "artifact": "live-meta-agent-evals-budget-failure.json",
+      "sha256": "a6a10ccf71e8f525e4d5ebdd9fd2dca684e76f8c023776f31edeaeab432c5d48",
+      "started_at": "2026-10-31T17:08:49.737068+00:00",
+      "passed_cases": 3,
+      "failed_cases": [
+        {
+          "case": "messy",
+          "finding_types": [
+            "ocr_required",
+            "comparison_skipped"
+          ],
+          "failed_validations": []
+        }
+      ]
+    },
+    {
+      "artifact": "live-meta-agent-evals-initial-failure.json",
+      "sha256": "b65c48f5d7318092340f1f7f88425e00338b96345402d2e49eb45c94074213e7",
+      "started_at": "2026-10-31T14:17:07.363586+00:00",
+      "passed_cases": 2,
+      "failed_cases": [
+        {
+          "case": "math_error",
+          "finding_types": [],
+          "failed_validations": []
+        }
+      ]
+    },
+    {
+      "artifact": "live-meta-ocr-initial-failure.json",
+      "sha256": "a36bba791fb782f06b783cfcf7bf1d7a9b0686615c07056b087dad6da7ca7939",
+      "started_at": "2026-10-30T01:47:32.165894+00:00",
+      "passed_cases": 1,
+      "failed_cases": [
+        {
+          "case": "contradiction",
+          "finding_types": [],
+          "failed_validations": []
+        }
+      ]
+    }
+  ],
+  "source_sha256": {
+    "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/agent_evals.py": "dbba8f90598c287a7958d237e8d189b628accba0569b4399dc43dbc226fd2f85",
+    "app/benchmark.py": "76f3fc9deaf71f887e3c95c895397303de6e8186c83cef2e45092d371640bbfb",
+    "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
+    "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
+    "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
+    "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
+    "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
+    "app/layouts.py": "b3399c6f90dd07163f4aa65e5c350bc95697fd4703c24a6a1e4055609aea9f04",
+    "app/main.py": "4a2d45d1de1dda927894348c15ff16a82c4a174117e9b18ed426d92d5d6f47cf",
+    "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
+    "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",
+    "app/meta.py": "099428fede7a69b52edbc433b97abe32c57e84dcb0a25bd71111b52aa0ae0fe4",
+    "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
+    "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
+    "app/orchestration.py": "8f6f87e7e1a1cb0555dc3c506663d194f9c8af547b690fe3220e8cc0b3581693",
+    "app/platform.py": "001a305ade38384df2c460e373eda791b5b5374a8aae977e694fbb6fe5efc916",
+    "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
+    "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
+    "app/repository.py": "61fe005593348502f18befc89f65522167ccae6394f38401322705dc7eb8d51c",
+    "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
+    "app/telemetry.py": "5212a9f9fcdc3e8949bee3386ed98f1b559a7523ea37d2a9b995aac70a9ac182",
+    "app/trace.py": "25943af20fe5fe5aebad4857bdcb04f9b99f50c0ca86eae196619fcf4e37763f",
+    "app/worker.py": "1b1f3a66ed32a95f78b9c047e38fa027adda2110ccef31d49e6f2e60170d3ded"
+  }
+}
