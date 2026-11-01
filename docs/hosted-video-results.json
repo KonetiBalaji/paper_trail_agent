@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "checked_at": "2026-11-01T21:52:10.693667+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "commit": "bacdf8acdbb18f8036a72d311d556be7bb96f579",
+  "video_sha256": "ce3c317c251011c0e9e05d9803ac96025bf990978145255ba2a16309d089e986",
+  "video_bytes": 5974154,
+  "checks": [
+    {
+      "check": "public_player_matches",
+      "passed": true
+    },
+    {
+      "check": "native_video_controls",
+      "passed": true
+    },
+    {
+      "check": "full_transcript",
+      "passed": true
+    },
+    {
+      "check": "saved_result_graphic_disclosed",
+      "passed": true
+    },
+    {
+      "check": "no_inline_or_remote_script",
+      "passed": true
+    },
+    {
+      "check": "media_csp",
+      "passed": true
+    },
+    {
+      "check": "root_links_player",
+      "passed": true
+    },
+    {
+      "check": "video_mime",
+      "passed": true
+    },
+    {
+      "check": "video_length",
+      "passed": true
+    },
+    {
+      "check": "beginning_206_range",
+      "passed": true
+    },
+    {
+      "check": "beginning_exact_bytes",
+      "passed": true
+    },
+    {
+      "check": "tail_206_range",
+      "passed": true
+    },
+    {
+      "check": "tail_exact_bytes",
+      "passed": true
+    },
+    {
+      "check": "complete_anonymous_video_hash",
+      "passed": true
+    },
+    {
+      "check": "subtitles_match",
+      "passed": true
+    },
+    {
+      "check": "poster_matches",
+      "passed": true
+    },
+    {
+      "check": "demo_css_available",
+      "passed": true
+    },
+    {
+      "check": "no_session_created",
+      "passed": true
+    },
+    {
+      "check": "application_still_healthy",
+      "passed": true
+    },
+    {
+      "check": "existing_live_evidence_still_current",
+      "passed": true
+    }
+  ],
+  "scope": "Read-only anonymous HTTP, exact full/range media bytes, player assets and existing app health. No model calls, sessions, browser playback, visual keyboard/mobile or listening review."
+}
