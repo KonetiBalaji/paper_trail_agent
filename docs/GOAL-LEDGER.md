@@ -6,7 +6,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | Item | Requirement | Current evidence / remaining gate |
 | --- | --- | --- |
 | 1 | Reliable hosted, abuse-protected judge demo | Public Vercel/Neon demo deployed; 50 hosted checks pass, including isolation, limits, CSRF, four outcomes, review, exports and paid-call/upload/OCR denial. Browser Evals 6/6 and benchmark 19/19 pass; uptime monitoring remains pending |
-| 2 | Three-minute actual-app video | Pending; shot plan exists, no completed video |
+| 2 | Three-minute actual-app video | 128.267-second narrated/open-captioned video rendered under three minutes: actual $25/$50/messy/Evals/trace/human-review footage plus an explicitly labelled graphic of a separate actual live Meta result. 41 media/evidence checks pass; portable local edit bundle prepared. Human listening, continuous playback and final public deployment checks remain pending |
 | 3 | Final form and project write-up | Draft exists; final review, URLs and submission pending |
 | 4 | Sanitized live Meta evidence in repository | Fresh MCP-backed four-case live evidence passes with 2/4/4/2 tool calls, matching actual server call counts and zero server validation failures. Critic verdicts/calculation coverage pass and all app hashes match the agent scorecard patch. Initial API failure retained. Layout evidence remains historical; hosted live Meta smoke and final-release recheck pending |
 | 5 | Discord linked role | Optional manual account step; not verified |

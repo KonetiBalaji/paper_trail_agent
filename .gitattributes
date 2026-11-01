@@ -3,3 +3,6 @@
 *.png binary
 *.ps1 text eol=crlf
 *.json text eol=lf
+*.mp4 binary
+*.jpg binary
+*.srt text eol=lf

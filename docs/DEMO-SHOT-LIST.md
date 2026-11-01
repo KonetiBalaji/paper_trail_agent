@@ -1,4 +1,6 @@
-# Three-minute demonstration plan
+# Demonstration shot plan and rendered version
+
+A narrated 2:08 version is now rendered below the three-minute target. See [the demo](DEMO.md) for its actual timestamps, evidence-graphic disclosure and review limits. The table below is the original planning estimate, not measured runtime.
 
 Record the real application with synthetic PDFs only. Keep the Meta key, Billing screens, personal tabs and private documents out of the recording. Pre-run the live analyses in separate tabs so the video can show completed results without spending its runtime waiting for inference. Clearly identify these as completed live runs; do not simulate tool activity.
 
@@ -21,4 +23,4 @@ Record the real application with synthetic PDFs only. Keep the Meta key, Billing
 - Export and public repository links accessible.
 - Final video URL opens for a viewer without special account access.
 
-This file is a shot plan, not a completed video.
+The original plan remains here for provenance; actual runtime and implemented scenes are recorded in DEMO.md.

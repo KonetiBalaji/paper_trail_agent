@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "scope": "Additional actual local Muse Spark run on the fictional contradiction pair, used for the labelled video evidence graphic. No provider key, request headers, or personal documents.",
+  "original_report_sha256": "c0d4344fa604975265bc07abe59d4a05a17adb5f701787f003a437fe8c38be5f",
+  "report_created_at": null,
+  "status": "discrepancies",
+  "confirmed_findings": [
+    {
+      "id": "F1",
+      "type": "cross_document_interest_mismatch",
+      "message": "T1 interest differs by 25.00 USD.",
+      "sources": [
+        "doc1:p1:l6",
+        "doc2:p1:l6"
+      ],
+      "severity": "confirmed",
+      "field": "interest",
+      "tranche": "T1",
+      "difference": "25.00",
+      "critic": {
+        "decision": "passed",
+        "stage": "Critic"
+      },
+      "human_review": {
+        "decision": "pending",
+        "revision": 0,
+        "history": []
+      }
+    }
+  ],
+  "agent": {
+    "summary": "Native PDF text (ocr_performed=false, no OCR uncertainty) shows T1 Interest 100.00 in doc1:p1:l6 vs 125.00 in doc2:p1:l6, a 25.00 difference. T2 matches at 200.00. Calculator verifies doc1 1000.00+100.00+2000.00+200.00=3300.00 matches stated 3300.00 in doc1:p1:l8, and doc2 1000.00+125.00+2000.00+200.00=3325.00 matches stated 3325.00 in doc2:p1:l8. Each total is internally consistent; cross-document difference is fully explained by the T1 interest mismatch. Correct T1 value requires human verification of source documents.",
+    "checklist": [
+      "Ask human to inspect native text of doc1.pdf line 6 vs doc2.pdf line 6 to confirm correct T1 Interest (100.00 vs 125.00)",
+      "Ask human to confirm which stated total (3300.00 vs 3325.00) is correct in source system and correct the other document if needed",
+      "Retain both PDFs for audit trail until pending human review of F1 is resolved"
+    ],
+    "sources": [
+      "doc1:p1:l6",
+      "doc2:p1:l6",
+      "doc1:p1:l7",
+      "doc2:p1:l7",
+      "doc1:p1:l8",
+      "doc2:p1:l8"
+    ],
+    "tool_trace": [
+      {
+        "tool": "search_evidence",
+        "input": {
+          "query": "T1 interest"
+        },
+        "result": [
+          {
+            "id": "doc1:p1:l6",
+            "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+            "page": 1,
+            "line": 6
+          },
+          {
+            "id": "doc2:p1:l6",
+            "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 125.00",
+            "page": 1,
+            "line": 6
+          },
+          {
+            "id": "doc1:p1:l7",
+            "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+            "page": 1,
+            "line": 7
+          },
+          {
+            "id": "doc1:p1:l8",
+            "text": "L07 Stated principal plus interest total: 3300.00",
+            "page": 1,
+            "line": 8
+          },
+          {
+            "id": "doc2:p1:l7",
+            "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+            "page": 1,
+            "line": 7
+          },
+          {
+            "id": "doc2:p1:l8",
+            "text": "L07 Stated principal plus interest total: 3325.00",
+            "page": 1,
+            "line": 8
+          }
+        ],
+        "validation": "passed",
+        "event_id": "E14",
+        "transport": "mcp_stdio",
+        "mcp_sequence": 1
+      },
+      {
+        "tool": "calculator",
+        "input": {
+          "values": [
+            "1000.00",
+            "100.00",
+            "2000.00",
+            "200.00"
+          ]
+        },
+        "result": {
+          "sum": "3300.00"
+        },
+        "validation": "passed",
+        "event_id": "E16",
+        "transport": "mcp_stdio",
+        "mcp_sequence": 2
+      },
+      {
+        "tool": "calculator",
+        "input": {
+          "values": [
+            "1000.00",
+            "125.00",
+            "2000.00",
+            "200.00"
+          ]
+        },
+        "result": {
+          "sum": "3325.00"
+        },
+        "validation": "passed",
+        "event_id": "E17",
+        "transport": "mcp_stdio",
+        "mcp_sequence": 3
+      }
+    ],
+    "mcp": {
+      "transport": "mcp_stdio",
+      "protocol_version": "2026-07-28",
+      "server": {
+        "name": "paper-trail-tools",
+        "version": "1.0.0"
+      },
+      "tools": [
+        {
+          "name": "search_evidence",
+          "input_schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "maxLength": 500,
+                "minLength": 1,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "title": "SearchInput"
+          },
+          "output_schema": {
+            "$defs": {
+              "EvidenceLine": {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "title": "Id",
+                    "type": "string"
+                  },
+                  "text": {
+                    "maxLength": 2000,
+                    "title": "Text",
+                    "type": "string"
+                  },
+                  "page": {
+                    "title": "Page",
+                    "type": "integer"
+                  },
+                  "line": {
+                    "title": "Line",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "text",
+                  "page",
+                  "line"
+                ],
+                "title": "EvidenceLine",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "lines": {
+                "items": {
+                  "$ref": "#/$defs/EvidenceLine"
+                },
+                "maxItems": 8,
+                "title": "Lines",
+                "type": "array"
+              }
+            },
+            "required": [
+              "lines"
+            ],
+            "title": "SearchOutput",
+            "type": "object"
+          }
+        },
+        {
+          "name": "calculator",
+          "input_schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "values": {
+                "items": {
+                  "maxLength": 32,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 1000,
+                "minItems": 1,
+                "title": "Values",
+                "type": "array"
+              }
+            },
+            "required": [
+              "values"
+            ],
+            "title": "CalculatorInput"
+          },
+          "output_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "sum": {
+                "title": "Sum",
+                "type": "string"
+              }
+            },
+            "required": [
+              "sum"
+            ],
+            "title": "CalculatorOutput",
+            "type": "object"
+          }
+        }
+      ],
+      "max_calls": 8,
+      "redaction": "pattern redaction before transport",
+      "server_call_log": [
+        {
+          "sequence": 1,
+          "tool": "search_evidence",
+          "input": {
+            "query": "T1 interest"
+          },
+          "output": {
+            "lines": [
+              {
+                "id": "doc1:p1:l6",
+                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+                "page": 1,
+                "line": 6
+              },
+              {
+                "id": "doc2:p1:l6",
+                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 125.00",
+                "page": 1,
+                "line": 6
+              },
+              {
+                "id": "doc1:p1:l7",
+                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+                "page": 1,
+                "line": 7
+              },
+              {
+                "id": "doc1:p1:l8",
+                "text": "L07 Stated principal plus interest total: 3300.00",
+                "page": 1,
+                "line": 8
+              },
+              {
+                "id": "doc2:p1:l7",
+                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+                "page": 1,
+                "line": 7
+              },
+              {
+                "id": "doc2:p1:l8",
+                "text": "L07 Stated principal plus interest total: 3325.00",
+                "page": 1,
+                "line": 8
+              }
+            ]
+          },
+          "validation": "passed",
+          "transport": "mcp_stdio",
+          "duration_ms": 0.39
+        },
+        {
+          "sequence": 2,
+          "tool": "calculator",
+          "input": {
+            "values": [
+              "1000.00",
+              "100.00",
+              "2000.00",
+              "200.00"
+            ]
+          },
+          "output": {
+            "sum": "3300.00"
+          },
+          "validation": "passed",
+          "transport": "mcp_stdio",
+          "duration_ms": 0.17
+        },
+        {
+          "sequence": 3,
+          "tool": "calculator",
+          "input": {
+            "values": [
+              "1000.00",
+              "125.00",
+              "2000.00",
+              "200.00"
+            ]
+          },
+          "output": {
+            "sum": "3325.00"
+          },
+          "validation": "passed",
+          "transport": "mcp_stdio",
+          "duration_ms": 0.06
+        }
+      ]
+    }
+  },
+  "metrics": {
+    "analysis_ms": 28387.62,
+    "attempted_model_calls": 5,
+    "successful_model_calls": 5,
+    "calls_with_reported_usage": 5,
+    "provider_usage_complete": true,
+    "reported_tokens": {
+      "prompt_tokens": 8242,
+      "completion_tokens": 5535,
+      "total_tokens": 13777
+    },
+    "token_coverage": {
+      "prompt_tokens": 5,
+      "completion_tokens": 5,
+      "total_tokens": 5
+    },
+    "estimated_cost_usd": null,
+    "cost_basis": "unmeasured or rates not configured"
+  },
+  "fictional_fixture_sha256": {
+    "data/synthetic/contradiction/statement_A.pdf": "beaa2faf94bda32635a9d3b7b80582374fdff250e11c700d68bdfbeae6c144ca",
+    "data/synthetic/contradiction/statement_B.pdf": "99c0b55b5ac20b9b4b829d11a52640b0ecf22f007e33a40d89bbbbff00984029"
+  }
+}

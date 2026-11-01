@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "verified_at": "2026-11-01T20:11:52.431953+00:00",
+  "file": "demo-review-v4.mp4",
+  "sha256": "ce3c317c251011c0e9e05d9803ac96025bf990978145255ba2a16309d089e986",
+  "duration_seconds": 128.26666666666668,
+  "frames_decoded": 1924,
+  "audio_samples_decoded": 6156288,
+  "audio_decoded_seconds": 128.256,
+  "loudness_lufs": -16.22,
+  "true_peak_dbtp": -4.34,
+  "source_conformance_samples": [
+    {
+      "chapter": "interest_hook",
+      "final_frame": 103,
+      "source_seconds": 25.866666666666667,
+      "mean_absolute_rgb_error": 1.3973
+    },
+    {
+      "chapter": "public_demo_boundary",
+      "final_frame": 271,
+      "source_seconds": 4.266666666666667,
+      "mean_absolute_rgb_error": 1.0469
+    },
+    {
+      "chapter": "grounded_sources",
+      "final_frame": 381,
+      "source_seconds": 43.0,
+      "mean_absolute_rgb_error": 0.9015
+    },
+    {
+      "chapter": "grounded_sources",
+      "final_frame": 471,
+      "source_seconds": 66.0,
+      "mean_absolute_rgb_error": 0.948
+    },
+    {
+      "chapter": "wrong_total",
+      "final_frame": 547,
+      "source_seconds": 121.0,
+      "mean_absolute_rgb_error": 1.3929
+    },
+    {
+      "chapter": "wrong_total",
+      "final_frame": 622,
+      "source_seconds": 135.0,
+      "mean_absolute_rgb_error": 0.6185
+    },
+    {
+      "chapter": "wrong_total",
+      "final_frame": 699,
+      "source_seconds": 142.13333333333333,
+      "mean_absolute_rgb_error": 1.0435
+    },
+    {
+      "chapter": "critic_and_human_review",
+      "final_frame": 787,
+      "source_seconds": 156.2,
+      "mean_absolute_rgb_error": 1.4274
+    },
+    {
+      "chapter": "critic_and_human_review",
+      "final_frame": 916,
+      "source_seconds": 90.33333333333333,
+      "mean_absolute_rgb_error": 0.9292
+    },
+    {
+      "chapter": "scan_abstention",
+      "final_frame": 1049,
+      "source_seconds": 171.0,
+      "mean_absolute_rgb_error": 1.2437
+    },
+    {
+      "chapter": "scan_abstention",
+      "final_frame": 1169,
+      "source_seconds": 184.0,
+      "mean_absolute_rgb_error": 1.0053
+    },
+    {
+      "chapter": "evaluations",
+      "final_frame": 1554,
+      "source_seconds": 210.46666666666667,
+      "mean_absolute_rgb_error": 0.5905
+    },
+    {
+      "chapter": "evaluations",
+      "final_frame": 1631,
+      "source_seconds": 226.66666666666666,
+      "mean_absolute_rgb_error": 0.6223
+    },
+    {
+      "chapter": "evaluations",
+      "final_frame": 1727,
+      "source_seconds": 256.73333333333335,
+      "mean_absolute_rgb_error": 0.6392
+    }
+  ],
+  "checks": [
+    {
+      "check": "bound_input_raw-screen-03.mp4",
+      "passed": true
+    },
+    {
+      "check": "bound_input_narration-master.wav",
+      "passed": true
+    },
+    {
+      "check": "bound_input_local-meta-report.json",
+      "passed": true
+    },
+    {
+      "check": "starts_at_zero",
+      "passed": true
+    },
+    {
+      "check": "continuous_picture",
+      "passed": true
+    },
+    {
+      "check": "complete_picture",
+      "passed": true
+    },
+    {
+      "check": "no_reused_source_intervals",
+      "passed": true
+    },
+    {
+      "check": "natural_source_speed",
+      "passed": true
+    },
+    {
+      "check": "all_nine_story_beats",
+      "passed": true
+    },
+    {
+      "check": "caption_intervals",
+      "passed": true
+    },
+    {
+      "check": "no_caption_overlap",
+      "passed": true
+    },
+    {
+      "check": "all_words_captioned_once",
+      "passed": true
+    },
+    {
+      "check": "caption_readability_flags_resolved",
+      "passed": true
+    },
+    {
+      "check": "actual_mcp_budget",
+      "passed": true
+    },
+    {
+      "check": "matching_actual_server_call_1",
+      "passed": true
+    },
+    {
+      "check": "matching_actual_server_call_2",
+      "passed": true
+    },
+    {
+      "check": "independent_sum_2",
+      "passed": true
+    },
+    {
+      "check": "matching_actual_server_call_3",
+      "passed": true
+    },
+    {
+      "check": "independent_sum_3",
+      "passed": true
+    },
+    {
+      "check": "actual_live_finding",
+      "passed": true
+    },
+    {
+      "check": "1080p_h264_15fps",
+      "passed": true
+    },
+    {
+      "check": "full_picture_decode",
+      "passed": true
+    },
+    {
+      "check": "no_black_frames",
+      "passed": true
+    },
+    {
+      "check": "stereo_48k_aac",
+      "passed": true
+    },
+    {
+      "check": "no_truncated_speech",
+      "passed": true
+    },
+    {
+      "check": "under_three_minutes",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_103",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_271",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_381",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_471",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_547",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_622",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_699",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_787",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_916",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_1049",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_1169",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_1554",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_1631",
+      "passed": true
+    },
+    {
+      "check": "sampled_source_conformance_1727",
+      "passed": true
+    },
+    {
+      "check": "encoded_audio_headroom",
+      "passed": true
+    }
+  ],
+  "listening_review": "not_performed",
+  "visual_review_scope": "Source and edited contact sheets plus selected full-size frames; no claim of continuous audiovisual playback review.",
+  "disclosure": "App footage is the public deterministic synthetic flow. The separate live Meta section is an editorial graphic of an actual saved local API result, explicitly labelled; it is not an app recording or a new tool execution.",
+  "input_sha256": {
+    "edit-timeline.json": "1484412c16232edc0300827372f5b150c2d420e9ffe2d62a91cd3b3a7ecf4b5c",
+    "caption-cues.json": "0ff3a10a3c754bccdfea6f0be625558ec45eee8c860944e7d77ae8cbca1066ac",
+    "narration-review.json": "9ff8790a54879d854590289fb5d66820bdf9ce48913cb10647fbc519f3d50755"
+  },
+  "asr_encoded_source_match": true,
+  "asr_scope": "Independent local small.en transcriptions of the source and encoded audio have identical normalized tokens; human listening not performed.",
+  "final_asr_sha256": "ad0ad1b90b23f5d7034e07323565dd3450d53abad964dab882e3f73aa365c7ce"
+}

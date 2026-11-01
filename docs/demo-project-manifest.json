@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "bundle_file": "paper-trail-demo-project.zip",
+  "bundle_sha256": "ed1ef28c90c4d9b3c29d164544e05c3295f85c724ee15232275a843d188f126f",
+  "bundle_bytes": 33275849,
+  "video_sha256": "ce3c317c251011c0e9e05d9803ac96025bf990978145255ba2a16309d089e986",
+  "duration_seconds": 128.26666666666668,
+  "files": {
+    "raw-screen-03.mp4": "af899cf801ec8cb1c2b865340915a9e29fbcd7fc44d4a70280c0d9b6d7d42d8c",
+    "capture-metadata-03.json": "2b0b1de825f98ec159cf3a9bb8e5f39e45cbf98590254efc4894405ee0afe38e",
+    "narration-original.audio": "156a8bf5b75ebda9e83a497e18033d6a84bdee94161fa83df4d934ad323ef4f9",
+    "narration-master.wav": "7752d7a234805644013f7d63e8d6fe55ac75e383853cfe90c0c198e4c4aaa538",
+    "narration-master-source.json": "96f2244b25dd1f3cdac265b99a8e40273110b22693f57c655e859ae35e64be2c",
+    "narration.txt": "e0a78d49346d179fa83e2702c5c5e95312bdd2572c2bf13484f58e73f63f8bf4",
+    "narration-review.json": "9ff8790a54879d854590289fb5d66820bdf9ce48913cb10647fbc519f3d50755",
+    "narration.srt": "6feac877edff0ea87dc97f320c8e15bb1d337f5e59a4f4b91084549be57b7302",
+    "caption-cues.json": "0ff3a10a3c754bccdfea6f0be625558ec45eee8c860944e7d77ae8cbca1066ac",
+    "speech-chapters.json": "5ca23dabfb4b9d173ad4c30785e482b28105908dca29f519a5ec4a8d9c7916d6",
+    "local-meta-report.json": "c0d4344fa604975265bc07abe59d4a05a17adb5f701787f003a437fe8c38be5f",
+    "edit-timeline.json": "1484412c16232edc0300827372f5b150c2d420e9ffe2d62a91cd3b3a7ecf4b5c",
+    "graphic-events.json": "fde3a431100c9b871c9c5e92eb9afd3edb87df5f97fbe094561c39b8991096d4",
+    "video-render-results.json": "c481f10efcef7058c4f8466e111687fc4582327566febeed54b975b57162e8ee",
+    "video-verification.json": "747cbb4cd554a7a58c9c3d9e16dc7ba112d27d430967f755967dfeecfd86e88d",
+    "final-audio-asr.json": "ad0ad1b90b23f5d7034e07323565dd3450d53abad964dab882e3f73aa365c7ce",
+    "demo-review-v4.mp4": "ce3c317c251011c0e9e05d9803ac96025bf990978145255ba2a16309d089e986",
+    "scripts/prepare_demo.py": "f4e695011f438418ee402cc292ce2f028bec92adab01b5b025f870adc982c971",
+    "scripts/render_demo.py": "55065722d40230d32ba5919630ff8e5c9f5aac3ec6719bf5b65a80c57816d5ee",
+    "scripts/verify_demo.py": "d42f676153d3c440e9d46ae85526252333766a04cf01a0b2412956e933d5f27e"
+  },
+  "provider_urls_excluded": true,
+  "aborted_takes_excluded": true,
+  "scope": "Portable local edit project with original accepted speech, only synthetic app take 03, actual saved live result, and Python source. No generation credentials or model cache."
+}

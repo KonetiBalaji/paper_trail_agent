@@ -1,5 +1,7 @@
 # Paper Trail Agent
 
+**[Watch the narrated 2:08 demo](https://paper-trail-agent.vercel.app/static/demo.html)** — actual synthetic-app footage, highlighted $25/$50 evidence, review, Evals, and a labelled graphic from a real saved Meta tool run. [Production/evidence notes](docs/DEMO.md).
+
 Authenticated OCR workflow: install `requirements-ocr.txt` in a separate worker
 environment, configure the same service database/encryption secrets, and run
 `python -m app.worker`. A reviewer can request OCR on an uploaded case, refresh
@@ -157,7 +159,7 @@ rate. Broader agent-level field/tool/layout metrics remain an open requirement.
 The upload page now includes a public **Data use and terms** notice explaining
 storage, Meta processing, redaction, deletion and human decisions. In service
 mode, administrators can preview and configure **Case retention**. It starts
-disabled; enabling requires typing `DELETE_EXPIRED_CASES`. Choose 1â€“365 days
+disabled; enabling requires typing `DELETE_EXPIRED_CASES`. Choose 1Ã¢â‚¬â€œ365 days
 measured from case creation in UTC. The worker performs bounded cleanup between
 jobs, and admins can run a pass manually. Deleted cases lose original PDFs and
 every report/review version; audit/job metadata, host backups and prior downloads
@@ -182,13 +184,13 @@ keys in **Integration API keys**. Choose `cases:read`, `cases:submit`, or both.
 The raw key is shown once in a masked field and is cleared on logout/access
 changes. Store it in the calling tool's secret settings. The database stores an
 HMAC digest, encrypted label, owner and scopes, never the raw token. Keys expire
-after 1â€“90 days (UI choices 7/30/90), and each workspace may have ten active keys.
+after 1Ã¢â‚¬â€œ90 days (UI choices 7/30/90), and each workspace may have ten active keys.
 Revocation, expiry and a disabled/non-admin owner block new requests. Creation
 and revocation append actor/key-ID audit events without the secret.
 
 Server-to-server callers send `Authorization: Bearer <your-key>` to:
 
-- `POST /api/integrations/v1/cases`: multipart `files`, 1â€“8 PDFs, and optional
+- `POST /api/integrations/v1/cases`: multipart `files`, 1Ã¢â‚¬â€œ8 PDFs, and optional
   `mode=local`; returns a case ID/status/version receipt. Requires `cases:submit`.
 - `GET /api/integrations/v1/cases/{id}`: pattern-redacted report; optional
   `version=N`. Requires `cases:read` and the same workspace.

@@ -1,0 +1,7 @@
+.demo-video{display:block;width:100%;height:auto;border-radius:8px;background:#18342d}
+.demo-page main{max-width:1200px}
+.demo-page h1{font-size:clamp(30px,4vw,46px)}
+.demo-page .transcript p{font-size:16px;line-height:1.8;max-width:80ch}
+.demo-page .actions{margin:20px 0}
+.demo-page summary{cursor:pointer;font-weight:600;padding:10px 0}
+.demo-page a:focus-visible,.demo-page summary:focus-visible,.demo-page video:focus-visible{outline:3px solid #b66a3e;outline-offset:4px}

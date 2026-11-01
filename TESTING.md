@@ -1,5 +1,29 @@
 # Verification record - October 28, 2026
 
+## Narrated demo artifact - November 1, 2026
+
+- A **128.267-second**, 1920x1080 H.264/AAC video now combines actual synthetic
+  app interactions with an explicitly labelled saved-live-result graphic.
+  The $25/$50 source highlights, exact calculation, manual scan review, persisted
+  human approval, trace, Evals and measured retrieval weakness are shown.
+- `docs/demo-video-verification.json` records **41 passing media/evidence checks**:
+  complete decode, 1,924 frames, no black gaps, no reused source intervals, natural
+  playback, source-conformance samples, all words captioned once, and agreement
+  between the saved agent and real MCP server calls. The 45 caption cues have
+  zero remaining timing/read-speed flags. The source and encoded audio have
+  matching independent local ASR transcriptions, including critical amounts.
+- Visual review used contact sheets and full-size critical frames. Human listening
+  and continuous audiovisual playback have **not** been performed; this is stated
+  in the evidence rather than inferred from metadata. The Meta graphic is not
+  passed off as an app recording or newly executing tools.
+- The new anonymous-player integration test passes locally, including video MIME,
+  SHA-256 binding, 206 byte ranges, 416 invalid ranges, subtitles and no database
+  or model access. Final CI/deployed-player checks will be recorded after push.
+- Original accepted voice, only synthetic recording take 03, source report,
+  captions, natural-speed cuts and Python render/verify scripts are preserved in
+  a 33 MB local project ZIP; signed provider URLs, model cache and aborted takes
+  are excluded. See `docs/DEMO.md` and `docs/demo-project-manifest.json`.
+
 ## Public-service security gates - November 1, 2026
 
 - New disposable service probes: **22 passed**, covering all ten case-read
