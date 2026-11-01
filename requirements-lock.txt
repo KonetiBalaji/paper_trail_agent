@@ -39,7 +39,7 @@ python-dotenv==1.2.4
 python-multipart==0.0.32
 pywin32==312; sys_platform == "win32"
 referencing==0.37.0
-reportlab==4.5.1
+reportlab==5.1.0
 rpds-py==2026.9.1
 SQLAlchemy==2.1.6
 sse-starlette==3.6.0
