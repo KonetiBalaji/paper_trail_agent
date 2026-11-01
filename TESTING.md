@@ -32,6 +32,10 @@
   remain withheld and counted separately. This is one successful run, not a
   reliability estimate; the failed attempts remain alongside it.
 
+- Hosted freshness initially caught CRLF/LF JSON checksum differences. JSON
+  files now use LF in Git checkouts and evidence writers; the scorecard was
+  regenerated against those bytes without changing the live observations.
+
 ## Actual MCP tool transport - October 31, 2026
 
 - `scripts/evaluate_mcp.py` uses independent official SDK clients against actual

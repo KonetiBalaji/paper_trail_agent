@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "evaluated_at": "2026-10-31T17:17:35.782198+00:00",
+  "evaluated_at": "2026-11-01T19:11:40.716879+00:00",
   "passed": true,
   "generation_model_calls": 0,
   "scope": "Offline corpus, controlled faults, actual local MCP probes and separately labeled recorded live evidence. Not real-world accuracy.",
@@ -1072,7 +1072,7 @@
         "review_modes": {}
       }
     ],
-    "manifest_sha256": "c05129d82463ec6dbb6828cec502811ebe5466744e910cec8194e8f4db1ddc8b"
+    "manifest_sha256": "7c61d3fa9f2fb9a26852c76ed2bfe5013dc1fba6dd3c458179e0bc85de50c78d"
   },
   "critic": {
     "review_faults": [
@@ -1705,7 +1705,7 @@
   "live": {
     "status": "scored",
     "current_source_match": true,
-    "artifact_sha256": "0b604cafb2fef4af056c68c63119c392f2016349e7c2c1ffff78a9a06e89105b",
+    "artifact_sha256": "80fbebd7ec3ca385f803bc7ccc2b38a28ab0ca9dbee91fcc67c3ff5329282685",
     "finished_at": "2026-10-31T17:16:54.764911+00:00",
     "fields": {
       "stated_total": {
@@ -2431,7 +2431,7 @@
   "retained_live_failures": [
     {
       "artifact": "live-meta-agent-evals-budget-failure.json",
-      "sha256": "a6a10ccf71e8f525e4d5ebdd9fd2dca684e76f8c023776f31edeaeab432c5d48",
+      "sha256": "f8bd91d63d73e24e22eaa2f7526fa6319a95b71f0b87ddc5ab0ae92633076f30",
       "started_at": "2026-10-31T17:08:49.737068+00:00",
       "passed_cases": 3,
       "failed_cases": [
@@ -2447,7 +2447,7 @@
     },
     {
       "artifact": "live-meta-agent-evals-initial-failure.json",
-      "sha256": "b65c48f5d7318092340f1f7f88425e00338b96345402d2e49eb45c94074213e7",
+      "sha256": "3f538dcb9a6979c51eabe5486c3c16ecbe563145d670a590fd3dbd6ae831f68d",
       "started_at": "2026-10-31T14:17:07.363586+00:00",
       "passed_cases": 2,
       "failed_cases": [
@@ -2460,7 +2460,7 @@
     },
     {
       "artifact": "live-meta-ocr-initial-failure.json",
-      "sha256": "a36bba791fb782f06b783cfcf7bf1d7a9b0686615c07056b087dad6da7ca7939",
+      "sha256": "aff8f9a7b319c9dc09a8e74df60890e09f3425771c0ed35022b5633b383bba8c",
       "started_at": "2026-10-30T01:47:32.165894+00:00",
       "passed_cases": 1,
       "failed_cases": [

@@ -35,7 +35,7 @@ def main():
     try:evidence['working_tree_modified']=bool(subprocess.check_output(['git','status','--porcelain'],cwd=project,text=True).strip())
     except (OSError,subprocess.CalledProcessError):evidence['working_tree_modified']=None
     output=Path(args.report);output.parent.mkdir(parents=True,exist_ok=True)
-    def save():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+    def save():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8',newline='\n')
     save()
     with TestClient(app) as client:
         for case,expected in [('clean',0),('contradiction',1),('math_error',1),('messy',0)]:
