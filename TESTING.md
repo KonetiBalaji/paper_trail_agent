@@ -16,7 +16,9 @@
 - The initial hosted probe failed at the missing Permissions-Policy header,
   before creating any session. Vercel configuration now includes common security
   headers, a restrictive home-document CSP and no-store on all API responses.
-  Actual deployed results and CI links will be recorded after verification.
+  **55 actual hosted checks pass** on deployed `d7a164c`, including those headers, all ten cross-session case reads, CSRF, guest privileges and revoked-cookie replay. Evidence: `docs/hosted-security-results.json`; the pre-fix failure remains in `docs/hosted-security-initial-failure.json`.
+- [Application CI run 41341656910](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41341656910) passes all four jobs: **309 core tests passed, 7 skipped**, PostgreSQL, OCR/DOM-to-HTTP and the bounded worker image. No application Python source changed; existing live agent evidence remains current.
+- [Security CI run 41341657002](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41341657002) passes. Its downloaded `docs/security-results.json` records 61 Linux core/OCR pins (Windows additionally audits pywin32), zero skipped entries, zero known advisories, zero history/tracked-file secret findings and a detected canary.
 - GitHub secret scanning and push protection were already enabled. Repository
   vulnerability alerts and Dependabot security updates are now enabled; weekly
   update PR configuration has no auto-merge. Incident/private-reporting

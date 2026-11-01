@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "checked_at": "2026-11-01T19:26:10.844735+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "commit": "d7a164c3a7afcc787d3c1b05ab110dfa681010bd",
+  "scope": "Bounded HTTP boundary probes using two disposable synthetic guests. No independent penetration test, browser CSP execution, load testing, cloud/IAM review, private documents or paid calls.",
+  "checks": [
+    {
+      "check": "home_x-content-type-options",
+      "passed": true
+    },
+    {
+      "check": "home_x-frame-options",
+      "passed": true
+    },
+    {
+      "check": "home_referrer-policy",
+      "passed": true
+    },
+    {
+      "check": "home_permissions-policy",
+      "passed": true
+    },
+    {
+      "check": "home_content-security-policy",
+      "passed": true
+    },
+    {
+      "check": "provider_hsts",
+      "passed": true
+    },
+    {
+      "check": "private_file_/.env",
+      "passed": true
+    },
+    {
+      "check": "private_file_/.env.production",
+      "passed": true
+    },
+    {
+      "check": "private_file_/.git/config",
+      "passed": true
+    },
+    {
+      "check": "private_file_/.git/HEAD",
+      "passed": true
+    },
+    {
+      "check": "private_file_/storage/private/report.json",
+      "passed": true
+    },
+    {
+      "check": "private_file_/data/private/statement.pdf",
+      "passed": true
+    },
+    {
+      "check": "private_file_/app/main.py",
+      "passed": true
+    },
+    {
+      "check": "private_file_/requirements-lock.txt",
+      "passed": true
+    },
+    {
+      "check": "private_file_/static/%2e%2e/.env",
+      "passed": true
+    },
+    {
+      "check": "anonymous_case_history",
+      "passed": true
+    },
+    {
+      "check": "unauthorized_no_store",
+      "passed": true
+    },
+    {
+      "check": "no_cross_origin_read_permission",
+      "passed": true
+    },
+    {
+      "check": "cross_origin_session_creation",
+      "passed": true
+    },
+    {
+      "check": "early_rejection_headers",
+      "passed": true
+    },
+    {
+      "check": "owner_secure_session",
+      "passed": true
+    },
+    {
+      "check": "owner_demo_only",
+      "passed": true
+    },
+    {
+      "check": "stranger_secure_session",
+      "passed": true
+    },
+    {
+      "check": "stranger_demo_only",
+      "passed": true
+    },
+    {
+      "check": "missing_csrf",
+      "passed": true
+    },
+    {
+      "check": "foreign_csrf",
+      "passed": true
+    },
+    {
+      "check": "cross_origin_write",
+      "passed": true
+    },
+    {
+      "check": "cross_session_",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_",
+      "passed": true
+    },
+    {
+      "check": "cross_session_?version=1",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_?version=1",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/audit",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/audit",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/documents/doc1",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/documents/doc1",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/documents/doc1/page/1",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/documents/doc1/page/1",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/search?q=principal",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/search?q=principal",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/export?format=json",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/export?format=json",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/export?format=csv",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/export?format=csv",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/ocr",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/ocr",
+      "passed": true
+    },
+    {
+      "check": "cross_session_/findings/F1/draft?version=1&revision=0",
+      "passed": true
+    },
+    {
+      "check": "private_rejection_no_store_/findings/F1/draft?version=1&revision=0",
+      "passed": true
+    },
+    {
+      "check": "guest_denied_/api/platform/api-keys",
+      "passed": true
+    },
+    {
+      "check": "guest_denied_/api/platform/retention",
+      "passed": true
+    },
+    {
+      "check": "guest_cannot_schedule",
+      "passed": true
+    },
+    {
+      "check": "session_is_not_api_key",
+      "passed": true
+    },
+    {
+      "check": "bearer_does_not_change_cookie_role",
+      "passed": true
+    },
+    {
+      "check": "failed_writes_did_not_alter_report",
+      "passed": true
+    },
+    {
+      "check": "logout_revokes",
+      "passed": true
+    },
+    {
+      "check": "revoked_cookie_replay",
+      "passed": true
+    }
+  ],
+  "input_sha256": {
+    "vercel.json": "91fdfa431cfc3239ff298f7002e5150793e40dbc7140626b844e5d3d2e478e7b",
+    "scripts/hosted_security_smoke.py": "6d28ad2b2e7d114218afc73df102e1d01e5b056fd933c961b10556e8d08c46ad"
+  }
+}

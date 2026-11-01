@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "checked_at": "2026-11-01T19:25:51.042335+00:00",
+  "commit": "d7a164c3a7afcc787d3c1b05ab110dfa681010bd",
+  "scope": "Default Gitleaks rules plus scoped API keys; reachable Git history and tracked working files only. Python/OCR pinned inventories and frontend lock against current advisory services. No proof against unknown vulnerabilities or secrets outside scanner rules. Ignored local secrets are deliberately excluded.",
+  "secrets": {
+    "version": "8.30.1",
+    "canary_detected": true,
+    "history": {
+      "passed": true,
+      "finding_count": 0,
+      "rule_ids": []
+    },
+    "tracked_files": {
+      "passed": true,
+      "finding_count": 0,
+      "rule_ids": []
+    },
+    "tracked_file_count": 195,
+    "tracked_manifest_sha256": "4d6766c9c77dc2cb16418a7b64138b37a26288234da0f8df07402bc03b68e303",
+    "commits_scanned": 29
+  },
+  "python": {
+    "auditor": "pip-audit==2.10.1",
+    "service": "PyPI",
+    "no_dependency_resolution": true,
+    "audited_count": 61,
+    "vulnerabilities": [],
+    "skipped": []
+  },
+  "frontend": {
+    "auditor": "npm audit",
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "input_sha256": {
+    "requirements-lock.txt": "27afd724f9be0a4f08aaeb091e43b2a6311e17822c2c8908f6df42e6bc10739e",
+    "requirements-ocr-lock.txt": "bd06cbb7e481c4c32bfe2d54928c84c196900499aa709b1a09c9d21b776f891b",
+    "tests/frontend/package-lock.json": "ac92608120c76151663ddd1393f3dc6674ffadae573c553fea44a5a1de17a019",
+    "tests/requirements-security.txt": "34f159679f45998075ec7ce025481357fd5eaf1ca39aa090e6667817041c98a4",
+    "scripts/security/gitleaks.toml": "6a1346ecd6807d2e1bbc353dccfa6324d7e4f26fdd8c8cdf6b29f38c3c32785b",
+    "scripts/security_checks.py": "c377b4360dbb25609334df4b5aca07f14b5511920143b1f18962c5364fd7b4ec"
+  }
+}

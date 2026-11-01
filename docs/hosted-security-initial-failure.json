@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "passed": false,
+  "checked_at": "2026-11-01T19:24:53.983724+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "commit": "4823c75c035d7eadafc5000e5d0d58a64eb3bf3e",
+  "scope": "Bounded HTTP boundary probes using two disposable synthetic guests. No independent penetration test, browser CSP execution, load testing, cloud/IAM review, private documents or paid calls.",
+  "checks": [
+    {
+      "check": "home_x-content-type-options",
+      "passed": true
+    },
+    {
+      "check": "home_x-frame-options",
+      "passed": true
+    },
+    {
+      "check": "home_referrer-policy",
+      "passed": true
+    },
+    {
+      "check": "home_permissions-policy",
+      "passed": false
+    }
+  ],
+  "input_sha256": {
+    "vercel.json": "91fdfa431cfc3239ff298f7002e5150793e40dbc7140626b844e5d3d2e478e7b",
+    "scripts/hosted_security_smoke.py": "6d28ad2b2e7d114218afc73df102e1d01e5b056fd933c961b10556e8d08c46ad"
+  }
+}
