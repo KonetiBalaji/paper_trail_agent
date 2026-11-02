@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "checked_at": "2026-11-02T04:48:07.692572+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "source_commit": "0d84ffecb7c85dddfb802519558bf2b527c4bb95",
+  "receipt_sha256": "7abdd5e343eaea0cb05ab2d44e83353025ffa873f0b7654a52b6eb8aa3e71567",
+  "checks": [
+    {
+      "check": "active_source_bound_registry",
+      "passed": true
+    },
+    {
+      "check": "exact_deployed_receipt",
+      "passed": true
+    },
+    {
+      "check": "full_corpus_count",
+      "passed": true
+    },
+    {
+      "check": "two_reviewed_native_layouts",
+      "passed": true
+    },
+    {
+      "check": "status_does_not_create_session",
+      "passed": true
+    },
+    {
+      "check": "isolated_synthetic_demo_role",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_outcome",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_no_paid_model",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_receipt_provenance",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_exact_difference",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_highlighted_original",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_exact_calculator",
+      "passed": true
+    },
+    {
+      "check": "reviewed_math_error_saved_provenance",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_outcome",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_no_paid_model",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_receipt_provenance",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_exact_difference",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_grounded_sources",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_highlighted_original",
+      "passed": true
+    },
+    {
+      "check": "reviewed_contradiction_saved_provenance",
+      "passed": true
+    },
+    {
+      "check": "reviewed_bank_clean_outcome",
+      "passed": true
+    },
+    {
+      "check": "reviewed_bank_clean_no_paid_model",
+      "passed": true
+    },
+    {
+      "check": "reviewed_bank_clean_receipt_provenance",
+      "passed": true
+    },
+    {
+      "check": "reviewed_bank_clean_exact_calculator",
+      "passed": true
+    },
+    {
+      "check": "reviewed_bank_clean_saved_provenance",
+      "passed": true
+    },
+    {
+      "check": "delete_own_synthetic_case",
+      "passed": true
+    },
+    {
+      "check": "delete_own_synthetic_case",
+      "passed": true
+    },
+    {
+      "check": "delete_own_synthetic_case",
+      "passed": true
+    }
+  ],
+  "scope": "One isolated fictional guest; fixed reviewed $50/$25/bank cases, source PNGs, saved provenance and self-cleanup. No uploads, real accounts or paid model calls."
+}

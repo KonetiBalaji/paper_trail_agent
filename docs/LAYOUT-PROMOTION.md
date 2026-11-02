@@ -1,8 +1,9 @@
 # Reviewed layout promotion
 
-Status: registry and receipt validation implemented; Cedar is active locally
-after its complete corpus gate. Deployment verification is recorded in the
-testing ledger after release.
+Status: registry and receipt validation implemented; Cedar is active locally and
+on Vercel after its complete corpus gate. All five release CI jobs pass; 29 hosted
+checks verify the exact receipt, $50/$25/bank results, highlighted sources, saved
+provenance and cleanup. See `docs/hosted-layout-results.json` and the testing ledger.
 This is a bounded declarative parser extension, not model training or automatic
 trust of a document's instructions. No HTTP endpoint, environment flag or PDF can
 install a mapping. Only a current, source-bound reviewed receipt can activate the

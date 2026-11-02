@@ -39,6 +39,15 @@
   case and rejecting a tampered materialized copy. A clean staged Git export
   without ignored files now passes `promote_layouts.py --check`. No source/hash
   check was removed or weakened to force activation.
+- Release `0d84ffe`: [all four application CI jobs](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41390110398)
+  pass, including **392 core tests**, PostgreSQL, actual OCR/full layout gate,
+  DOM-to-HTTP and the bounded worker image. [Security CI](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41390110439)
+  passes. Vercel deployed the same code successfully.
+- **29 hosted layout checks pass** in `docs/hosted-layout-results.json`: exact
+  deployed receipt and scope, reviewed $50/$25/bank outcomes, zero paid calls,
+  grounded/highlighted original sources, saved provenance and own-case cleanup.
+  **20 hosted video checks pass** in `docs/layout-registry-hosted-video-results.json`,
+  including unchanged approved video bytes and current live Meta evidence.
 
 ## Actual candidate-layout package - November 1, 2026
 
