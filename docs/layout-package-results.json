@@ -37,19 +37,72 @@
           "Reversed-header truth follows its actual printed meanings; ambiguous bank ID/date remain in the withheld-field denominator.",
           "Actual parser, source grounding, all old native cases and actual OCR corpus pass; regression evidence remains a separate required gate."
         ],
-        "activation": "Not activated. A validated source-bound receipt and runtime registry are still required."
+        "activation": "This record reviews mappings only. Activation is governed separately by the validated source-bound receipt and runtime registry."
       },
-      "record_sha256": "35fec5802710a6715c2e2713cc43e1472f73eec19df407a841b8c66df0114431"
+      "record_sha256": "85e9cc7fb749857a3cb50b6daf4edab9c66f62948da616733d0bb3f946663be7"
     }
   ],
   "review_records_valid": true,
+  "admitted_inventory_valid": true,
   "definition_sha256": {
     "cedar_capital_v1": "dbd2209188f0f3aed30f7cc2e5ff839a7840cc2a769a3e299ea5633f3302358b",
     "cedar_movement_v1": "346b27d2f6ecf072c088a6caf79b7b6582453176cf735304d50af2d2d2215b41"
   },
+  "runtime_dependencies": {
+    "PyJWT": "2.15.1",
+    "Pygments": "2.21.0",
+    "SQLAlchemy": "2.1.6",
+    "annotated-doc": "0.0.5",
+    "annotated-types": "0.8.0",
+    "anyio": "4.15.1",
+    "attrs": "26.1.0",
+    "certifi": "2026.10.23",
+    "cffi": "2.1.1",
+    "charset-normalizer": "3.5.2",
+    "click": "8.5.0",
+    "colorama": "0.4.6",
+    "cryptography": "50.0.2",
+    "fastapi": "0.162.0",
+    "h11": "0.16.0",
+    "httpcore": "1.0.9",
+    "httpcore2": "2.16.0",
+    "httpx": "0.28.1",
+    "httpx2": "2.16.0",
+    "idna": "3.20",
+    "iniconfig": "2.3.1",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "mcp": "2.3.0",
+    "mcp-types": "2.3.0",
+    "opentelemetry-api": "1.45.1",
+    "packaging": "26.3",
+    "pdfminer.six": "20260107",
+    "pdfplumber": "0.11.10",
+    "pillow": "13.0.0",
+    "pluggy": "1.7.0",
+    "psycopg": "3.3.6",
+    "psycopg-binary": "3.3.6",
+    "pycparser": "3.12",
+    "pydantic": "2.14.1",
+    "pydantic_core": "2.50.1",
+    "pypdfium2": "5.14.0",
+    "pytest": "9.1.1",
+    "python-dotenv": "1.2.4",
+    "python-multipart": "0.0.32",
+    "referencing": "0.37.0",
+    "reportlab": "4.5.1",
+    "rpds-py": "2026.9.1",
+    "sse-starlette": "3.6.0",
+    "starlette": "1.10.0",
+    "truststore": "0.10.5",
+    "typing-inspection": "0.4.4",
+    "typing_extensions": "4.16.0",
+    "tzdata": "2026.6",
+    "uvicorn": "0.54.0"
+  },
   "source_sha256": {
     ".github/workflows/security.yml": "05ac3e05d2cf630bd0ee4563700e557b725f96eb2d374c9df22a076317b1a47c",
-    ".github/workflows/tests.yml": "2427b7148363bc05cc6f02c229d889e4f146ee6a1ec3edb70dc8b9d1f9dabc0b",
+    ".github/workflows/tests.yml": "b516002673d09bd96cdd8b214e52b452f58d547338056595bb6cdfa8d6ec68da",
     "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "app/agent_evals.py": "dbba8f90598c287a7958d237e8d189b628accba0569b4399dc43dbc226fd2f85",
     "app/benchmark.py": "76f3fc9deaf71f887e3c95c895397303de6e8186c83cef2e45092d371640bbfb",
@@ -58,29 +111,39 @@
     "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
     "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
     "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
-    "app/layout_proposals.py": "c11fbf62dd9a1941462ab87004f12a5c9a06382febfa475a89c9e2d023b356f4",
-    "app/layouts.py": "7445d402320abe3222d5a248f2b47987908ab2026691a5075c780561157244e0",
-    "app/main.py": "4a2d45d1de1dda927894348c15ff16a82c4a174117e9b18ed426d92d5d6f47cf",
+    "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
+    "app/layout_registry.py": "02e31c814166a5e220ee7ee8277b671ddc0b31b429331603966cda5c59ab364f",
+    "app/layouts.py": "a5ecdbaa94094ec40fbf25d4a1084270689b5d99cc9f65070c0294d0f7beb5bf",
+    "app/main.py": "4af3afb81639bc6b2af76b65767599656b424d2adc11eea45bbb6a5042d6e631",
     "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
     "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",
-    "app/meta.py": "099428fede7a69b52edbc433b97abe32c57e84dcb0a25bd71111b52aa0ae0fe4",
+    "app/meta.py": "3db97832987c367dfb1f74def467feae4e15569e6494566e152c5f46bcbd2bce",
     "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
     "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
     "app/orchestration.py": "8f6f87e7e1a1cb0555dc3c506663d194f9c8af547b690fe3220e8cc0b3581693",
-    "app/platform.py": "001a305ade38384df2c460e373eda791b5b5374a8aae977e694fbb6fe5efc916",
+    "app/platform.py": "8a8b2ad4029994a5d90d510a17935dfc5c1c0673edbacdde7c2f85787886dfd1",
     "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
     "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
     "app/repository.py": "61fe005593348502f18befc89f65522167ccae6394f38401322705dc7eb8d51c",
     "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
+    "app/static/app.js": "4092c4a7e89065f8ef57c554310ff15aca1b9c58fbbf65f46b3f01e6eec22818",
+    "app/static/demo.css": "c9c615c3d002c1ec40542b326e8f812234c55de2da083c251b97e557e52f16c6",
+    "app/static/demo.html": "e758daaaa93885e748366ce984be6be4e6acb3aa8e0f3101b8ba813876d5c369",
+    "app/static/index.html": "15be743062084611140c609521a7f7cd5ae95a05f7feb6d50dc3191120e8ad06",
+    "app/static/style.css": "0132e38193d7b03f24162cf40ef14712cc91d09225a6d16416d04873d423615f",
     "app/telemetry.py": "5212a9f9fcdc3e8949bee3386ed98f1b559a7523ea37d2a9b995aac70a9ac182",
     "app/trace.py": "25943af20fe5fe5aebad4857bdcb04f9b99f50c0ca86eae196619fcf4e37763f",
     "app/worker.py": "1b1f3a66ed32a95f78b9c047e38fa027adda2110ccef31d49e6f2e60170d3ded",
+    "requirements-lock.txt": "27afd724f9be0a4f08aaeb091e43b2a6311e17822c2c8908f6df42e6bc10739e",
+    "requirements-ocr-lock.txt": "bd06cbb7e481c4c32bfe2d54928c84c196900499aa709b1a09c9d21b776f891b",
+    "requirements-ocr.txt": "98de2f8e47db59c864f8d1b6a2352326a50d3702d1f0121faa0caa28092a19d8",
+    "requirements.txt": "401694d906afaa8f451cdc49e63df6cdd1d241f12bf5b58397543903650577e8",
     "scripts/benchmark.py": "ecb777f119ef4bd3f0f892f2c47267a2281afd2e62390a3c876da444dbc3e640",
     "scripts/check_deployment_requirements.py": "4e6fbd24d3b1762edd2594b04bcf4d8a6a628a44697a6c69a208d6418d66eb6c",
     "scripts/container_worker_smoke.py": "d15b074fc5c53944376ccb682541b4ee7d38ac80a3eb7f680d8237d74000a1fc",
     "scripts/evaluate.py": "9d79c8151ad383b1b4c93acd13b354d44a2255168333c1b60e2e9b02cb7a55c9",
     "scripts/evaluate_agents.py": "0e595507e6a95f737f731002ee2cbed23bbdcf70af36dcd2cbacebbdf6720126",
-    "scripts/evaluate_layout_package.py": "511710425e651ec5e30a2854b9cec9e2f00fede85ed2e51130c7dccac3ab0f7c",
+    "scripts/evaluate_layout_package.py": "668ee07777334d3acfa1dd80e8749d53d0591735149851837f3a201a9eafc711",
     "scripts/evaluate_mcp.py": "ee5717e009a503c5f75b358eae040798797afb88ea68baad3bfac33a3b96c54c",
     "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210",
     "scripts/generate_bank_fixtures.py": "b6a753e1989d438f95632086711704adb3bf4a915e3114dece6f61d41dba5fbf",
@@ -89,6 +152,7 @@
     "scripts/generate_layout_package.py": "781279609a31f8a4deea1f09f41bbd4e86087960bd471993645ad24f466677a2",
     "scripts/generate_ocr_fixtures.py": "0e30d6dc76e337709ab83a81b234f003959ed8bfec235f5a9db03ed749d66479",
     "scripts/hosted_draft_smoke.py": "12ae2beeb4b54319671d8128e919b3e9e317ae4c8b769682da20b2b550533966",
+    "scripts/hosted_layout_smoke.py": "9ccb508b4ad77c110693401e8a2191b9c82e95332b8f7f36199ce1432330eb60",
     "scripts/hosted_security_smoke.py": "6d28ad2b2e7d114218afc73df102e1d01e5b056fd933c961b10556e8d08c46ad",
     "scripts/hosted_smoke.py": "0041cc7b6c60d6fd254c3374617ba566dc6f004aea42467a7570f6cb3be1e329",
     "scripts/hosted_video_smoke.py": "410734984f131d725e8a0e84b5eef9a049afebbc99c8e8de1a2c358e258c55f6",
@@ -98,15 +162,17 @@
     "scripts/ocr_smoke.py": "db1d8075f8c5ed76d7abe5da73efd99e339d70bb0c6ddf2623dca51a3fa92c91",
     "scripts/prepare_demo.py": "f4e695011f438418ee402cc292ce2f028bec92adab01b5b025f870adc982c971",
     "scripts/prepare_mcp_case.py": "f2ede92f664a56de7a17111d35ca71e8b265fbf4042d0b406d4cca4286aad685",
+    "scripts/promote_layouts.py": "a8074ea271b6f93893c2c5082a076a8faddac51dd304f3fec8186717bab8cb16",
     "scripts/render_demo.py": "55065722d40230d32ba5919630ff8e5c9f5aac3ec6719bf5b65a80c57816d5ee",
     "scripts/render_layout_review.py": "cbc660abffd9153d2ff28d48f25dfe2ae023566eef8de8c47fc412ecd883d2bb",
     "scripts/resource_benchmark.py": "ae53711ee6dc7cd375deac46ded7cc96e3df0970009ca01d494ff89f87761feb",
     "scripts/security_checks.py": "62143747b4f75b47a3c5768241c17b8589a6f0b872630d709871e7cbb7ecf7d7",
     "scripts/smoke.py": "55a2eb7a663e16d49bae34a338b8dd9938e790911a4d22c71660360476e18539",
-    "scripts/test_frontend.py": "8450e62f984aee534a534a03aa5005b1720a5b0b02237b6070dd30e7c6e12151",
+    "scripts/test_frontend.py": "37dd140f609a7abcbcb77d05cd7a15d0990c30491565c8ba0300b236f305a532",
     "scripts/validate_worker_config.py": "31b86216477e9e5979c3b9f0b08c18a80843162751f79872e6899d526184b1a4",
     "scripts/verify_demo.py": "d42f676153d3c440e9d46ae85526252333766a04cf01a0b2412956e933d5f27e",
     "scripts/worker_entrypoint.py": "8d59ebb943fa92aa382421c6b97854dcbe0f76c285b8f3030b6b144091c7958c",
+    "tests/frontend/ocr-http.test.mjs": "705396a7a4a26508483972d62780907b99d10152396438ee64942c6dd0026c2c",
     "tests/test_agent_evals.py": "c53f8245ea16991dc0c847b297fd3e5490b0e9f2806dd51e00050778eb14b8a1",
     "tests/test_api.py": "f7b607be41868c544bfbc47e3349f8738023a6736afb9e7b151aa0be88c07b5f",
     "tests/test_bank.py": "3fe2932a98a0d2c9a614c16f42824cb31e5bfc5e5c40bbd8d5f041f4b806d6b3",
@@ -116,8 +182,9 @@
     "tests/test_drafts.py": "777684116b1ccd8b1968ac51dc520f5bea24d489cb76824d151f2268bd15573f",
     "tests/test_history.py": "c0ff320f3b8ddc1c0d26eadbcb011c1632d18da4047599dce0d29940c13dcd7e",
     "tests/test_integrations.py": "57a06ad7e59583bfccee1f2467e0be1bf0dc4e6c9aed5fa66fa9f35de2876e30",
-    "tests/test_layout_packages.py": "f97a574280453b82426c648e02e730554dfaa2a6e3519892286ce0ebd5a3c380",
+    "tests/test_layout_packages.py": "d49d5279ddbca3694964434a08da45204d410ffd6efc2f1526bc17608d46335e",
     "tests/test_layout_proposals.py": "54feef381c6abf317559744194becc33f66f859f78734cee72e6b48d32319d1d",
+    "tests/test_layout_registry.py": "b929ca3537fbe4215acb9f1e90e64c109b6ae5e561d3bd1a596633d5b4bab629",
     "tests/test_mcp.py": "bf390219b5e5c395d7624bb94fd55193453b01376d1c569393ac3f7b5d7dba3e",
     "tests/test_meta.py": "2b316885904f2ed7ea16e11d44073d2c40280c35298e15ae112ecc89c5dec4b5",
     "tests/test_ocr.py": "df6d16b6afe5dfab2957f6a757241aa57d980afe7e7aa70ff74979fa1bb36836",
@@ -203,7 +270,8 @@
     "data/layout_packages/cedar_v1/cases/loan_wrong_header/statement_1.pdf": "6edd682a9a35ae826d0308a52bff1637ccba6e217b9c71b47afc7f22c06d1df9",
     "data/layout_packages/cedar_v1/cases/manifest.json": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
     "data/layout_packages/cedar_v1/definitions.json": "a0c0bacb09cefe03691f261cdedc82e44a05d63ae865654d65858df741f8c9dd",
-    "data/layout_packages/cedar_v1/review.json": "35fec5802710a6715c2e2713cc43e1472f73eec19df407a841b8c66df0114431",
+    "data/layout_packages/cedar_v1/review.json": "85e9cc7fb749857a3cb50b6daf4edab9c66f62948da616733d0bb3f946663be7",
+    "data/layout_packages/inventory.json": "a3ac299fb59d9ac27af073033bd7533d9d7a26f6a4758404a1a2f33db56168b2",
     "data/ocr/blank.pdf": "0b1584d77c181f0e263a4289d6f48329b50074707a345e052d26e7eb4c4cee8c",
     "data/ocr/degraded.pdf": "4c14b905ec346f48ed604fd7bb3b20fcee92311b7cd13617ee9fad013a388b26",
     "data/ocr/labeled_error.pdf": "8b762972c369ffed9a9328e11a134c2692aaa77e37619e86b8faea4034a83397",
@@ -229,7 +297,7 @@
     "passed": true,
     "promoted": false,
     "baseline": {
-      "evaluated_at": "2026-11-02T03:30:57.566735+00:00",
+      "evaluated_at": "2026-11-02T04:24:20.276575+00:00",
       "mode": "offline",
       "model_calls": 0,
       "cases": [
@@ -349,7 +417,7 @@
     "regression": {
       "mode": "offline",
       "model_calls": 0,
-      "evaluated_at": "2026-11-02T03:30:58.110631+00:00",
+      "evaluated_at": "2026-11-02T04:24:20.809744+00:00",
       "manifest_sha256": "7c61d3fa9f2fb9a26852c76ed2bfe5013dc1fba6dd3c458179e0bc85de50c78d",
       "cases": [
         {
@@ -425,7 +493,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.25
+          "elapsed_ms": 12.94
         },
         {
           "case": "loan_columns_error",
@@ -500,7 +568,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.97
+          "elapsed_ms": 8.67
         },
         {
           "case": "loan_columns_contradiction",
@@ -575,7 +643,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 35.84
+          "elapsed_ms": 31.91
         },
         {
           "case": "loan_reverse_columns",
@@ -650,7 +718,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.73
+          "elapsed_ms": 7.49
         },
         {
           "case": "loan_cross_page",
@@ -725,7 +793,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.67
+          "elapsed_ms": 13.39
         },
         {
           "case": "loan_split_row",
@@ -801,7 +869,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 12.97
+          "elapsed_ms": 13.32
         },
         {
           "case": "loan_duplicate",
@@ -876,7 +944,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.01
+          "elapsed_ms": 8.43
         },
         {
           "case": "loan_partial",
@@ -951,7 +1019,7 @@
             "precision": 1.0,
             "recall": 0.7777777777777778
           },
-          "elapsed_ms": 7.52
+          "elapsed_ms": 8.0
         },
         {
           "case": "bank_debit_credit",
@@ -1033,7 +1101,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 9.27
+          "elapsed_ms": 8.6
         },
         {
           "case": "bank_signed",
@@ -1115,7 +1183,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.81
+          "elapsed_ms": 8.33
         },
         {
           "case": "bank_cross_page",
@@ -1204,7 +1272,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.99
+          "elapsed_ms": 14.15
         },
         {
           "case": "bank_bad_carry",
@@ -1293,7 +1361,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.95
+          "elapsed_ms": 15.6
         },
         {
           "case": "injection_note",
@@ -1368,7 +1436,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 10.31
+          "elapsed_ms": 10.56
         },
         {
           "case": "identity_conflict",
@@ -1436,7 +1504,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.84
+          "elapsed_ms": 8.32
         },
         {
           "case": "ambiguous_date",
@@ -1504,7 +1572,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.48
+          "elapsed_ms": 7.65
         },
         {
           "case": "currency_guard",
@@ -1579,7 +1647,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 16.13
+          "elapsed_ms": 16.17
         },
         {
           "case": "missing_tranche",
@@ -1654,7 +1722,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.74
+          "elapsed_ms": 15.05
         },
         {
           "case": "corrupt_pdf",
@@ -1676,7 +1744,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 0.34
+          "elapsed_ms": 0.32
         },
         {
           "case": "oversized_pdf",
@@ -1698,7 +1766,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 10.31
+          "elapsed_ms": 10.11
         }
       ],
       "fields": {
@@ -1822,7 +1890,7 @@
           "report": {
             "mode": "offline",
             "model_calls": 0,
-            "evaluated_at": "2026-11-02T03:30:58.226703+00:00",
+            "evaluated_at": "2026-11-02T04:24:20.928455+00:00",
             "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
             "cases": [
               {
@@ -1899,7 +1967,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.72
+                "elapsed_ms": 8.06
               },
               {
                 "case": "loan_math_error",
@@ -1975,7 +2043,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.36
+                "elapsed_ms": 9.29
               },
               {
                 "case": "loan_contradiction",
@@ -2051,7 +2119,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 17.19
+                "elapsed_ms": 16.39
               },
               {
                 "case": "loan_partial",
@@ -2127,7 +2195,7 @@
                   "precision": 1.0,
                   "recall": 0.7777777777777778
                 },
-                "elapsed_ms": 7.84
+                "elapsed_ms": 7.92
               },
               {
                 "case": "loan_duplicate",
@@ -2203,7 +2271,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.24
+                "elapsed_ms": 8.68
               },
               {
                 "case": "loan_wrong_header",
@@ -2276,7 +2344,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 7.88
+                "elapsed_ms": 8.06
               },
               {
                 "case": "loan_missing_marker",
@@ -2349,7 +2417,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 8.71
+                "elapsed_ms": 8.75
               },
               {
                 "case": "loan_page_scope",
@@ -2422,7 +2490,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 10.77
+                "elapsed_ms": 11.12
               },
               {
                 "case": "loan_injection",
@@ -2498,7 +2566,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.64
+                "elapsed_ms": 9.88
               },
               {
                 "case": "bank_clean",
@@ -2581,7 +2649,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.82
+                "elapsed_ms": 9.35
               },
               {
                 "case": "bank_balance_error",
@@ -2664,7 +2732,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.11
+                "elapsed_ms": 9.98
               },
               {
                 "case": "bank_ambiguous_sides",
@@ -2747,7 +2815,7 @@
                   "precision": 1.0,
                   "recall": 0.8
                 },
-                "elapsed_ms": 9.78
+                "elapsed_ms": 8.75
               }
             ],
             "fields": {
@@ -2862,7 +2930,7 @@
     "remaining_gates": [
       "actual OCR regression",
       "prior promoted packages",
-      "human mapping review",
+      "mapping review",
       "source-bound promotion receipt"
     ]
   },
@@ -2876,7 +2944,7 @@
     "source_sha256": {
       "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
       "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
-      "app/layouts.py": "7445d402320abe3222d5a248f2b47987908ab2026691a5075c780561157244e0",
+      "app/layouts.py": "a5ecdbaa94094ec40fbf25d4a1084270689b5d99cc9f65070c0294d0f7beb5bf",
       "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210"
     },
     "model_sha256": {
@@ -2902,7 +2970,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 5985,
+          "duration_ms": 10344,
           "usable_lines": 9,
           "total_lines": 10,
           "field_candidates": []
@@ -3138,7 +3206,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 4781,
+          "duration_ms": 6265,
           "usable_lines": 6,
           "total_lines": 6,
           "field_candidates": [
@@ -3365,7 +3433,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3375,
+          "duration_ms": 3422,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
@@ -3421,7 +3489,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3672,
+          "duration_ms": 3313,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []

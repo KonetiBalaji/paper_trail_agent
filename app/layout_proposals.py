@@ -1,8 +1,7 @@
 """Operator-only trials of literal column mappings; never runtime auto-learning.
 
-There is deliberately no HTTP route, environment switch, persisted approval or
-promotion operation here. Production accepts no proposals. A trial evaluates a
-bounded declarative mapping through the existing parser and model validator.
+Only a validated deployment receipt can supply runtime definitions. There is no
+HTTP write route, environment switch or promotion by document content.
 """
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -68,6 +67,7 @@ def trial(proposals):
 def document_mapping(doc):
     """Validate scope once per document, before consuming any proposed table row."""
     doc.pop('layout_trial', None)
+    doc.pop('layout_support', None)
     entries = [(line, re.sub(r'^L\d+\s+', '', ' '.join(line['text'].split())))
                for line in doc['lines']]
     markers = [(line, text) for line, text in entries if re.match(r'^layout:\s*pta-', text, re.I)]
@@ -81,7 +81,13 @@ def document_mapping(doc):
         return {}
 
     values = {text for _, text in markers}
-    matches = [p for p in _trial.get() if p.marker in values]
+    proposed = _trial.get()
+    deployed = None
+    if not proposed:
+        from .layout_registry import load
+        deployed = load()
+        proposed = deployed['definitions']
+    matches = [p for p in proposed if p.marker in values]
     if len(values) != 1 or len(matches) != 1:
         return reject('layout_not_promoted', 'This declared layout has no approved runtime mapping; review required.')
     proposal = matches[0]
@@ -92,10 +98,14 @@ def document_mapping(doc):
     headers = [line for line, text in entries if normalize(text) == normalize(proposal.header)]
     if not headers:
         return reject('layout_header_missing', 'Declared layout lacks its exact reviewed header; review required.')
-    doc['layout_trial'] = {'id': proposal.id, 'definition_sha256': proposal.fingerprint(),
+    evidence = {'id': proposal.id, 'definition_sha256': proposal.fingerprint(),
                            'marker_sources': [line['id'] for line, _ in markers],
                            'header_sources': [line['id'] for line in headers],
                            'promoted': False}
+    if deployed is not None:
+        doc['layout_support'] = evidence | deployed['provenance'][proposal.id]
+    else:
+        doc['layout_trial'] = evidence
     return {normalize(proposal.header): proposal}
 
 
@@ -103,7 +113,7 @@ def evaluate_trial(proposals, evaluate_candidate):
     """Rerun old native cases and candidate truth in the same actual parser scope.
 
     Not a promotion receipt: OCR, prior promoted packages, deployment freshness
-    and human approval must also pass before a production registry is enabled.
+    and mapping review must also pass before a production registry is enabled.
     """
     from . import benchmark, evals
     with trial(proposals):
@@ -116,4 +126,4 @@ def evaluate_trial(proposals, evaluate_candidate):
     return {'passed': passed, 'promoted': False, 'baseline': baseline,
             'regression': regression, 'candidate': candidate,
             'remaining_gates': ['actual OCR regression', 'prior promoted packages',
-                                'human mapping review', 'source-bound promotion receipt']}
+                                'mapping review', 'source-bound promotion receipt']}

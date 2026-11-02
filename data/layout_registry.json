@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "packages": [
+    "cedar_v1"
+  ],
+  "report_sha256": "729d3533ffc2256839d53493a90bebe1f36a397b1d8a4a7dd1b5b2766cfa46ec"
+}

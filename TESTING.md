@@ -1,5 +1,39 @@
 # Verification record - October 28, 2026
 
+## Read-only layout registry - November 1, 2026
+
+- Complete 41-case gate passes: six demo, 19 original benchmark, 12 Cedar
+  candidate and four actual CPU OCR cases. `data/layout_registry.json` pins its
+  exact report SHA-256; runtime accepts only the matching package inventory,
+  definition/review records, source/fixture bytes and installed dependency
+  versions. Missing, inconsistent or stale evidence disables the mapping.
+- Publisher validates before atomic replacement; `--check` is read-only and a
+  core CI gate. There is no HTTP write/promotion route and no model/OCR execution
+  when reading status. Repository review and CI are the trust boundary; hashes
+  are not a signature against repository administrators.
+- Admitted versions are retained in `data/layout_packages/inventory.json`.
+  Removing an entire admitted directory cannot silently remove its old cases;
+  changed formats require another version with the old oracle retained.
+- Focused tests cover altered source/frontend/fixture/truth/review/definition,
+  missing/extra packages, missing old cases/OCR, unsupported confirmed OCR,
+  dependency mismatch, arbitrary paths, forged flags, failed publication and
+  direct-model column swaps. Validator unit fixtures are explicitly synthetic;
+  they are not passed off as new runtime evaluation.
+- Actual DOM-to-HTTP test passes the active receipt panel and new reviewed $50
+  case, including receipt provenance in the trace. The initial frontend failure
+  exposed a wrongly scoped table helper; the helper is now shared and the real
+  workflow passes. Existing OCR, saved human review, export, API-key, retention
+  and offline-worker flows also pass. Evidence is saved with the release.
+- Three new fixed guest fixtures demonstrate reviewed $50, reviewed $25 and
+  bank clean behavior using the same backend. The same guest quota, isolation,
+  CSRF and no-paid-call/no-upload restrictions apply.
+- Full local suite: **391 passed, seven skipped**. The actual DOM-to-HTTP record
+  is `docs/layout-registry-frontend-results.json`. All four fresh real Muse Spark
+  cases pass with **2/3/3/3** tool calls. Prior successful evidence is retained in
+  `docs/live-meta-pre-registry-results.json`; the current scorecard matches the
+  new Python sources and actual live artifact. Final CI and hosted verification
+  are recorded after release; no unverified deployment result is claimed here.
+
 ## Actual candidate-layout package - November 1, 2026
 
 - Added `data/layout_packages/cedar_v1`: 12 manually specified fictional loan/bank

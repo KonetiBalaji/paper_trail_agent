@@ -78,7 +78,7 @@ def augment(doc,result):
             unfinished();mode=definition.kind;order=definition.columns
             recognized.add({'loan':'loan_columns_v1','bank_signed':'bank_signed_columns_v1',
                             'bank_columns':'bank_debit_credit_v1'}[mode])
-            recognized.add('trial:'+definition.id);continue
+            recognized.add(('reviewed:' if doc.get('layout_support') else 'trial:')+definition.id);continue
         if mode=='loan':
             match=re.fullmatch(r'([\w-]+)\s+'+AMOUNT+r'\s+'+AMOUNT,text)
             if match:

@@ -168,12 +168,16 @@ def create_router(root_provider,analyze_files):
     @router.post('/demo/cases/{fixture}')
     def demo_case(fixture:str,actor=Depends(write_principal)):
         if actor.role!='demo':raise HTTPException(403,'Start a synthetic demo session first')
-        if fixture not in ('clean','contradiction','math_error','messy'):raise HTTPException(404,'Unknown synthetic case')
+        reviewed={'reviewed_math_error':'loan_math_error','reviewed_contradiction':'loan_contradiction','reviewed_bank_clean':'bank_clean'}
+        if fixture not in ('clean','contradiction','math_error','messy') and fixture not in reviewed:raise HTTPException(404,'Unknown synthetic case')
         repo,_=resources();repo.consume('demo-analysis-global',240,3600);repo.consume('demo-analysis:'+actor.workspace,12,3600)
         # Fixed allowlisted repository fixtures only. No paths, uploads or model mode
         # are accepted from a visitor, and each session owns a separate workspace.
-        paths=sorted((Path(__file__).resolve().parents[1]/'data'/'synthetic'/fixture).glob('*.pdf'))
-        if len(paths)!=2:raise HTTPException(503,'Demo fixtures unavailable')
+        root=Path(__file__).resolve().parents[1]
+        folder=root/'data/layout_packages/cedar_v1/cases'/reviewed[fixture] if fixture in reviewed else root/'data/synthetic'/fixture
+        paths=sorted(folder.glob('*.pdf'))
+        expected=2 if fixture not in reviewed or fixture=='reviewed_contradiction' else 1
+        if len(paths)!=expected:raise HTTPException(503,'Demo fixtures unavailable')
         blobs=[path.read_bytes() for path in paths]
         uploads=[UploadFile(filename=path.name,file=io.BytesIO(raw)) for path,raw in zip(paths,blobs)]
         report=analyze_files(uploads,'local',persist=False)

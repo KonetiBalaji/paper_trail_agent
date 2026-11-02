@@ -55,6 +55,11 @@ def agent_evals():
     try:return load_report()
     except (OSError,ValueError,KeyError,TypeError):raise HTTPException(503,'Agent scorecard unavailable; regenerate its verified artifact.') from None
 
+@app.get('/api/layouts')
+def reviewed_layouts():
+    from .layout_registry import public_status
+    return public_status()
+
 def save_report(path,report):
     temporary=path/('report-'+uuid.uuid4().hex+'.tmp')
     try:
@@ -248,9 +253,9 @@ async def database_handler(request,exc):return JSONResponse({'detail':'Database 
 @app.middleware('http')
 async def service_boundary(request,call_next):
     if platform.service_mode() and request.url.path.startswith('/api/'):
-        if request.url.path in ('/api/evals','/api/benchmark','/api/agent-evals'):
+        if request.url.path in ('/api/evals','/api/benchmark','/api/agent-evals','/api/layouts'):
             extended=request.url.path=='/api/benchmark'
-            bucket='public-agent-evaluation' if request.url.path=='/api/agent-evals' else 'public-benchmark' if extended else 'public-evaluation'
+            bucket='public-layout-status' if request.url.path=='/api/layouts' else 'public-agent-evaluation' if request.url.path=='/api/agent-evals' else 'public-benchmark' if extended else 'public-evaluation'
             try:platform.runtime(STORE)[0].consume(bucket,60 if extended else 120,3600)
             except HTTPException as exc:return JSONResponse({'detail':exc.detail},status_code=exc.status_code)
             except LimitExceeded:return JSONResponse({'detail':'Evaluation usage limit reached'},status_code=429,headers={'Retry-After':'60'})

@@ -1,7 +1,7 @@
 # Cedar fictional layout package
 
-No real account, lender or customer is represented. No production mapping is
-activated. `review.json` records assistant review of these exact definitions and
+No real account, lender or customer is represented. Activation is controlled by
+the read-only deployment registry. `review.json` records assistant review of these exact definitions and
 truth, not human approval or approval of real financial actions. These are
 native-text, single-page, USD examples with ISO/English
 named-month dates. `loan_page_scope` deliberately adds an excluded second page.
@@ -43,6 +43,7 @@ case, changed source and inconsistent review-truth tests must all fail the gate.
 The package evaluation runs all six existing demo cases, 19 existing benchmark
 cases, every candidate package and, with `--with-ocr`, the four actual CPU OCR
 cases. It records source/fixture/definition hashes but does not install a mapping.
-Future admission still needs the validated promotion receipt, registry checks
-and deployed provenance. New package generation never creates a review record;
+Admission requires the validated promotion receipt, registry checks and case
+provenance. The inventory retains this admitted version and its exact old truth.
+New package generation never creates a review record;
 changed definitions or truth invalidate the existing record.

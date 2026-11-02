@@ -248,6 +248,17 @@ test('public synthetic MCP check discovers real tools and shows server call resu
   assert.match(score,/30\/30/);assert.match(score,/50% \(2\/4\)/);assert.match(score,/loan_columns/);
   assert.match(score,/native_fields|Native model|not scored/i);
   assert.ok(ui.requests.some(r=>r.path==='/api/agent-evals' && r.status===200));
+  ui.doc.getElementById('run-reviewed-layouts').click();
+  await waitFor(()=>!ui.doc.getElementById('run-reviewed-layouts').disabled && ui.doc.getElementById('reviewed-layouts-message').textContent,'Reviewed receipt did not load from backend');
+  assert.match(ui.doc.getElementById('reviewed-layouts-message').textContent,/Reviewed layouts: active/);
+  const layouts=ui.doc.getElementById('reviewed-layouts-results').textContent;
+  assert.match(layouts,/41 corpus cases passed/);assert.match(layouts,/cedar_capital_v1/);
+  assert.match(layouts,/assistant/);assert.match(layouts,/Excluded/);
+  assert.ok(ui.requests.some(r=>r.path==='/api/layouts' && r.status===200));
+  ui.doc.querySelector('[data-fixture="reviewed_math_error"]').click();
+  await waitFor(()=>ui.doc.getElementById('trace').textContent.includes('reviewed layout cedar_capital_v1'),'Reviewed case provenance did not reach frontend');
+  assert.match(ui.doc.getElementById('findings').textContent,/50\.00/);
+  assert.ok(ui.requests.some(r=>r.path==='/api/platform/demo/cases/reviewed_math_error' && r.status===200));
   ui.doc.getElementById('logout').click();
   await waitFor(()=>ui.doc.getElementById('mcp-demo').hidden,'MCP panel remained after sign out');
   assert.equal(ui.doc.getElementById('mcp-demo-output').textContent,'');

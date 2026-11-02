@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app import benchmark
 from app.layout_proposals import Proposal, evaluate_trial, trial
+from app.layout_registry import runtime_dependencies, inventory
 
 PROJECT = Path(__file__).resolve().parents[1]
 PACKAGES = PROJECT / 'data/layout_packages'
@@ -27,6 +28,8 @@ def complete_scope(rows, expected):
 def sources():
     paths = ([p for folder in ('app', 'scripts', 'tests') for p in (PROJECT / folder).rglob('*.py')
               if '__pycache__' not in p.parts] + list((PROJECT / '.github/workflows').glob('*.yml')))
+    paths += [p for p in (PROJECT / 'app/static').rglob('*') if p.is_file() and p.suffix in ('.js', '.html', '.css')]
+    paths += list((PROJECT / 'tests/frontend').glob('*.mjs')) + list(PROJECT.glob('requirements*.txt'))
     return {p.relative_to(PROJECT).as_posix(): hashlib.sha256(p.read_text(encoding='utf-8').encode()).hexdigest()
             for p in sorted(paths) if p.is_file()}
 
@@ -97,6 +100,10 @@ def evaluate(*, with_ocr=False, package_root=PACKAGES):
         return {'passed': passed, 'packages': rows}
 
     started_sources, started_fixtures = sources(), fixtures(package_root)
+    try:
+        inventory(package_root, [p.name for p in packages]); inventory_valid = True
+    except (ValueError, OSError, KeyError, TypeError):
+        inventory_valid = False
     result = evaluate_trial(proposals, candidates)
     native_scope = (complete_scope(result['baseline']['cases'], LEGACY_DEMO) and
                     complete_scope(result['regression']['cases'], LEGACY_BENCHMARK))
@@ -108,15 +115,18 @@ def evaluate(*, with_ocr=False, package_root=PACKAGES):
     reviews = [review_record(root) for root in packages]
     unchanged = started_sources == sources() and started_fixtures == fixtures(package_root)
     ocr_scope = ocr is not None and complete_scope(ocr['cases'], LEGACY_OCR)
-    full = result['passed'] and native_scope and ocr_scope and ocr['passed'] and unchanged
+    full = result['passed'] and native_scope and ocr_scope and ocr['passed'] and unchanged and inventory_valid
     return {'schema_version': 1, 'native_passed': result['passed'] and native_scope,
             'legacy_scope_complete': {'native': native_scope, 'ocr': ocr_scope}, 'full_regression_passed': bool(full),
             'promoted': False, 'human_review': None,
             'review_records': reviews, 'review_records_valid': all(row['reviewed'] for row in reviews),
+            'admitted_inventory_valid': inventory_valid,
             'definition_sha256': {p.id: p.fingerprint() for p in proposals},
+            'runtime_dependencies': runtime_dependencies(),
             'source_sha256': started_sources, 'fixture_sha256': started_fixtures,
             'inputs_unchanged_during_run': unchanged, 'native': result, 'ocr': ocr,
-            'remaining_gates': ([] if all(row['reviewed'] for row in reviews) else ['mapping and truth review']) +
+            'remaining_gates': ([] if inventory_valid else ['admitted package inventory']) +
+                               ([] if all(row['reviewed'] for row in reviews) else ['mapping and truth review']) +
                                ['verified promotion receipt and runtime registry',
                                 'deployed provenance and release verification']}
 

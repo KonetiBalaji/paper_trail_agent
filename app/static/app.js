@@ -14,6 +14,11 @@ function el(tag, text, cls) {
   if (cls) node.className = cls;
   return node;
 }
+function dataTable(labels,rows) {
+  const scroll=el('div',undefined,'table-scroll');const t=el('table');const head=el('tr');
+  for(const label of labels)head.append(el('th',label));const thead=el('thead');thead.append(head);t.append(thead);
+  const body=el('tbody');for(const values of rows){const row=el('tr');for(const value of values)row.append(el('td',value));body.append(row);}t.append(body);scroll.append(t);return scroll;
+}
 async function jsonRequest(url, options) {
   const settings = {...options};
   if (settings.method && !['GET', 'HEAD'].includes(settings.method)) {
@@ -244,6 +249,9 @@ function render() {
     $('trace').prepend(el('p', report.documents.map(doc => `${doc.name}: ${doc.routing?.selected || 'legacy'} extraction`).join(' · '), 'note'));
   }
   if (report.harness) $('trace').prepend(el('p', `Harness: ${report.harness.max_model_turns} investigation turns · ${report.harness.max_tool_calls_total} total tool calls · ${report.harness.request_timeout_seconds}s per request`, 'note'));
+  for(const doc of report.documents) {
+    if(doc.layout_support) $('trace').prepend(el('p',`${doc.name}: reviewed layout ${doc.layout_support.id}; ${doc.layout_support.review_kind} review; receipt ${doc.layout_support.receipt_sha256}.`,'note receipt-note'));
+  }
   $('document').replaceChildren();
   for (const doc of report.documents) { const option = el('option', doc.name); option.value = doc.id; $('document').append(option); }
   showDoc(report.documents.some(doc => doc.id === selectedDoc) ? selectedDoc : report.documents[0].id);
@@ -556,11 +564,7 @@ function setupAgentEvals() {
   const feedback=el('p','','note');feedback.id='agent-evals-message';feedback.setAttribute('role','status');
   const output=el('div');output.id='agent-evals-results';
   const metric=value=>value?.total ? `${percent(value.rate)} (${value.correct}/${value.total})` : 'Not measured (0 observations)';
-  const table=(labels,rows)=>{
-    const scroll=el('div',undefined,'table-scroll');const t=el('table');const head=el('tr');
-    for (const label of labels)head.append(el('th',label));const thead=el('thead');thead.append(head);t.append(thead);
-    const body=el('tbody');for(const values of rows){const row=el('tr');for(const value of values)row.append(el('td',value));body.append(row);}t.append(body);scroll.append(t);return scroll;
-  };
+  const table=dataTable;
   button.onclick=async()=>{
     button.disabled=true;feedback.textContent='Loading evaluated artifact and checking freshness…';output.replaceChildren();
     try {
@@ -598,6 +602,30 @@ function setupAgentEvals() {
   panel.append(button,feedback,output);$('benchmark-panel').after(panel);
 }
 setupAgentEvals();
+function setupReviewedLayouts() {
+  for(const [fixture,label] of [['reviewed_math_error','Reviewed layout: $50 error'],['reviewed_contradiction','Reviewed layout: $25 contradiction'],['reviewed_bank_clean','Reviewed bank: clean']]) {
+    const demoButton=el('button',label,'secondary');demoButton.type='button';demoButton.dataset.fixture=fixture;$('demo-cases').append(demoButton);
+  }
+  const panel=el('section',undefined,'panel');panel.id='reviewed-layouts-panel';
+  panel.append(el('h2','Reviewed layout support'),el('p','A layout is usable only while its reviewed mapping and full regression receipt match this deployment. Fictional native-text formats only.','note'));
+  const button=el('button','Check reviewed layouts','secondary');button.type='button';button.id='run-reviewed-layouts';
+  const message=el('p');message.id='reviewed-layouts-message';message.setAttribute('role','status');
+  const output=el('div');output.id='reviewed-layouts-results';
+  button.onclick=async()=>{
+    button.disabled=true;output.replaceChildren();
+    try {
+      const result=await jsonRequest('/api/layouts');
+      message.textContent=`Reviewed layouts: ${result.status}`;
+      if(result.status==='active') {
+        output.append(el('p',`${result.corpus_cases} corpus cases passed. Receipt: ${result.receipt_sha256}.`,'note receipt-note'),
+          dataTable(['Layout','Exact header','Page limit','Review','OCR'],result.layouts.map(row=>[row.id,row.header,row.max_pages,row.review_kind,row.ocr_supported?'Supported':'Excluded'])));
+      } else output.append(el('p','No reviewed mapping is active. Missing or stale evidence keeps declared layouts in review.'));
+    } catch(error) {message.textContent='Reviewed layouts unavailable: '+error.message;}
+    finally {button.disabled=false;}
+  };
+  panel.append(button,message,output);$('benchmark-panel').after(panel);
+}
+setupReviewedLayouts();
 async function configureService() {
   try {
     const config = await jsonRequest('/api/platform/config');

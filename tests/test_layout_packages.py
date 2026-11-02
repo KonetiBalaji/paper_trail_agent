@@ -19,7 +19,9 @@ def test_candidate_pdf_truth_through_real_pipeline(name):
     assert not result['false_clean']
 
 
-def test_candidates_cannot_become_supported_outside_trial():
+def test_candidates_cannot_become_supported_without_a_registry(monkeypatch,tmp_path):
+    from app import layout_registry
+    monkeypatch.setattr(layout_registry, 'ROOT', tmp_path)
     for name in ('loan_clean', 'bank_clean', 'loan_math_error'):
         report = benchmark.evaluate_case(CASES[name], PACKAGE / 'cases')
         assert report['status'] == 'review'
@@ -135,3 +137,14 @@ def test_generation_does_not_manufacture_a_review_and_stale_review_fails(tmp_pat
     record['manifest_sha256'] = '0' * 64
     (tmp_path / 'review.json').write_text(json.dumps(record))
     assert not gate.review_record(tmp_path)['reviewed']
+
+
+def test_deleted_admitted_package_cannot_vanish_from_full_regression(tmp_path, monkeypatch):
+    from scripts import evaluate_ocr
+    generate(tmp_path / 'new_version')
+    (tmp_path / 'inventory.json').write_bytes((gate.PACKAGES / 'inventory.json').read_bytes())
+    prior = json.loads((gate.PROJECT / 'docs/layout-package-results.json').read_text())['ocr']
+    monkeypatch.setattr(evaluate_ocr, 'evaluate', lambda root: prior)
+    report = gate.evaluate(package_root=tmp_path, with_ocr=True)
+    assert report['native_passed'] and report['legacy_scope_complete']['ocr']
+    assert not report['admitted_inventory_valid'] and not report['full_regression_passed']

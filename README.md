@@ -1,13 +1,11 @@
 # Paper Trail Agent
 
-Reviewed layout support is being built behind an operator-only trial. Literal
-column mappings use the existing parser, calculator and source validation; the
-native gate reruns all six demo and 19 benchmark cases. A 12-case fictional
-loan/bank package now supplies independent PDF ground truth; the full package
-gate also reruns actual CPU OCR. The mapping has an explicit assistant review
-bound to the fictional package; no owner sign-off is required for this code
-change. **No new layout is promoted yet.** Verified promotion receipts and a
-runtime registry remain required. See
+Reviewed fictional layouts use a read-only deployment registry. The exact
+mapping, review, PDF/truth fixtures, application source and installed dependencies
+must still match a passing 41-case regression receipt; otherwise the layout
+requests review. Existing admitted versions remain in an explicit inventory.
+The UI exposes receipt status and per-case provenance. Scope remains the
+documented synthetic native-text formats, not arbitrary real lender PDFs. See
 [layout promotion status](docs/LAYOUT-PROMOTION.md).
 
 **[Watch the narrated 2:08 demo](https://paper-trail-agent.vercel.app/static/demo.html)** — actual synthetic-app footage, highlighted $25/$50 evidence, review, Evals, and a labelled graphic from a real saved Meta tool run. [Production/evidence notes](docs/DEMO.md).
@@ -261,7 +259,7 @@ Current verification includes the full SQLite/local test suite, six baseline eva
 
 ### Public synthetic demo
 
-Service mode offers four fixed fixture buttons after **Start private demo session**: clean, $25 interest contradiction, $50 total error and image-only review. Each visitor gets a separate one-hour workspace. Sources, side-by-side viewing, trace, human review and exports use the same backend as private cases. Guests cannot upload PDFs, call Meta, queue jobs or manage accounts. This demo makes zero model calls; it does not prove live Meta behavior. Shared rate limits and revocable secure sessions are tested. Demo cleanup runs opportunistically on new sessions for guest data older than 24 hours; do not enter personal information in review notes.
+Service mode offers seven fixed fixture buttons after **Start private demo session**: the original clean, $25 interest contradiction, $50 total error and image-only review, plus reviewed-layout $25/$50 cases and a reviewed bank control. Each visitor gets a separate one-hour workspace. Sources, side-by-side viewing, trace, human review and exports use the same backend as private cases. Guests cannot upload PDFs, call Meta, queue jobs or manage accounts. This demo makes zero model calls; it does not prove live Meta behavior. Shared rate limits and revocable secure sessions are tested. Demo cleanup runs opportunistically on new sessions for guest data older than 24 hours; do not enter personal information in review notes.
 
 ## How it works
 

@@ -21,9 +21,9 @@ The model connects document evidence to a structured, tool-driven investigation.
 - Public code: https://github.com/KonetiBalaji/paper_trail_agent
 - Live synthetic demo: https://paper-trail-agent.vercel.app/ (public guests use deterministic checks; paid Meta calls are blocked).
 - Narrated/open-captioned video, 2:08: https://paper-trail-agent.vercel.app/static/demo.html (actual app footage plus a clearly labelled graphic of a separate saved Meta result; owner-approved for hackathon use on November 1, 2026).
-- 337 core tests passed in verified application CI, including the public-player/range test and bounded layout trials. PostgreSQL, OCR/frontend and worker-image checks are separate CI gates. No candidate layout is production-promoted yet.
+- 391 core tests passed locally, including public-player/range and gated layout admission tests. PostgreSQL, OCR/frontend and worker-image checks are separate CI gates. The reviewed fictional Cedar package has a source-bound runtime registry and a 41-case full regression receipt; this is not a universal real-lender accuracy claim.
 - 50 hosted API/security checks passed, including all four outcomes, review persistence, session isolation and guest OCR denial.
-- Four fresh live MCP-backed Muse Spark cases pass with 3/3/3/2 tool calls against the layout-trial Python sources; prior successful evidence and failed attempts remain documented. The video additionally includes an actual local contradiction run with three calls, shown as a labelled saved-result graphic.
+- Four fresh live MCP-backed Muse Spark cases pass with 2/3/3/3 tool calls against the registry Python sources; prior successful evidence and failed attempts remain documented. The video additionally includes an actual local contradiction run with three calls, shown as a labelled saved-result graphic.
 - Six demo evals, 19 varied-layout cases and four actual OCR scan cases pass their respective gates.
 - GitHub Actions runs core/HTTP/resource checks, PostgreSQL integration, real CPU OCR and the frontend/HTTP workflow. Live Meta tests require a local key and are separate.
 

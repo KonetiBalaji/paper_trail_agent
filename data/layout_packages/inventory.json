@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "policy": "Retain admitted versions and their known-answer cases; add a new package version instead of rewriting old truth.",
+  "packages": {
+    "cedar_v1": {
+      "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
+      "definition_sha256": {
+        "cedar_capital_v1": "dbd2209188f0f3aed30f7cc2e5ff839a7840cc2a769a3e299ea5633f3302358b",
+        "cedar_movement_v1": "346b27d2f6ecf072c088a6caf79b7b6582453176cf735304d50af2d2d2215b41"
+      },
+      "cases": ["loan_clean", "loan_math_error", "loan_contradiction", "loan_partial", "loan_duplicate", "loan_wrong_header", "loan_missing_marker", "loan_page_scope", "loan_injection", "bank_clean", "bank_balance_error", "bank_ambiguous_sides"]
+    }
+  }
+}

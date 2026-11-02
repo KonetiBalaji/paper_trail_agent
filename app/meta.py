@@ -164,6 +164,11 @@ def validate_statement(data, doc):
             raise EvidenceError('Carried balance amount or transaction position is ungrounded')
         carry['amount']=format(money(carry['amount']),'.2f')
     if not parsed['carried_balances']:parsed.pop('carried_balances')
+    # Direct model extraction validates against a separate native baseline. Keep
+    # its receipt provenance only after every model amount/source has passed.
+    if baseline_doc.get('layout_support') or baseline_doc.get('layout_trial'):
+        for key in ('layout_support','layout_trial','layouts'):
+            if key in baseline_doc:doc[key]=baseline_doc[key]
     return parsed
 
 def extract(doc,trace=None):

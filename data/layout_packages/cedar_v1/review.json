@@ -23,5 +23,5 @@
     "Reversed-header truth follows its actual printed meanings; ambiguous bank ID/date remain in the withheld-field denominator.",
     "Actual parser, source grounding, all old native cases and actual OCR corpus pass; regression evidence remains a separate required gate."
   ],
-  "activation": "Not activated. A validated source-bound receipt and runtime registry are still required."
+  "activation": "This record reviews mappings only. Activation is governed separately by the validated source-bound receipt and runtime registry."
 }

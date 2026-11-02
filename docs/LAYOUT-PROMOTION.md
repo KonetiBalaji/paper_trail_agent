@@ -1,9 +1,12 @@
 # Reviewed layout promotion
 
-Status: operator trial implemented; production promotion is **not enabled**.
+Status: registry and receipt validation implemented; Cedar is active locally
+after its complete corpus gate. Deployment verification is recorded in the
+testing ledger after release.
 This is a bounded declarative parser extension, not model training or automatic
 trust of a document's instructions. No HTTP endpoint, environment flag or PDF can
-install a mapping. There are no promoted layouts yet.
+install a mapping. Only a current, source-bound reviewed receipt can activate the
+two fictional Cedar mappings.
 
 `app/layout_proposals.py` validates literal headers and a reserved
 `Layout: PTA-...` marker. The only allowed meanings are the existing loan
@@ -19,9 +22,10 @@ Partial rows retain review findings. Bank columns retain the established sign
 rules. OCR and documents beyond the proposed page scope are excluded. Empty
 pages count toward scope through the PDF reader's page issues.
 
-Outside an operator trial, a reserved layout declaration generates a
-`layout_not_promoted` review finding, even if other labeled rows are complete.
-A declaration alone never makes an unknown layout clean. Inside a trial, a
+Outside an operator trial, a reserved declaration must match an active registry
+mapping or it generates a `layout_not_promoted` review finding, even if other
+labeled rows are complete. A declaration alone never makes an unknown layout
+clean. Inside a trial, a
 missing exact header, conflicting marker or exceeded scope also requests review.
 The document's `layout_trial` provenance includes its definition SHA-256 and
 marker/header source IDs, with `promoted: false`.
@@ -32,7 +36,7 @@ regression, false clean or failed candidate prevents the native gate from
 passing. Its result always states `promoted: false` and lists outstanding gates.
 It is not a complete regression or a production authorization receipt.
 
-## Remaining acceptance work for roadmap item 14
+## Admission requirements
 
 1. Implemented: `data/layout_packages/cedar_v1` has 12 independently specified
    fictional cases (13 PDFs, 14 pages), with clean, wrong-total, contradiction,
@@ -44,18 +48,25 @@ It is not a complete regression or a production authorization receipt.
    is rerun, including old candidates, alongside all six demo and 19 benchmark
    cases. `--with-ocr` runs all four actual CPU OCR cases in that same trial scope,
    not a cached report. The OCR CI job runs this gate and uploads its report.
-   Future registry admission must also verify all approved packages are present;
-   a missing registry/package entry cannot be allowed to silently shrink scope.
-3. Bind the receipt to definitions, exact ground truth, PDF bytes and current
-   source code; reject missing, changed, incomplete and stale receipts.
+   `data/layout_packages/inventory.json` preserves the exact admitted versions,
+   definitions, truth manifests and case IDs. Deleting an old directory cannot
+   silently remove its regressions. Changed formats get a new package version;
+   the old oracle is retained. Admission requires exact inventory and package
+   membership; unlisted candidates cannot activate.
+3. Implemented: the receipt binds definitions, review records, exact ground truth,
+   PDF bytes, current Python/frontend source and installed runtime dependencies.
+   Missing, changed, incomplete or stale evidence disables the reviewed mapping.
 4. Implemented for this synthetic package: `review.json` explicitly records
    assistant review of the printed meanings and independent truth, bound to
    definition and manifest hashes. The owner clarified that personal approval
    is unnecessary; the roadmap requires a reviewed mapping, not their sign-off.
    New package generation never manufactures a review. There is no claim of
    human approval, real lender validation or approval of financial actions.
-5. Enable only receipt-backed, reviewed definitions in a read-only deployment
-   registry; expose their provenance to users and verify the deployed behavior.
+5. Implemented: `data/layout_registry.json` pins the full report SHA-256 and
+   admitted package list. `GET /api/layouts` reads this evidence with no model,
+   OCR or regression execution. The UI shows state, scope, review kind and
+   receipt. Native and direct model-validated cases retain `layout_support`
+   provenance. Deployment checks demonstrate the fixed synthetic cases.
 
 Tests: `python -m pytest tests/test_layout_proposals.py -q`. The trial checks
 include real old-corpus execution, an injected old regression, model column-swap
@@ -71,6 +82,19 @@ These tests do not claim a real-world layout has been approved.
 .venv\Scripts\python.exe -m pytest tests/test_layout_proposals.py tests/test_layout_packages.py -q
 ```
 
+For admission, write the complete evaluation to the fixed
+`docs/layout-package-results.json`, then run `python scripts/promote_layouts.py`.
+The publisher validates current source/fixture hashes and underlying corpus
+results before atomically replacing the registry. `--check` verifies without
+writes and is a release CI step. It never invents missing evaluation evidence.
+
+Hash validation detects stale or changed evidence; it is not a cryptographic
+attestation against an administrator rewriting the trusted repository. Repository
+review and release CI are the trust boundary. Runtime does not need the excluded
+test directory: it verifies deployed Python/frontend source, installed dependency
+versions, fixture bytes and corpus/review results. Publishing and CI additionally
+verify the full test/tool/config snapshot.
+
 Without `--with-ocr`, the report can pass its native subset but always reports
 `full_regression_passed: false`. Source, exact PDF/JSON fixture and definition
 hashes are captured before the run and checked again afterward. Any modification
@@ -78,9 +102,9 @@ during execution prevents the full regression result from passing. This report
 also checks the exact membership of all six legacy demo, 19 benchmark and four
 OCR cases: silently dropping an old case cannot produce a smaller green gate.
 Per-case reviewable truth must equal the evaluated aggregate manifest exactly.
-The report
-is evidence for a future promotion receipt, not itself a trusted runtime
-authorization. The normal complete test/release CI remains a separate gate.
+The report becomes eligible for runtime admission only through the publisher's
+validation and explicit registry entry. The normal complete test/release CI
+remains a separate gate. The service has no HTTP registration/promotion route.
 
 ## Concrete reviewed synthetic mapping
 
@@ -101,9 +125,11 @@ recall denominator. The reversed-header control's ground truth follows its
 actual printed reversed meanings, although the trial must withhold those rows.
 
 No human reviewer identity or approval has been invented. `human_review` is null,
-the assistant review is recorded separately, and `promoted` is false. Review
+the assistant review is recorded separately, and `promoted` is false in the
+evaluation artifact because evaluation does not install a mapping. The separate
+registry controls activation. Review
 validation checks the exact definition and truth-manifest hashes; a changed
-mapping cannot inherit the old record. Runtime activation remains pending a
-validated, source-bound promotion receipt and registry. This mapping review does
+mapping cannot inherit the old record. Activation requires the validated,
+source-bound promotion receipt and registry. This mapping review does
 not replace the existing human approval required for financial communication or
 money decisions.
