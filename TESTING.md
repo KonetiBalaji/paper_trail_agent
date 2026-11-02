@@ -6,14 +6,22 @@
   demo and 19-case native regression runs within the trial, an injected failing
   old regression, model column swaps, schema bypass, page/OCR scope, partial rows
   and signed/debit-credit bank semantics.
-- Full local collection before the last four focused checks were added:
-  **333 passed, 7 skipped**. The final focused collection separately passes all 27.
+- Final application CI: **337 passed, 7 skipped**. All four application jobs pass
+  in [run 41380944273](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41380944273);
+  [security run 41380944233](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41380944233)
+  also passes. Vercel deployed application commit `be5f363` successfully.
 - All four actual CPU OCR corpus cases pass after the parser changes; none is
-  marked confirmed or clean. Evidence: `work/layout-trial-ocr-results.json`.
-- The offline agent scorecard was regenerated from actual checks. Earlier live
-  Meta evidence is historical for these changed Python sources; its original
-  source hashes are preserved and `current_source_match` is false. No paid model
-  calls were made for this patch.
+  marked confirmed or clean. Evidence: `docs/layout-trial-ocr-results.json`.
+- Real DOM-to-HTTP checks, online OCR and offline-worker behavior pass in
+  `docs/layout-trial-frontend-results.json`. All 50 hosted production checks pass
+  in `docs/layout-trial-hosted-results.json`; no paid or private upload path was
+  used by this hosted check.
+- A fresh real Muse Spark/MCP run passes all four synthetic cases with
+  **3/3/3/2** tool calls, within the eight-call budget. The regenerated scorecard
+  matches current Python sources and the new live artifact. The earlier
+  2/4/4/2 record is retained unchanged in
+  `docs/live-meta-pre-layout-trial-results.json`. No real financial documents
+  were sent; only repository synthetic fixtures were used.
 - This does not complete item 14: no mapping is production-promoted, and actual
   candidate PDF/truth packages, complete promotion receipts, human mapping review
   and deployed provenance remain pending. See `docs/LAYOUT-PROMOTION.md`.
