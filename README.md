@@ -2,9 +2,10 @@
 
 Reviewed layout support is being built behind an operator-only trial. Literal
 column mappings use the existing parser, calculator and source validation; the
-native gate reruns all six demo and 19 benchmark cases. **No new layout is
-promoted yet.** OCR regression, independently specified PDF/truth packages,
-human review and source-bound receipts remain required. See
+native gate reruns all six demo and 19 benchmark cases. A 12-case fictional
+loan/bank package now supplies independent PDF ground truth; the full package
+gate also reruns actual CPU OCR. **No new layout is promoted yet.** Human review,
+verified promotion receipts and a runtime registry remain required. See
 [layout promotion status](docs/LAYOUT-PROMOTION.md).
 
 **[Watch the narrated 2:08 demo](https://paper-trail-agent.vercel.app/static/demo.html)** — actual synthetic-app footage, highlighted $25/$50 evidence, review, Evals, and a labelled graphic from a real saved Meta tool run. [Production/evidence notes](docs/DEMO.md).

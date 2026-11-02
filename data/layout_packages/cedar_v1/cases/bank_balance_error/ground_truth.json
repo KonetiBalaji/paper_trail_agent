@@ -1,0 +1,37 @@
+{
+  "case": "bank_balance_error",
+  "expected_status": "discrepancies",
+  "confirmed": [
+    {
+      "type": "incorrect_closing_balance",
+      "difference": "25.00",
+      "computed": "913.65"
+    }
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "2a332470c3c7a850ce19ac8d43e5eecdd7776da18bbc01513c1c039f78db058c",
+      "truth": {
+        "loan_id": "PTA-CEDAR-002",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "opening_balance": "820.25",
+        "closing_balance": "938.65",
+        "tranches": [],
+        "transactions": [
+          {
+            "id": "TX1",
+            "date": "2026-10-02",
+            "amount": "-32.10"
+          },
+          {
+            "id": "TX2",
+            "date": "2026-10-06",
+            "amount": "125.50"
+          }
+        ]
+      }
+    }
+  ]
+}

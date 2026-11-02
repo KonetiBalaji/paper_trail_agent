@@ -1,5 +1,35 @@
 # Verification record - October 28, 2026
 
+## Actual candidate-layout package - November 1, 2026
+
+- Added `data/layout_packages/cedar_v1`: 12 manually specified fictional loan/bank
+  known-answer cases, 13 PDFs and 14 rendered pages. No real documents or model
+  output are used as truth. Deterministic regeneration reproduces the PDF hashes.
+- All candidate cases pass exact truth through the actual parser/orchestration
+  pipeline in an operator-only trial: 112 true-positive fields, zero false
+  positives, 22 withheld fields; precision 1.0, recall 112/134. Grounded citations
+  are 49/49; false-clean count is zero across nine at-risk cases. The six review
+  cases deliberately withhold fields, including the visible ID/date on an
+  ambiguous bank row. These are fictional fixture metrics, not real-world
+  accuracy or a promoted format.
+- Full package command: `scripts/evaluate_layout_package.py --with-ocr`. It runs
+  all six old demo, 19 old benchmark, 12 candidate and four actual CPU OCR cases.
+  Its report records exact source/fixture/definition hashes and rejects input
+  changes during execution, dropped old cases and disagreement between reviewable
+  truth files and the evaluated manifest. See `docs/layout-package-results.json`.
+- `tests/test_layout_packages.py`: 23 focused checks pass, including reversed
+  mapping, corrupted PDF, a failing older package, omitted native/OCR case,
+  source changes and mismatched review truth. Full local suite before the last
+  three guard tests were added: 357 passed, seven skipped. Final CI verifies the
+  complete collection.
+- Poppler renders were inspected as a 14-page contact sheet and full-size clean,
+  changed-header and ambiguous-bank examples. Rendering output stays under
+  ignored `tmp/pdfs/layout-review`; actual reviewable PDFs remain in the package.
+- The OCR CI job now runs the complete package command and uploads its result.
+  Production Python and existing live Meta source hashes are unchanged.
+- Human semantic review, verified promotion receipt, runtime registry and
+  deployed provenance remain pending. This package is not automatically trusted.
+
 ## Layout promotion trial foundation - November 1, 2026
 
 - `tests/test_layout_proposals.py`: 27 checks pass, including the actual six-case

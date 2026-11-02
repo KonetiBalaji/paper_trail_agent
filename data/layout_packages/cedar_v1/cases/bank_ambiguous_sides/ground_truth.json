@@ -1,0 +1,40 @@
+{
+  "case": "bank_ambiguous_sides",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "ambiguous_transaction"
+  ],
+  "allowed_abstentions": {
+    "doc1": [
+      "transactions:TX1#0:id",
+      "transactions:TX1#0:date"
+    ]
+  },
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "aa9e44f7f92dde5f9233c6aa92afed5d857785d7e60e1a93ebb074f57259c96d",
+      "truth": {
+        "loan_id": "PTA-CEDAR-002",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "opening_balance": "820.25",
+        "closing_balance": "913.65",
+        "tranches": [],
+        "transactions": [
+          {
+            "id": "TX1",
+            "date": "2026-10-02",
+            "amount": null
+          },
+          {
+            "id": "TX2",
+            "date": "2026-10-06",
+            "amount": "125.50"
+          }
+        ]
+      }
+    }
+  ]
+}

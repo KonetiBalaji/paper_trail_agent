@@ -1,0 +1,43 @@
+{
+  "case": "loan_page_scope",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "layout_scope"
+  ],
+  "allowed_abstentions": {
+    "doc1": [
+      "tranches:T1#0:id",
+      "tranches:T1#0:principal",
+      "tranches:T1#0:interest",
+      "tranches:T2#0:id",
+      "tranches:T2#0:principal",
+      "tranches:T2#0:interest"
+    ]
+  },
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "4681e5aa7618e10bba24424f46be68b768de7cb43348b316be176b10b851a387",
+      "truth": {
+        "loan_id": "PTA-CEDAR-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "2437.10",
+        "transactions": [],
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1375.25",
+            "interest": "62.35"
+          },
+          {
+            "id": "T2",
+            "principal": "982.10",
+            "interest": "17.40"
+          }
+        ]
+      }
+    }
+  ]
+}

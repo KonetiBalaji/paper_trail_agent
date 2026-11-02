@@ -1,0 +1,31 @@
+{
+  "case": "bank_clean",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "18c2f44c56d5ca205d2a28dbc0adab1567a6c97f1d0c7396df5ca5328afc0b03",
+      "truth": {
+        "loan_id": "PTA-CEDAR-002",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "opening_balance": "820.25",
+        "closing_balance": "913.65",
+        "tranches": [],
+        "transactions": [
+          {
+            "id": "TX1",
+            "date": "2026-10-02",
+            "amount": "-32.10"
+          },
+          {
+            "id": "TX2",
+            "date": "2026-10-06",
+            "amount": "125.50"
+          }
+        ]
+      }
+    }
+  ]
+}

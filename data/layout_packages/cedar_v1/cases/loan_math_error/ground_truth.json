@@ -1,0 +1,36 @@
+{
+  "case": "loan_math_error",
+  "expected_status": "discrepancies",
+  "confirmed": [
+    {
+      "type": "incorrect_statement_total",
+      "difference": "50.00",
+      "computed": "2437.10"
+    }
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "25d92ae13c7c72c70633b99f298f34e51bf09cb3035034265fda2c09ab3bc59a",
+      "truth": {
+        "loan_id": "PTA-CEDAR-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "2487.10",
+        "transactions": [],
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1375.25",
+            "interest": "62.35"
+          },
+          {
+            "id": "T2",
+            "principal": "982.10",
+            "interest": "17.40"
+          }
+        ]
+      }
+    }
+  ]
+}

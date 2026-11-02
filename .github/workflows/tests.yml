@@ -61,6 +61,8 @@ jobs:
       - run: npm ci --prefix tests/frontend --ignore-scripts --no-audit --no-fund
       - run: python -m pytest tests/test_ocr.py tests/test_ocr_jobs.py -q
       - run: python scripts/evaluate_ocr.py --report work/ocr-results.json
+      - name: Candidate layouts plus all native packages and actual OCR regression
+        run: python scripts/evaluate_layout_package.py --with-ocr --report work/layout-package-results.json
       - run: python scripts/test_frontend.py --report work/frontend-ocr-results.json
       - uses: actions/upload-artifact@v4
         if: always()
@@ -68,6 +70,7 @@ jobs:
           name: ocr-evaluation
           path: |
             work/ocr-results.json
+            work/layout-package-results.json
             work/frontend-ocr-results.json
   postgres:
     runs-on: ubuntu-latest

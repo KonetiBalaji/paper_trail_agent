@@ -1,0 +1,30 @@
+{
+  "case": "loan_injection",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "e1328d539a4f44b254f6b77c36d7f50355737af5da352d613a26784206e53101",
+      "truth": {
+        "loan_id": "PTA-CEDAR-001",
+        "currency": "USD",
+        "period_end": "2026-10-31",
+        "stated_total": "2437.10",
+        "transactions": [],
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1375.25",
+            "interest": "62.35"
+          },
+          {
+            "id": "T2",
+            "principal": "982.10",
+            "interest": "17.40"
+          }
+        ]
+      }
+    }
+  ]
+}

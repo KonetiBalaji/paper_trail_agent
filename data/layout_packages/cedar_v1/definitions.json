@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "definitions": [
+    {
+      "id": "cedar_capital_v1",
+      "marker": "Layout: PTA-CEDAR-LOAN-V1",
+      "header": "Facility Capital outstanding Finance charge",
+      "kind": "loan",
+      "columns": [
+        "principal",
+        "interest"
+      ],
+      "max_pages": 1
+    },
+    {
+      "id": "cedar_movement_v1",
+      "marker": "Layout: PTA-CEDAR-BANK-V1",
+      "header": "Posting Reference Outflow Inflow",
+      "kind": "bank_columns",
+      "columns": [
+        "debit",
+        "credit"
+      ],
+      "max_pages": 1
+    }
+  ]
+}

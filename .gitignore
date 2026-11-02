@@ -8,6 +8,7 @@ __pycache__/
 .pytest_cache/
 storage/
 work/
+tmp/
 data/private/
 data/synthetic/bank_clean/bank.pdf
 data/synthetic/bank_error/bank.pdf
