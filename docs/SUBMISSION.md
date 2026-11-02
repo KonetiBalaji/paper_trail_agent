@@ -20,7 +20,7 @@ The model connects document evidence to a structured, tool-driven investigation.
 
 - Public code: https://github.com/KonetiBalaji/paper_trail_agent
 - Live synthetic demo: https://paper-trail-agent.vercel.app/ (public guests use deterministic checks; paid Meta calls are blocked).
-- Narrated/open-captioned video, 2:08: https://paper-trail-agent.vercel.app/static/demo.html (actual app footage plus a clearly labelled graphic of a separate saved Meta result; final owner playback/listening review pending).
+- Narrated/open-captioned video, 2:08: https://paper-trail-agent.vercel.app/static/demo.html (actual app footage plus a clearly labelled graphic of a separate saved Meta result; owner-approved for hackathon use on November 1, 2026).
 - 310 core tests passed in verified application CI, including the public-player/range test. PostgreSQL, OCR/frontend and worker-image checks are separate CI gates.
 - 50 hosted API/security checks passed, including all four outcomes, review persistence, session isolation and guest OCR denial.
 - Four live MCP-backed Muse Spark cases pass with 2/4/4/2 tool calls; retained failed attempts remain documented. The video additionally includes an actual local contradiction run with three calls, shown as a labelled saved-result graphic.
@@ -34,7 +34,7 @@ The tested benchmark consists of synthetic documents. Local parsing supports lab
 ## Complete before submitting
 
 - Keep the deployed application URL and public guest flow available through judging.
-- Review the deployed video, including audio and readable source highlights, and confirm the form accepts the public player/MP4 URL.
+- Owner approved the deployed 2:08 video after the watch/listen request. Confirm the actual form accepts the public player/MP4 URL.
 - Confirm track and contributor details in the actual submission form.
 - Write personal feedback on Meta products and any partner technologies actually used. Do not invent feedback or claim unused services.
 - Review the requested publication permission before submitting the form.

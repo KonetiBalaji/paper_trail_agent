@@ -1,12 +1,12 @@
 # Narrated synthetic demonstration
 
-[Watch the 2:08 demo](https://paper-trail-agent.vercel.app/static/demo.html) ·
-[MP4](https://paper-trail-agent.vercel.app/static/demo.mp4) ·
+[Watch the 2:08 demo](https://paper-trail-agent.vercel.app/static/demo.html) Â·
+[MP4](https://paper-trail-agent.vercel.app/static/demo.mp4) Â·
 [Subtitles](https://paper-trail-agent.vercel.app/static/demo.srt)
 
-The 1920×1080 H.264/AAC video is **128.267 seconds**, below three minutes.
+The 1920Ã—1080 H.264/AAC video is **128.267 seconds**, below three minutes.
 It uses actual recorded application interactions with fictional PDFs. Source
-footage and speech retain their natural 1× speed; no source interval is repeated
+footage and speech retain their natural 1Ã— speed; no source interval is repeated
 or frozen to fill a target duration.
 
 | Time | Evidence |
@@ -56,9 +56,7 @@ amounts and review negations. ASR is supplemental evidence, not a human ear.
 Visual QA inspected the source contact sheet, an edited contact sheet and
 full-size critical frames, including both original highlights, the saved review
 revision, $50 calculation/source pairing and every Meta graphic state.
-**Continuous audiovisual playback and a human listening review have not been
-performed.** Final owner review remains appropriate before submission; no
-auditory-quality or universal accessibility claim is made.
+**The assistant did not perform continuous audiovisual playback or a human listening review.** On November 1, 2026, after the watch/listen review request, the user explicitly answered “Approve this demo video.” It is approved for hackathon use. This records owner approval separately from automated evidence; it does not turn the assistant’s checks into an auditory-quality or universal accessibility claim.
 
 The player is public, uses native controls, serves byte ranges, and offers the
 complete text transcript and subtitles. It has no model call or identity

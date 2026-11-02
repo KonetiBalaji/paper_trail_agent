@@ -20,6 +20,7 @@
   SHA-256 binding, 206 byte ranges, 416 invalid ranges, subtitles and no database
   or model access. **20 deployed read-only checks pass**, including anonymous full-file hash, beginning/tail byte ranges, player/transcript/subtitles/poster, no session creation and current agent evidence. See `docs/hosted-video-results.json`.
 - [Application CI 41353980967](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41353980967) passes all four jobs, including **310 core tests, 7 skipped**, PostgreSQL, CPU OCR/DOM-to-HTTP and the bounded worker image. [Security CI 41353981026](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41353981026) also passes. Vercel deployed `bacdf8a`; no production Python source changed and live agent evidence stays current.
+- Owner video approval: on November 1 the user answered **“Approve this demo video”** after the watch/listen review request for the 2:08 version. This is recorded separately from the assistant’s technical/sampled visual evidence.
 - Original accepted voice, only synthetic recording take 03, source report,
   captions, natural-speed cuts and Python render/verify scripts are preserved in
   a 33 MB local project ZIP; signed provider URLs, model cache and aborted takes
