@@ -21,6 +21,8 @@ LEGACY_BENCHMARK = {
     'bank_signed', 'bank_cross_page', 'bank_bad_carry', 'injection_note', 'identity_conflict',
     'ambiguous_date', 'currency_guard', 'missing_tranche', 'corrupt_pdf', 'oversized_pdf'}
 LEGACY_OCR = {'table_review', 'labeled_error', 'degraded', 'blank'}
+GENERATED_FIXTURES = {'data/benchmark/oversized_pdf/statement_1.pdf',
+                      'data/synthetic/bank_clean/bank.pdf', 'data/synthetic/bank_error/bank.pdf'}
 
 
 def require(condition):
@@ -50,10 +52,29 @@ def runtime_sources(root=ROOT):
 
 def fixture_hashes(root=ROOT):
     paths = [p for folder in ('synthetic', 'benchmark', 'ocr', 'layout_packages')
-             for p in (root / 'data' / folder).rglob('*') if p.is_file() and p.suffix in ('.json', '.pdf')]
+             for p in (root / 'data' / folder).rglob('*') if p.is_file() and p.suffix in ('.json', '.pdf')
+             and p.relative_to(root).as_posix() not in GENERATED_FIXTURES]
     require(len(paths) <= 512)
     require(sum(p.stat().st_size for p in paths) <= 40 * 1024 * 1024)
-    return {p.relative_to(root).as_posix(): digest(p) for p in sorted(paths)}
+    result = {p.relative_to(root).as_posix(): digest(p) for p in sorted(paths)}
+    # This ignored 10-MiB negative fixture is materialized locally, but rebuilt
+    # in memory on clean clones. Bind identical canonical bytes in either case.
+    manifest = read(root / 'data/benchmark/manifest.json')
+    negative = next(r for r in manifest['cases'] if r['case'] == 'oversized_pdf')['documents'][0]
+    expected = oversized_hash()
+    require(negative['file'] == 'statement_1.pdf' and negative['raw'] == 'oversized' and negative['sha256'] == expected)
+    materialized = root / 'data/benchmark/oversized_pdf/statement_1.pdf'
+    if materialized.exists(): require(digest(materialized) == expected)
+    result['virtual:benchmark/oversized_pdf/statement_1.pdf'] = expected
+    return result
+
+
+@lru_cache(maxsize=1)
+def oversized_hash():
+    result = hashlib.sha256(b'%PDF-1.7\n')
+    block = b'0' * (1024 * 1024)
+    for _ in range(10): result.update(block)
+    return result.hexdigest()
 
 
 @lru_cache(maxsize=8)

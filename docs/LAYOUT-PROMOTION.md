@@ -95,6 +95,17 @@ test directory: it verifies deployed Python/frontend source, installed dependenc
 versions, fixture bytes and corpus/review results. Publishing and CI additionally
 verify the full test/tool/config snapshot.
 
+The oversized-upload rejection PDF is deliberately Git-ignored: local fixture
+generation materializes it, while clean clones rebuild it in memory. The receipt
+binds its exact canonical byte hash under a `virtual:` key in both environments;
+if a local materialized copy exists, its bytes must also match. This retains the
+actual rejection test without requiring an ignored 10-MiB file in deployment.
+Unused generated bank-copy PDFs are excluded because the six-case evaluator
+always generates its bank inputs in an owned temporary directory. Their truth
+and generator code remain bound. Other committed PDF/JSON fixtures are hashed
+directly. The first deployment exposed this portability mismatch and correctly
+remained stale; no gate was bypassed to activate it.
+
 Without `--with-ocr`, the report can pass its native subset but always reports
 `full_regression_passed: false`. Source, exact PDF/JSON fixture and definition
 hashes are captured before the run and checked again afterward. Any modification

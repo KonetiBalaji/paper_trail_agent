@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app import benchmark
 from app.layout_proposals import Proposal, evaluate_trial, trial
-from app.layout_registry import runtime_dependencies, inventory
+from app.layout_registry import runtime_dependencies, inventory, fixture_hashes
 
 PROJECT = Path(__file__).resolve().parents[1]
 PACKAGES = PROJECT / 'data/layout_packages'
@@ -36,10 +36,11 @@ def sources():
 
 def fixtures(package_root=PACKAGES):
     package_root = Path(package_root)
-    paths = [p for name in ('synthetic', 'benchmark', 'ocr')
-             for p in (PROJECT / 'data' / name).rglob('*') if p.is_file() and p.suffix in ('.json', '.pdf')]
-    paths += [p for p in package_root.rglob('*') if p.is_file() and p.suffix in ('.json', '.pdf')]
-    return {(p.relative_to(PROJECT).as_posix() if p.is_relative_to(PROJECT)
+    base = fixture_hashes(PROJECT)
+    if package_root == PACKAGES: return base
+    base = {key: value for key, value in base.items() if not key.startswith('data/layout_packages/')}
+    paths = [p for p in package_root.rglob('*') if p.is_file() and p.suffix in ('.json', '.pdf')]
+    return base | {(p.relative_to(PROJECT).as_posix() if p.is_relative_to(PROJECT)
              else 'external-package/' + p.relative_to(package_root).as_posix()):
             hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
 

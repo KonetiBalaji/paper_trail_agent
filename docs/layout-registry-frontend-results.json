@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checked_at": "2026-11-02T04:15:19.147202+00:00",
-  "duration_seconds": 24.27,
+  "checked_at": "2026-11-02T04:36:40.379965+00:00",
+  "duration_seconds": 26.56,
   "scope": "Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.",
   "scenarios": [
     "reviewer login and upload",
@@ -32,7 +32,7 @@
     "source-bound reviewed-layout status and real synthetic $50 case with receipt provenance"
   ],
   "source_sha256": {
-    "app/layout_registry.py": "02e31c814166a5e220ee7ee8277b671ddc0b31b429331603966cda5c59ab364f",
+    "app/layout_registry.py": "8305eba8900fbdb1aa51c61957f2ad61e1ac13fc1a0adfe27d35c88dbd8d6a04",
     "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
     "app/platform.py": "8a8b2ad4029994a5d90d510a17935dfc5c1c0673edbacdde7c2f85787886dfd1",
     "app/main.py": "4af3afb81639bc6b2af76b65767599656b424d2adc11eea45bbb6a5042d6e631",

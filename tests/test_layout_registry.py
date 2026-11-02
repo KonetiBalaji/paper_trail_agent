@@ -172,3 +172,17 @@ def test_failed_receipt_cannot_replace_registry(admitted, monkeypatch):
     report['full_regression_passed'] = False; write(root / registry.REPORT, report)
     with pytest.raises(ValueError):promote_layouts.publish()
     assert (root / registry.REGISTRY).read_bytes() == previous
+
+
+def test_materialized_or_virtual_negative_fixture_has_identical_binding(admitted):
+    root, _, _ = admitted
+    path = root / 'data/benchmark/oversized_pdf/statement_1.pdf'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b'%PDF-1.7\n' + b'0' * (10 * 1024 * 1024))
+    materialized = registry.fixture_hashes(root)
+    path.unlink()
+    assert registry.fixture_hashes(root) == materialized
+    assert materialized['virtual:benchmark/oversized_pdf/statement_1.pdf'] == registry.oversized_hash()
+    assert registry.load(root)['status'] == 'active'
+    path.write_bytes(b'%PDF-wrong-negative-fixture')
+    assert registry.load(root)['status'] == 'stale'

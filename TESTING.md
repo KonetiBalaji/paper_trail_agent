@@ -27,12 +27,18 @@
 - Three new fixed guest fixtures demonstrate reviewed $50, reviewed $25 and
   bank clean behavior using the same backend. The same guest quota, isolation,
   CSRF and no-paid-call/no-upload restrictions apply.
-- Full local suite: **391 passed, seven skipped**. The actual DOM-to-HTTP record
+- Full local suite: **392 passed, seven skipped**. The actual DOM-to-HTTP record
   is `docs/layout-registry-frontend-results.json`. All four fresh real Muse Spark
-  cases pass with **2/3/3/3** tool calls. Prior successful evidence is retained in
-  `docs/live-meta-pre-registry-results.json`; the current scorecard matches the
+  cases pass with **3/4/3/3** tool calls. Prior successful evidence is retained in
+  `docs/live-meta-pre-registry-results.json` and `docs/live-meta-pre-portability-results.json`; the current scorecard matches the
   new Python sources and actual live artifact. Final CI and hosted verification
   are recorded after release; no unverified deployment result is claimed here.
+- Initial Linux CI (41388486429) and deployment correctly rejected the receipt:
+  it included an ignored local oversized fixture absent from Git. Canonical
+  virtual-byte binding fixes that mismatch while retaining the actual rejection
+  case and rejecting a tampered materialized copy. A clean staged Git export
+  without ignored files now passes `promote_layouts.py --check`. No source/hash
+  check was removed or weakened to force activation.
 
 ## Actual candidate-layout package - November 1, 2026
 
