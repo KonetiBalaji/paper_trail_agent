@@ -7,3 +7,13 @@ id = "paper-trail-integration-key"
 description = "Paper Trail scoped bearer credential"
 regex = '''\bpta_api_[A-Za-z0-9_-]{43}\b'''
 keywords = ["pta_api_"]
+
+# Verified file digest, not a credential. Keep this exception exact in both value
+# and report path; ordinary keys in this report must still be detected.
+[[allowlists]]
+description = "Exact verified tests/test_api.py source digest in the layout regression artifact"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''(^|/)docs/layout-package-results\.json$''']
+regexTarget = "secret"
+regexes = ['''^f7b607be41868c544bfbc47e3349f8738023a6736afb9e7b151aa0be88c07b5f$''']

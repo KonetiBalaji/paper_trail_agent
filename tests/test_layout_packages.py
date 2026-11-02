@@ -120,3 +120,18 @@ def test_reviewed_truth_must_equal_the_truth_actually_evaluated(tmp_path):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match='ground truth differs'):
         gate.evaluate(package_root=tmp_path)
+
+
+def test_assistant_review_is_bound_to_exact_package_not_forged_as_human():
+    review = gate.review_record(PACKAGE)
+    assert review['reviewed'] and review['record']['review_kind'] == 'assistant'
+    assert review['record']['human_approval'] is False
+
+
+def test_generation_does_not_manufacture_a_review_and_stale_review_fails(tmp_path):
+    generate(tmp_path)
+    assert not gate.review_record(tmp_path)['reviewed']
+    record = json.loads((PACKAGE / 'review.json').read_text())
+    record['manifest_sha256'] = '0' * 64
+    (tmp_path / 'review.json').write_text(json.dumps(record))
+    assert not gate.review_record(tmp_path)['reviewed']

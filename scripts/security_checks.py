@@ -60,8 +60,13 @@ def run(binary, audit_python):
         temporary = Path(directory)
         canary = temporary / 'canary'; canary.mkdir()
         (canary / 'synthetic.txt').write_text('token=pta_api_' + secrets.token_urlsafe(32) + ' # gitleaks:allow', encoding='utf-8')
+        # Prove the narrowly excepted evaluation-report path still detects a
+        # different generic key; never write or print any real credential.
+        (canary / 'docs').mkdir()
+        (canary / 'docs/layout-package-results.json').write_text(
+            json.dumps({'model_api_key': secrets.token_hex(32)}), encoding='utf-8')
         detected = scan(binary, 'dir', canary, temporary / 'canary.json')
-        if detected['passed'] or 'paper-trail-integration-key' not in detected['rule_ids']:
+        if detected['passed'] or not {'paper-trail-integration-key', 'generic-api-key'} <= set(detected['rule_ids']):
             raise RuntimeError('Secret scanner failed its canary; no scan is accepted')
         history = scan(binary, 'git', ROOT, temporary / 'history.json')
         snapshot = temporary / 'tracked'; snapshot.mkdir()
@@ -106,7 +111,8 @@ def run(binary, audit_python):
         return {'schema_version': 1, 'passed': passed, 'checked_at': datetime.now(timezone.utc).isoformat(),
                 'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
                 'scope': 'Default Gitleaks rules plus scoped API keys; reachable Git history and tracked working files only. Python/OCR pinned inventories and frontend lock against current advisory services. No proof against unknown vulnerabilities or secrets outside scanner rules. Ignored local secrets are deliberately excluded.',
-                'secrets': {'version': '8.30.1', 'canary_detected': True, 'history': history, 'tracked_files': working,
+                'secrets': {'version': '8.30.1', 'canary_detected': True,
+                            'report_path_generic_key_canary_detected': True, 'history': history, 'tracked_files': working,
                             'tracked_file_count': len(manifest), 'tracked_manifest_sha256': hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest(),
                             'commits_scanned': int(subprocess.check_output(['git', 'rev-list', '--all', '--count'], cwd=ROOT, text=True))},
                 'python': {'auditor': 'pip-audit==2.10.1', 'service': 'PyPI', 'no_dependency_resolution': True,

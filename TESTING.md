@@ -17,7 +17,7 @@
   Its report records exact source/fixture/definition hashes and rejects input
   changes during execution, dropped old cases and disagreement between reviewable
   truth files and the evaluated manifest. See `docs/layout-package-results.json`.
-- `tests/test_layout_packages.py`: 23 focused checks pass, including reversed
+- `tests/test_layout_packages.py`: 25 focused checks pass, including reversed
   mapping, corrupted PDF, a failing older package, omitted native/OCR case,
   source changes and mismatched review truth. Full local suite before the last
   three guard tests were added: 357 passed, seven skipped. Final CI verifies the
@@ -27,8 +27,17 @@
   ignored `tmp/pdfs/layout-review`; actual reviewable PDFs remain in the package.
 - The OCR CI job now runs the complete package command and uploads its result.
   Production Python and existing live Meta source hashes are unchanged.
-- Human semantic review, verified promotion receipt, runtime registry and
-  deployed provenance remain pending. This package is not automatically trusted.
+- `review.json` records assistant review, bound to exact definition and manifest
+  hashes. No human approval is claimed or required for this synthetic code
+  change; generated packages do not manufacture a review and stale records fail.
+  Verified promotion receipt, runtime registry and deployed provenance remain
+  pending. This package is not automatically trusted.
+- Security CI initially flagged the source digest of `tests/test_api.py` as a
+  generic key. It is verified to equal that exact tracked file's SHA-256. The
+  exception matches only that value in `docs/layout-package-results.json` for
+  the generic-key rule. A generated generic-key canary at that same report path
+  remains detectable, alongside the scoped-key canary. Full reachable history
+  and tracked-file scans, dependency audits and both canaries pass locally.
 
 ## Layout promotion trial foundation - November 1, 2026
 
@@ -53,7 +62,7 @@
   `docs/live-meta-pre-layout-trial-results.json`. No real financial documents
   were sent; only repository synthetic fixtures were used.
 - This does not complete item 14: no mapping is production-promoted, and actual
-  candidate PDF/truth packages, complete promotion receipts, human mapping review
+  candidate PDF/truth packages, complete promotion receipts, mapping review
   and deployed provenance remain pending. See `docs/LAYOUT-PROMOTION.md`.
 
 ## Narrated demo artifact - November 1, 2026

@@ -48,8 +48,12 @@ It is not a complete regression or a production authorization receipt.
    a missing registry/package entry cannot be allowed to silently shrink scope.
 3. Bind the receipt to definitions, exact ground truth, PDF bytes and current
    source code; reject missing, changed, incomplete and stale receipts.
-4. Obtain a real human review of the concrete financial column mapping and its
-   truth package. Do not invent a reviewer or treat model output as approval.
+4. Implemented for this synthetic package: `review.json` explicitly records
+   assistant review of the printed meanings and independent truth, bound to
+   definition and manifest hashes. The owner clarified that personal approval
+   is unnecessary; the roadmap requires a reviewed mapping, not their sign-off.
+   New package generation never manufactures a review. There is no claim of
+   human approval, real lender validation or approval of financial actions.
 5. Enable only receipt-backed, reviewed definitions in a read-only deployment
    registry; expose their provenance to users and verify the deployed behavior.
 
@@ -78,7 +82,7 @@ The report
 is evidence for a future promotion receipt, not itself a trusted runtime
 authorization. The normal complete test/release CI remains a separate gate.
 
-## Concrete mapping awaiting human review
+## Concrete reviewed synthetic mapping
 
 The fictional Cedar loan header maps **Capital outstanding → principal** and
 **Finance charge → interest**. That second meaning is explicitly defined only
@@ -96,6 +100,10 @@ its visible ID/date are counted as withheld fields, rather than removed from the
 recall denominator. The reversed-header control's ground truth follows its
 actual printed reversed meanings, although the trial must withhold those rows.
 
-No reviewer identity or approval has been invented. `human_review` is null and
-`promoted` is false in the package evaluation report. Runtime activation remains
-pending a concrete human review and a validated, source-bound promotion receipt.
+No human reviewer identity or approval has been invented. `human_review` is null,
+the assistant review is recorded separately, and `promoted` is false. Review
+validation checks the exact definition and truth-manifest hashes; a changed
+mapping cannot inherit the old record. Runtime activation remains pending a
+validated, source-bound promotion receipt and registry. This mapping review does
+not replace the existing human approval required for financial communication or
+money decisions.

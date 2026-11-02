@@ -8,6 +8,41 @@
   "full_regression_passed": true,
   "promoted": false,
   "human_review": null,
+  "review_records": [
+    {
+      "package": "cedar_v1",
+      "reviewed": true,
+      "record": {
+        "schema_version": 1,
+        "review_kind": "assistant",
+        "reviewer": "Codex",
+        "reviewed_on_utc": "2026-11-02",
+        "decision": "reviewed_for_synthetic_scope",
+        "human_approval": false,
+        "scope": "These fictional Cedar native-text single-page fixtures only; no real lender, OCR, currency conversion, financial action or universal finance-charge interpretation.",
+        "definition_sha256": {
+          "cedar_capital_v1": "dbd2209188f0f3aed30f7cc2e5ff839a7840cc2a769a3e299ea5633f3302358b",
+          "cedar_movement_v1": "346b27d2f6ecf072c088a6caf79b7b6582453176cf735304d50af2d2d2215b41"
+        },
+        "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
+        "reviewed_meanings": [
+          "Capital outstanding means principal in the constructed loan fixtures.",
+          "Finance charge means interest only in these constructed loan fixtures; real finance charges may include fees.",
+          "Outflow is debit and Inflow is credit; signed bank movement is credit minus debit.",
+          "A changed or reversed header, missing marker, extra page, missing amount, repeated ID or both populated bank sides requires review."
+        ],
+        "review_evidence": [
+          "All 14 rendered pages inspected in a contact sheet; clean loan, changed header and ambiguous bank row inspected at full size.",
+          "Literal independent financial truth checked: loan 2437.10, wrong stated total 2487.10, interest difference 25.00, bank closing 913.65.",
+          "Reversed-header truth follows its actual printed meanings; ambiguous bank ID/date remain in the withheld-field denominator.",
+          "Actual parser, source grounding, all old native cases and actual OCR corpus pass; regression evidence remains a separate required gate."
+        ],
+        "activation": "Not activated. A validated source-bound receipt and runtime registry are still required."
+      },
+      "record_sha256": "35fec5802710a6715c2e2713cc43e1472f73eec19df407a841b8c66df0114431"
+    }
+  ],
+  "review_records_valid": true,
   "definition_sha256": {
     "cedar_capital_v1": "dbd2209188f0f3aed30f7cc2e5ff839a7840cc2a769a3e299ea5633f3302358b",
     "cedar_movement_v1": "346b27d2f6ecf072c088a6caf79b7b6582453176cf735304d50af2d2d2215b41"
@@ -45,7 +80,7 @@
     "scripts/container_worker_smoke.py": "d15b074fc5c53944376ccb682541b4ee7d38ac80a3eb7f680d8237d74000a1fc",
     "scripts/evaluate.py": "9d79c8151ad383b1b4c93acd13b354d44a2255168333c1b60e2e9b02cb7a55c9",
     "scripts/evaluate_agents.py": "0e595507e6a95f737f731002ee2cbed23bbdcf70af36dcd2cbacebbdf6720126",
-    "scripts/evaluate_layout_package.py": "7e03690036f5287d0d4f9a1079e6e10c17f6d69d997f347514891a224089e57d",
+    "scripts/evaluate_layout_package.py": "511710425e651ec5e30a2854b9cec9e2f00fede85ed2e51130c7dccac3ab0f7c",
     "scripts/evaluate_mcp.py": "ee5717e009a503c5f75b358eae040798797afb88ea68baad3bfac33a3b96c54c",
     "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210",
     "scripts/generate_bank_fixtures.py": "b6a753e1989d438f95632086711704adb3bf4a915e3114dece6f61d41dba5fbf",
@@ -66,7 +101,7 @@
     "scripts/render_demo.py": "55065722d40230d32ba5919630ff8e5c9f5aac3ec6719bf5b65a80c57816d5ee",
     "scripts/render_layout_review.py": "cbc660abffd9153d2ff28d48f25dfe2ae023566eef8de8c47fc412ecd883d2bb",
     "scripts/resource_benchmark.py": "ae53711ee6dc7cd375deac46ded7cc96e3df0970009ca01d494ff89f87761feb",
-    "scripts/security_checks.py": "c377b4360dbb25609334df4b5aca07f14b5511920143b1f18962c5364fd7b4ec",
+    "scripts/security_checks.py": "62143747b4f75b47a3c5768241c17b8589a6f0b872630d709871e7cbb7ecf7d7",
     "scripts/smoke.py": "55a2eb7a663e16d49bae34a338b8dd9938e790911a4d22c71660360476e18539",
     "scripts/test_frontend.py": "8450e62f984aee534a534a03aa5005b1720a5b0b02237b6070dd30e7c6e12151",
     "scripts/validate_worker_config.py": "31b86216477e9e5979c3b9f0b08c18a80843162751f79872e6899d526184b1a4",
@@ -81,7 +116,7 @@
     "tests/test_drafts.py": "777684116b1ccd8b1968ac51dc520f5bea24d489cb76824d151f2268bd15573f",
     "tests/test_history.py": "c0ff320f3b8ddc1c0d26eadbcb011c1632d18da4047599dce0d29940c13dcd7e",
     "tests/test_integrations.py": "57a06ad7e59583bfccee1f2467e0be1bf0dc4e6c9aed5fa66fa9f35de2876e30",
-    "tests/test_layout_packages.py": "0672daa079516ed920fa2f2239d56384d479b26ef50bbc8c0008b0f3062085b5",
+    "tests/test_layout_packages.py": "f97a574280453b82426c648e02e730554dfaa2a6e3519892286ce0ebd5a3c380",
     "tests/test_layout_proposals.py": "54feef381c6abf317559744194becc33f66f859f78734cee72e6b48d32319d1d",
     "tests/test_mcp.py": "bf390219b5e5c395d7624bb94fd55193453b01376d1c569393ac3f7b5d7dba3e",
     "tests/test_meta.py": "2b316885904f2ed7ea16e11d44073d2c40280c35298e15ae112ecc89c5dec4b5",
@@ -168,6 +203,7 @@
     "data/layout_packages/cedar_v1/cases/loan_wrong_header/statement_1.pdf": "6edd682a9a35ae826d0308a52bff1637ccba6e217b9c71b47afc7f22c06d1df9",
     "data/layout_packages/cedar_v1/cases/manifest.json": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
     "data/layout_packages/cedar_v1/definitions.json": "a0c0bacb09cefe03691f261cdedc82e44a05d63ae865654d65858df741f8c9dd",
+    "data/layout_packages/cedar_v1/review.json": "35fec5802710a6715c2e2713cc43e1472f73eec19df407a841b8c66df0114431",
     "data/ocr/blank.pdf": "0b1584d77c181f0e263a4289d6f48329b50074707a345e052d26e7eb4c4cee8c",
     "data/ocr/degraded.pdf": "4c14b905ec346f48ed604fd7bb3b20fcee92311b7cd13617ee9fad013a388b26",
     "data/ocr/labeled_error.pdf": "8b762972c369ffed9a9328e11a134c2692aaa77e37619e86b8faea4034a83397",
@@ -193,7 +229,7 @@
     "passed": true,
     "promoted": false,
     "baseline": {
-      "evaluated_at": "2026-11-02T03:22:36.542439+00:00",
+      "evaluated_at": "2026-11-02T03:30:57.566735+00:00",
       "mode": "offline",
       "model_calls": 0,
       "cases": [
@@ -313,7 +349,7 @@
     "regression": {
       "mode": "offline",
       "model_calls": 0,
-      "evaluated_at": "2026-11-02T03:22:37.057965+00:00",
+      "evaluated_at": "2026-11-02T03:30:58.110631+00:00",
       "manifest_sha256": "7c61d3fa9f2fb9a26852c76ed2bfe5013dc1fba6dd3c458179e0bc85de50c78d",
       "cases": [
         {
@@ -389,7 +425,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 12.96
+          "elapsed_ms": 13.25
         },
         {
           "case": "loan_columns_error",
@@ -464,7 +500,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.84
+          "elapsed_ms": 7.97
         },
         {
           "case": "loan_columns_contradiction",
@@ -539,7 +575,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 33.76
+          "elapsed_ms": 35.84
         },
         {
           "case": "loan_reverse_columns",
@@ -614,7 +650,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.66
+          "elapsed_ms": 7.73
         },
         {
           "case": "loan_cross_page",
@@ -689,7 +725,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.86
+          "elapsed_ms": 13.67
         },
         {
           "case": "loan_split_row",
@@ -765,7 +801,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.18
+          "elapsed_ms": 12.97
         },
         {
           "case": "loan_duplicate",
@@ -840,7 +876,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.53
+          "elapsed_ms": 8.01
         },
         {
           "case": "loan_partial",
@@ -915,7 +951,7 @@
             "precision": 1.0,
             "recall": 0.7777777777777778
           },
-          "elapsed_ms": 8.07
+          "elapsed_ms": 7.52
         },
         {
           "case": "bank_debit_credit",
@@ -997,7 +1033,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 9.43
+          "elapsed_ms": 9.27
         },
         {
           "case": "bank_signed",
@@ -1079,7 +1115,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.84
+          "elapsed_ms": 7.81
         },
         {
           "case": "bank_cross_page",
@@ -1168,7 +1204,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.98
+          "elapsed_ms": 13.99
         },
         {
           "case": "bank_bad_carry",
@@ -1257,7 +1293,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.74
+          "elapsed_ms": 14.95
         },
         {
           "case": "injection_note",
@@ -1332,7 +1368,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 9.87
+          "elapsed_ms": 10.31
         },
         {
           "case": "identity_conflict",
@@ -1400,7 +1436,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.04
+          "elapsed_ms": 7.84
         },
         {
           "case": "ambiguous_date",
@@ -1468,7 +1504,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.68
+          "elapsed_ms": 7.48
         },
         {
           "case": "currency_guard",
@@ -1543,7 +1579,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 16.21
+          "elapsed_ms": 16.13
         },
         {
           "case": "missing_tranche",
@@ -1618,7 +1654,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.94
+          "elapsed_ms": 14.74
         },
         {
           "case": "corrupt_pdf",
@@ -1640,7 +1676,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 0.33
+          "elapsed_ms": 0.34
         },
         {
           "case": "oversized_pdf",
@@ -1662,7 +1698,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 10.43
+          "elapsed_ms": 10.31
         }
       ],
       "fields": {
@@ -1786,7 +1822,7 @@
           "report": {
             "mode": "offline",
             "model_calls": 0,
-            "evaluated_at": "2026-11-02T03:22:37.174702+00:00",
+            "evaluated_at": "2026-11-02T03:30:58.226703+00:00",
             "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
             "cases": [
               {
@@ -1863,7 +1899,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.46
+                "elapsed_ms": 8.72
               },
               {
                 "case": "loan_math_error",
@@ -1939,7 +1975,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.4
+                "elapsed_ms": 8.36
               },
               {
                 "case": "loan_contradiction",
@@ -2015,7 +2051,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 17.22
+                "elapsed_ms": 17.19
               },
               {
                 "case": "loan_partial",
@@ -2091,7 +2127,7 @@
                   "precision": 1.0,
                   "recall": 0.7777777777777778
                 },
-                "elapsed_ms": 8.06
+                "elapsed_ms": 7.84
               },
               {
                 "case": "loan_duplicate",
@@ -2167,7 +2203,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.45
+                "elapsed_ms": 8.24
               },
               {
                 "case": "loan_wrong_header",
@@ -2240,7 +2276,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 7.78
+                "elapsed_ms": 7.88
               },
               {
                 "case": "loan_missing_marker",
@@ -2313,7 +2349,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 8.65
+                "elapsed_ms": 8.71
               },
               {
                 "case": "loan_page_scope",
@@ -2386,7 +2422,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 10.65
+                "elapsed_ms": 10.77
               },
               {
                 "case": "loan_injection",
@@ -2462,7 +2498,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 10.15
+                "elapsed_ms": 9.64
               },
               {
                 "case": "bank_clean",
@@ -2545,7 +2581,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.08
+                "elapsed_ms": 8.82
               },
               {
                 "case": "bank_balance_error",
@@ -2628,7 +2664,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.05
+                "elapsed_ms": 9.11
               },
               {
                 "case": "bank_ambiguous_sides",
@@ -2711,7 +2747,7 @@
                   "precision": 1.0,
                   "recall": 0.8
                 },
-                "elapsed_ms": 10.18
+                "elapsed_ms": 9.78
               }
             ],
             "fields": {
@@ -2866,7 +2902,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 9828,
+          "duration_ms": 5985,
           "usable_lines": 9,
           "total_lines": 10,
           "field_candidates": []
@@ -3102,7 +3138,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 7797,
+          "duration_ms": 4781,
           "usable_lines": 6,
           "total_lines": 6,
           "field_candidates": [
@@ -3329,7 +3365,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 4110,
+          "duration_ms": 3375,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
@@ -3385,7 +3421,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 4187,
+          "duration_ms": 3672,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
@@ -3428,7 +3464,6 @@
     "passed": true
   },
   "remaining_gates": [
-    "human mapping and truth review",
     "verified promotion receipt and runtime registry",
     "deployed provenance and release verification"
   ]

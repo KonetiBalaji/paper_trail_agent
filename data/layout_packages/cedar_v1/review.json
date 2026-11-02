@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "review_kind": "assistant",
+  "reviewer": "Codex",
+  "reviewed_on_utc": "2026-11-02",
+  "decision": "reviewed_for_synthetic_scope",
+  "human_approval": false,
+  "scope": "These fictional Cedar native-text single-page fixtures only; no real lender, OCR, currency conversion, financial action or universal finance-charge interpretation.",
+  "definition_sha256": {
+    "cedar_capital_v1": "dbd2209188f0f3aed30f7cc2e5ff839a7840cc2a769a3e299ea5633f3302358b",
+    "cedar_movement_v1": "346b27d2f6ecf072c088a6caf79b7b6582453176cf735304d50af2d2d2215b41"
+  },
+  "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
+  "reviewed_meanings": [
+    "Capital outstanding means principal in the constructed loan fixtures.",
+    "Finance charge means interest only in these constructed loan fixtures; real finance charges may include fees.",
+    "Outflow is debit and Inflow is credit; signed bank movement is credit minus debit.",
+    "A changed or reversed header, missing marker, extra page, missing amount, repeated ID or both populated bank sides requires review."
+  ],
+  "review_evidence": [
+    "All 14 rendered pages inspected in a contact sheet; clean loan, changed header and ambiguous bank row inspected at full size.",
+    "Literal independent financial truth checked: loan 2437.10, wrong stated total 2487.10, interest difference 25.00, bank closing 913.65.",
+    "Reversed-header truth follows its actual printed meanings; ambiguous bank ID/date remain in the withheld-field denominator.",
+    "Actual parser, source grounding, all old native cases and actual OCR corpus pass; regression evidence remains a separate required gate."
+  ],
+  "activation": "Not activated. A validated source-bound receipt and runtime registry are still required."
+}

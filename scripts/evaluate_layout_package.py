@@ -63,6 +63,20 @@ def validate_truth(root):
             raise ValueError('Reviewable ground truth differs from the evaluated manifest')
 
 
+def review_record(root):
+    path = root / 'review.json'
+    if not path.is_file():
+        return {'package': root.name, 'reviewed': False, 'reason': 'No review record'}
+    data = json.loads(path.read_text(encoding='utf-8'))
+    expected = {p.id: p.fingerprint() for p in definitions(root)}
+    reviewed = (data.get('schema_version') == 1 and data.get('review_kind') in ('assistant', 'human')
+                and data.get('decision') == 'reviewed_for_synthetic_scope'
+                and data.get('definition_sha256') == expected
+                and data.get('manifest_sha256') == hashlib.sha256((root / 'cases/manifest.json').read_bytes()).hexdigest())
+    return {'package': root.name, 'reviewed': reviewed, 'record': data,
+            'record_sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
 def evaluate(*, with_ocr=False, package_root=PACKAGES):
     package_root = Path(package_root)
     packages = sorted(p.parent for p in package_root.glob('*/definitions.json'))
@@ -91,16 +105,19 @@ def evaluate(*, with_ocr=False, package_root=PACKAGES):
         from scripts.evaluate_ocr import evaluate as evaluate_ocr
         with trial(proposals):
             ocr = evaluate_ocr(PROJECT / 'data/ocr')
+    reviews = [review_record(root) for root in packages]
     unchanged = started_sources == sources() and started_fixtures == fixtures(package_root)
     ocr_scope = ocr is not None and complete_scope(ocr['cases'], LEGACY_OCR)
     full = result['passed'] and native_scope and ocr_scope and ocr['passed'] and unchanged
     return {'schema_version': 1, 'native_passed': result['passed'] and native_scope,
             'legacy_scope_complete': {'native': native_scope, 'ocr': ocr_scope}, 'full_regression_passed': bool(full),
             'promoted': False, 'human_review': None,
+            'review_records': reviews, 'review_records_valid': all(row['reviewed'] for row in reviews),
             'definition_sha256': {p.id: p.fingerprint() for p in proposals},
             'source_sha256': started_sources, 'fixture_sha256': started_fixtures,
             'inputs_unchanged_during_run': unchanged, 'native': result, 'ocr': ocr,
-            'remaining_gates': ['human mapping and truth review', 'verified promotion receipt and runtime registry',
+            'remaining_gates': ([] if all(row['reviewed'] for row in reviews) else ['mapping and truth review']) +
+                               ['verified promotion receipt and runtime registry',
                                 'deployed provenance and release verification']}
 
 
