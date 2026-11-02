@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "evaluated_at": "2026-11-01T19:11:40.716879+00:00",
+  "evaluated_at": "2026-11-02T03:01:39.391557+00:00",
   "passed": true,
   "generation_model_calls": 0,
   "scope": "Offline corpus, controlled faults, actual local MCP probes and separately labeled recorded live evidence. Not real-world accuracy.",
@@ -1704,7 +1704,7 @@
   },
   "live": {
     "status": "scored",
-    "current_source_match": true,
+    "current_source_match": false,
     "artifact_sha256": "80fbebd7ec3ca385f803bc7ccc2b38a28ab0ca9dbee91fcc67c3ff5329282685",
     "finished_at": "2026-10-31T17:16:54.764911+00:00",
     "fields": {
@@ -2481,7 +2481,8 @@
     "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
     "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
     "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
-    "app/layouts.py": "b3399c6f90dd07163f4aa65e5c350bc95697fd4703c24a6a1e4055609aea9f04",
+    "app/layout_proposals.py": "c11fbf62dd9a1941462ab87004f12a5c9a06382febfa475a89c9e2d023b356f4",
+    "app/layouts.py": "7445d402320abe3222d5a248f2b47987908ab2026691a5075c780561157244e0",
     "app/main.py": "4a2d45d1de1dda927894348c15ff16a82c4a174117e9b18ed426d92d5d6f47cf",
     "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
     "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",

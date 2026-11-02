@@ -17,6 +17,8 @@ def statement_date(value):
         return date(int(match[3]),MONTHS[match[2].lower()],int(match[1])).isoformat()
 
 def augment(doc,result):
+    from .layout_proposals import document_mapping
+    proposed=document_mapping(doc)
     mode=None;order=None;pending=None;recognized=set();carries=[]
     issues=doc.setdefault('issues',[]);seen={};conflicted=set()
     def issue(kind,message,source,related=None):
@@ -71,6 +73,12 @@ def augment(doc,result):
             mode='bank_signed';recognized.add('bank_signed_columns_v1');continue
         if normalized in ('date reference debit credit','date reference credit debit'):
             mode='bank_columns';order=tuple(normalized.split()[-2:]);recognized.add('bank_debit_credit_v1');continue
+        if normalized in proposed:
+            definition=proposed[normalized]
+            unfinished();mode=definition.kind;order=definition.columns
+            recognized.add({'loan':'loan_columns_v1','bank_signed':'bank_signed_columns_v1',
+                            'bank_columns':'bank_debit_credit_v1'}[mode])
+            recognized.add('trial:'+definition.id);continue
         if mode=='loan':
             match=re.fullmatch(r'([\w-]+)\s+'+AMOUNT+r'\s+'+AMOUNT,text)
             if match:

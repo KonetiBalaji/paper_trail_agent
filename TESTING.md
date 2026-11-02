@@ -1,5 +1,23 @@
 # Verification record - October 28, 2026
 
+## Layout promotion trial foundation - November 1, 2026
+
+- `tests/test_layout_proposals.py`: 27 checks pass, including the actual six-case
+  demo and 19-case native regression runs within the trial, an injected failing
+  old regression, model column swaps, schema bypass, page/OCR scope, partial rows
+  and signed/debit-credit bank semantics.
+- Full local collection before the last four focused checks were added:
+  **333 passed, 7 skipped**. The final focused collection separately passes all 27.
+- All four actual CPU OCR corpus cases pass after the parser changes; none is
+  marked confirmed or clean. Evidence: `work/layout-trial-ocr-results.json`.
+- The offline agent scorecard was regenerated from actual checks. Earlier live
+  Meta evidence is historical for these changed Python sources; its original
+  source hashes are preserved and `current_source_match` is false. No paid model
+  calls were made for this patch.
+- This does not complete item 14: no mapping is production-promoted, and actual
+  candidate PDF/truth packages, complete promotion receipts, human mapping review
+  and deployed provenance remain pending. See `docs/LAYOUT-PROMOTION.md`.
+
 ## Narrated demo artifact - November 1, 2026
 
 - A **128.267-second**, 1920x1080 H.264/AAC video now combines actual synthetic
