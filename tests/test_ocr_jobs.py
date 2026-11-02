@@ -40,7 +40,9 @@ def scanned_case(repo):
 def upload(client,headers):
     response=client.post('/api/analyze',headers=headers,files={'files':('scan.pdf',SCAN.read_bytes(),'application/pdf')})
     assert response.status_code==200,response.text
-    return response.json()
+    report=response.json()
+    report.pop('intake_receipt') # Request receipt is not a stored report version.
+    return report
 
 
 def test_queue_permissions_worker_availability_and_dedup(service):

@@ -10,6 +10,8 @@ import json
 import secrets
 import time
 import uuid
+import base64
+import hmac
 from cryptography.fernet import Fernet
 from sqlalchemy import (create_engine,MetaData,Table,Column,String,Integer,LargeBinary,
                         Float,Text,select,update,delete,and_,text,func)
@@ -65,17 +67,31 @@ api_keys=Table('api_keys',schema,Column('id',String(32),primary_key=True),
 retention_policies=Table('retention_policies',schema,Column('workspace',String(80),primary_key=True),
     Column('days',Integer,nullable=False),Column('enabled',Integer,nullable=False),
     Column('revision',Integer,nullable=False),Column('last_run_at',Float,nullable=False,default=0))
+intake_sets=Table('intake_sets',schema,Column('workspace',String(80),primary_key=True),
+    Column('fingerprint',String(64),primary_key=True),Column('case_id',String(32),nullable=False,index=True))
+statement_sources=Table('statement_sources',schema,Column('workspace',String(80),primary_key=True),
+    Column('sha256',String(64),primary_key=True),Column('case_id',String(32),primary_key=True,index=True),
+    Column('document_id',String(32),primary_key=True),Column('account_tag',String(64),index=True),
+    Column('period_tag',String(64),index=True),Column('identity',LargeBinary,nullable=False),
+    Column('created_at',String(40),nullable=False))
 
 class Repository:
     def __init__(self,url,key):
         self.cipher=Fernet(key.encode() if isinstance(key,str) else key)
+        self._source_key=sha256(b'paper-trail-source-index-v1\0'+base64.urlsafe_b64decode(key)).digest()
         if url.startswith('postgres://'):url=url.replace('postgres://','postgresql+psycopg://',1)
         if url.startswith('postgresql://'):url=url.replace('postgresql://','postgresql+psycopg://',1)
         options={'pool_pre_ping':True,'hide_parameters':True}
         if url.startswith('sqlite'):options['connect_args']={'check_same_thread':False,'timeout':30}
         else:options.update(pool_size=3,max_overflow=2,pool_recycle=300)
         self.engine=create_engine(url,**options)
-        schema.create_all(self.engine)
+        # New ingestion tables may be first opened by concurrent web workers.
+        # Serialize check/create so cold starts cannot race CREATE TABLE.
+        with self.transaction() as conn:
+            if self.engine.dialect.name=='postgresql':
+                lock=int.from_bytes(sha256(b'paper-trail-schema-v1').digest()[:8],'big',signed=True)
+                conn.execute(text('SELECT pg_advisory_xact_lock(:key)'),{'key':lock})
+            schema.create_all(conn)
 
     @contextmanager
     def transaction(self):
@@ -101,6 +117,8 @@ class Repository:
                 cases.c.workspace.like('demo-%'),cases.c.created_at<cutoff)).distinct().limit(25)).scalars().all()
             for workspace in workspaces:
                 ids=select(cases.c.id).where(and_(cases.c.workspace==workspace,cases.c.synthetic==1))
+                conn.execute(delete(intake_sets).where(intake_sets.c.case_id.in_(ids)))
+                conn.execute(delete(statement_sources).where(statement_sources.c.case_id.in_(ids)))
                 conn.execute(delete(documents).where(documents.c.case_id.in_(ids)))
                 conn.execute(delete(versions).where(versions.c.case_id.in_(ids)))
                 conn.execute(delete(cases).where(and_(cases.c.workspace==workspace,cases.c.synthetic==1)))
@@ -168,16 +186,68 @@ class Repository:
     def create_case(self,workspace,actor,report,blobs,synthetic=False):
         self.provision_workspace(workspace)
         if len(report['documents'])!=len(blobs):raise ValueError('Document count differs from original files')
-        case_id=report['id'];now=utc();report['report_version']=1
         with self.transaction() as conn:
-            if conn.execute(select(cases.c.id).where(cases.c.id==case_id)).first():raise Conflict('Case already exists')
-            conn.execute(cases.insert().values(id=case_id,workspace=workspace,created_at=now,updated_at=now,
-                status=report['status'],version=1,report=self.seal(report),summary=self.seal(self.summary(report)),synthetic=int(synthetic)))
-            for doc,raw in zip(report['documents'],blobs):
-                conn.execute(documents.insert().values(case_id=case_id,id=doc['id'],sha256=sha256(raw).hexdigest(),original=self.cipher.encrypt(raw)))
-            conn.execute(versions.insert().values(case_id=case_id,version=1,report=self.seal(report),created_at=now))
-            self._audit(conn,workspace,actor,'case_created',case_id,{'version':1,'documents':len(blobs),'synthetic':synthetic})
+            self._insert_case(conn,workspace,actor,report,blobs,synthetic)
         return report
+
+    def _insert_case(self,conn,workspace,actor,report,blobs,synthetic=False):
+        case_id=report['id'];now=utc();report['report_version']=1
+        if conn.execute(select(cases.c.id).where(cases.c.id==case_id)).first():raise Conflict('Case already exists')
+        conn.execute(cases.insert().values(id=case_id,workspace=workspace,created_at=now,updated_at=now,
+            status=report['status'],version=1,report=self.seal(report),summary=self.seal(self.summary(report)),synthetic=int(synthetic)))
+        for doc,raw in zip(report['documents'],blobs):
+            if doc.get('sha256') and doc['sha256']!=sha256(raw).hexdigest():raise ValueError('Original document hash mismatch')
+            conn.execute(documents.insert().values(case_id=case_id,id=doc['id'],sha256=sha256(raw).hexdigest(),original=self.cipher.encrypt(raw)))
+        conn.execute(versions.insert().values(case_id=case_id,version=1,report=self.seal(report),created_at=now))
+        self._audit(conn,workspace,actor,'case_created',case_id,{'version':1,'documents':len(blobs),'synthetic':synthetic})
+
+    def find_intake(self,workspace,fingerprint,actor,origin):
+        self.provision_workspace(workspace)
+        with self.transaction() as conn:
+            conn.execute(select(audit_heads).where(audit_heads.c.workspace==workspace).with_for_update()).first()
+            row=conn.execute(select(cases.c.report).join(intake_sets,intake_sets.c.case_id==cases.c.id)
+                .where(and_(intake_sets.c.workspace==workspace,intake_sets.c.fingerprint==fingerprint,cases.c.workspace==workspace))).first()
+            if not row:return None
+            report=self.unseal(row[0]);self._audit(conn,workspace,actor,'intake_reused',report['id'],{'origin':origin})
+            return report
+
+    def _identity_tag(self,workspace,values):
+        return hmac.new(self._source_key,canonical([workspace,*values]),sha256).hexdigest()
+
+    def ingest_case(self,workspace,actor,fingerprint,report,blobs,origin,cacheable=True,synthetic=False):
+        """Serialize intake and audit per workspace; originals/reviews are immutable."""
+        self.provision_workspace(workspace)
+        if len(report['documents'])!=len(blobs):raise ValueError('Document count differs from original files')
+        with self.transaction() as conn:
+            conn.execute(select(audit_heads).where(audit_heads.c.workspace==workspace).with_for_update()).first()
+            old=conn.execute(select(cases.c.report).join(intake_sets,intake_sets.c.case_id==cases.c.id)
+                .where(and_(intake_sets.c.workspace==workspace,intake_sets.c.fingerprint==fingerprint,cases.c.workspace==workspace))).first()
+            if old:
+                saved=self.unseal(old[0]);self._audit(conn,workspace,actor,'intake_reused',saved['id'],
+                    {'origin':origin,'analyzed_before_commit':True,'attempted_model_calls':report.get('metrics',{}).get('attempted_model_calls',0)})
+                return saved,False
+            hashes=[sha256(raw).hexdigest() for raw in blobs]
+            known=set(conn.execute(select(documents.c.sha256).join(cases,cases.c.id==documents.c.case_id)
+                .where(and_(cases.c.workspace==workspace,documents.c.sha256.in_(hashes)))).scalars())
+            report['ingestion']={'origin':origin,'unique_sources':len(set(hashes)),'previously_seen_sources':len(known)}
+            self._insert_case(conn,workspace,actor,report,blobs,synthetic)
+            valid={d['document'] for d in report.get('orchestration',{}).get('extractor',{}).get('documents',[]) if d['validation']=='passed'}
+            for doc,digest in zip(report['documents'],hashes):
+                s=doc['statement'];identity={k:s.get(k) for k in ('loan_id','currency','period_end')}
+                grounded=doc['id'] in valid and all(identity.values()) and not doc.get('issues')
+                if grounded:
+                    from .core import parse_statement
+                    native_doc={'lines':[line for line in doc.get('lines',[]) if line.get('usable',True) and line.get('method')!='ocr'],'issues':[]}
+                    native=parse_statement(native_doc)
+                    grounded=not native_doc['issues'] and all(native.get(k)==value for k,value in identity.items())
+                account=self._identity_tag(workspace,[identity['loan_id'],identity['currency']]) if grounded else None
+                period=self._identity_tag(workspace,list(identity.values())) if grounded else None
+                conn.execute(statement_sources.insert().values(workspace=workspace,sha256=digest,case_id=report['id'],
+                    document_id=doc['id'],account_tag=account,period_tag=period,identity=self.seal(identity),created_at=utc()))
+            conn.execute(delete(intake_sets).where(and_(intake_sets.c.workspace==workspace,intake_sets.c.fingerprint==fingerprint)))
+            if cacheable:conn.execute(intake_sets.insert().values(workspace=workspace,fingerprint=fingerprint,case_id=report['id']))
+            self._audit(conn,workspace,actor,'intake_created',report['id'],report['ingestion'])
+            return report,True
 
     def get_case(self,workspace,case_id,version=None):
         with self.engine.connect() as conn:
@@ -268,6 +338,8 @@ class Repository:
     def delete_case(self,workspace,actor,case_id):
         with self.transaction() as conn:
             self._case(conn,workspace,case_id)
+            conn.execute(delete(intake_sets).where(intake_sets.c.case_id==case_id))
+            conn.execute(delete(statement_sources).where(statement_sources.c.case_id==case_id))
             conn.execute(delete(documents).where(documents.c.case_id==case_id))
             conn.execute(delete(versions).where(versions.c.case_id==case_id))
             conn.execute(delete(cases).where(cases.c.id==case_id))
@@ -306,6 +378,8 @@ class Repository:
             rows=conn.execute(select(cases.c.id).where(and_(cases.c.workspace==workspace,cases.c.created_at<cutoff))
                               .order_by(cases.c.created_at,cases.c.id).limit(25).with_for_update(skip_locked=True)).scalars().all()
             for case_id in rows:
+                conn.execute(delete(intake_sets).where(intake_sets.c.case_id==case_id))
+                conn.execute(delete(statement_sources).where(statement_sources.c.case_id==case_id))
                 conn.execute(delete(documents).where(documents.c.case_id==case_id))
                 conn.execute(delete(versions).where(versions.c.case_id==case_id))
                 conn.execute(delete(cases).where(cases.c.id==case_id))

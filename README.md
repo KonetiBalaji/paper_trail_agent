@@ -1,5 +1,11 @@
 # Paper Trail Agent
 
+Uploads, scoped API submissions and fixed demos share duplicate-aware intake.
+Identical inputs reopen the latest saved case/review; a repeated PDF cannot be
+compared against itself. API submissions return 201 when created and 200 when
+reused. See [intake behavior and limits](docs/INGESTION.md). Email/portal
+adapters and continuous historical monitoring remain pending.
+
 Reviewed fictional layouts use a read-only deployment registry. The exact
 mapping, review, PDF/truth fixtures, application source and installed dependencies
 must still match a passing 41-case regression receipt; otherwise the layout
@@ -259,7 +265,7 @@ Current verification includes the full SQLite/local test suite, six baseline eva
 
 ### Public synthetic demo
 
-Service mode offers seven fixed fixture buttons after **Start private demo session**: the original clean, $25 interest contradiction, $50 total error and image-only review, plus reviewed-layout $25/$50 cases and a reviewed bank control. Each visitor gets a separate one-hour workspace. Sources, side-by-side viewing, trace, human review and exports use the same backend as private cases. Guests cannot upload PDFs, call Meta, queue jobs or manage accounts. This demo makes zero model calls; it does not prove live Meta behavior. Shared rate limits and revocable secure sessions are tested. Demo cleanup runs opportunistically on new sessions for guest data older than 24 hours; do not enter personal information in review notes.
+Service mode offers eight fixed fixture buttons after **Start private demo session**: the original clean, $25 interest contradiction, $50 total error and image-only review, plus reviewed-layout $25/$50 cases a reviewed bank control and duplicate-PDF review. Each visitor gets a separate one-hour workspace. Sources, side-by-side viewing, trace, human review and exports use the same backend as private cases. Guests cannot upload PDFs, call Meta, queue jobs or manage accounts. This demo makes zero model calls; it does not prove live Meta behavior. Shared rate limits and revocable secure sessions are tested. Demo cleanup runs opportunistically on new sessions for guest data older than 24 hours; do not enter personal information in review notes.
 
 ## How it works
 

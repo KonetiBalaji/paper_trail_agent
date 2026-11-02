@@ -1,5 +1,23 @@
 # Verification record - October 28, 2026
 
+## Duplicate-aware intake increment
+
+- Full local suite: **407 passed, nine skipped**. Dedicated PostgreSQL and
+  optional environment gates are verified separately in CI.
+- Actual DOM-to-HTTP tests pass with a disposable service database and real CPU
+  OCR. Identical uploads preserve OCR-derived versions and saved human review;
+  scoped API submissions reuse an existing case with HTTP 200. Evidence:
+  `docs/frontend-ingestion-results.json`. This is not browser visual proof.
+- Fresh synthetic live Meta clean, contradiction, math-error and messy cases
+  pass. Exact source/fixture hashes and actual MCP calls are recorded in
+  `docs/live-meta-results.json`; the prior record is retained separately.
+- The complete 41-case layout regression and read-only promotion check pass.
+- Tests cover workspace separation, concurrent intake commit, encrypted identity
+  tags, inferred identity rejection, legacy originals, failed-model retry and
+  deletion/retention cleanup. Email/portal adapters and continuous monitoring
+  remain pending. See `docs/INGESTION.md` for exact reuse semantics.
+- GitHub CI and hosted intake checks for this increment are pending publication.
+
 ## Read-only layout registry - November 1, 2026
 
 - Complete 41-case gate passes: six demo, 19 original benchmark, 12 Cedar

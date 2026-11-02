@@ -169,21 +169,25 @@ def create_router(root_provider,analyze_files):
     def demo_case(fixture:str,actor=Depends(write_principal)):
         if actor.role!='demo':raise HTTPException(403,'Start a synthetic demo session first')
         reviewed={'reviewed_math_error':'loan_math_error','reviewed_contradiction':'loan_contradiction','reviewed_bank_clean':'bank_clean'}
-        if fixture not in ('clean','contradiction','math_error','messy') and fixture not in reviewed:raise HTTPException(404,'Unknown synthetic case')
+        if fixture not in ('clean','contradiction','math_error','messy','duplicate_document') and fixture not in reviewed:raise HTTPException(404,'Unknown synthetic case')
         repo,_=resources();repo.consume('demo-analysis-global',240,3600);repo.consume('demo-analysis:'+actor.workspace,12,3600)
         # Fixed allowlisted repository fixtures only. No paths, uploads or model mode
         # are accepted from a visitor, and each session owns a separate workspace.
         root=Path(__file__).resolve().parents[1]
         folder=root/'data/layout_packages/cedar_v1/cases'/reviewed[fixture] if fixture in reviewed else root/'data/synthetic'/fixture
         paths=sorted(folder.glob('*.pdf'))
+        if fixture=='duplicate_document':paths=[root/'data/synthetic/clean/statement_A.pdf']*2
         expected=2 if fixture not in reviewed or fixture=='reviewed_contradiction' else 1
         if len(paths)!=expected:raise HTTPException(503,'Demo fixtures unavailable')
         blobs=[path.read_bytes() for path in paths]
-        uploads=[UploadFile(filename=path.name,file=io.BytesIO(raw)) for path,raw in zip(paths,blobs)]
-        report=analyze_files(uploads,'local',persist=False)
-        report['demo']={'synthetic':True,'mode':'local','model_calls':0,'session_seconds':3600}
-        repo.create_case(actor.workspace,actor.id,report,blobs,synthetic=True)
-        return report
+        uploads=[UploadFile(filename=('copy-of-' if fixture=='duplicate_document' and i else '')+path.name,file=io.BytesIO(raw))
+                 for i,(path,raw) in enumerate(zip(paths,blobs))]
+        def synthetic_analysis(files,mode,persist=False):
+            report=analyze_files(files,mode,persist=False)
+            report['demo']={'synthetic':True,'mode':'local','model_calls':0,'session_seconds':3600}
+            return report
+        from .ingestion import intake
+        return intake(repo,actor.workspace,actor.id,uploads,'local','demo_fixture',synthetic_analysis,synthetic=True)
 
     @router.post('/demo/mcp-check')
     def demo_mcp(actor=Depends(write_principal)):
@@ -274,16 +278,8 @@ def create_router(root_provider,analyze_files):
         if actor.role=='demo':raise HTTPException(403,'Public demo accepts fixed synthetic cases only; no uploads or model calls')
         repo,_=resources();repo.consume('analysis:'+actor.workspace,20,3600)
         if mode in ('meta','auto'):repo.consume('meta:'+actor.workspace,10,3600)
-        # The pipeline still enforces byte/page/text limits before model use.
-        blobs=[]
-        if not 1<=len(files)<=8:raise HTTPException(422,'Upload 1 to 8 PDFs')
-        for file in files:
-            raw=file.file.read(10*1024*1024+1)
-            if len(raw)>10*1024*1024:raise HTTPException(413,'Maximum 10 MB per PDF')
-            blobs.append(raw);file.file.seek(0)
-        report=analyze_files(files,mode,persist=False)
-        repo.create_case(actor.workspace,actor.id,report,blobs)
-        return report
+        from .ingestion import intake
+        return intake(repo,actor.workspace,actor.id,files,mode,'upload',analyze_files)
 
     @router.get('/cases')
     def history(q:str='',status:str|None=None,decision:str|None=None,limit:int=50,offset:int=0,actor=Depends(principal)):

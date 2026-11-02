@@ -113,6 +113,7 @@ def extract_documents(files,mode,events):
         started=time.perf_counter()
         try:doc=core.read_pdf(raw,name,f'doc{i+1}')
         except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+        core.mark_duplicate_documents([*docs,doc])
         record(events,'extraction','pdf_text',{'document':doc['id'],'bytes':len(raw)},
                {'line_count':len(doc['lines']),'issues':[x['type'] for x in doc['issues']]},
                'review' if doc['issues'] else 'passed',(time.perf_counter()-started)*1000,document=doc['id'])

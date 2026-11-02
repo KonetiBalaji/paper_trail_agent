@@ -121,10 +121,12 @@ def test_local_search_body_and_export_html_safety(client):
 def test_legacy_trace_is_redacted_on_read_without_rewriting_service_version(service):
     import uuid
     client,repo,_=service;headers=login(client)
-    response=client.post('/api/analyze',files={'files':('Avery Example.pdf',private_pdf(),'application/pdf')},headers=headers)
+    original=private_pdf()
+    response=client.post('/api/analyze',files={'files':('Avery Example.pdf',original,'application/pdf')},headers=headers)
     legacy=response.json();legacy['id']=uuid.uuid4().hex
+    legacy.pop('intake_receipt')
     legacy['trace'].append({'id':'old','output':'avery@example.invalid Avery Example.pdf','input':{'loan_id':PRIVATE[0]}})
-    repo.create_case('team-a','legacy-import',legacy,[private_pdf()])
+    repo.create_case('team-a','legacy-import',legacy,[original])
     returned=client.get('/api/cases/'+legacy['id'],params={'version':1}).json()
     assert PRIVATE[2] not in json.dumps(returned['trace']) and 'Avery Example.pdf' not in json.dumps(returned['trace'])
     assert returned['documents'][0]['name']=='Avery Example.pdf'

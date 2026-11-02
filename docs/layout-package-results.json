@@ -106,11 +106,12 @@
     "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "app/agent_evals.py": "dbba8f90598c287a7958d237e8d189b628accba0569b4399dc43dbc226fd2f85",
     "app/benchmark.py": "76f3fc9deaf71f887e3c95c895397303de6e8186c83cef2e45092d371640bbfb",
-    "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
+    "app/core.py": "04fe4eb0358e38cc21e2647468ca86e3776ccb8c111e68112258afff65d23ef4",
     "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
     "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
     "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
-    "app/integrations.py": "6f490b5f63a681baed3422616a95edad3a98ab4a5ad427f682af848fdd43af88",
+    "app/ingestion.py": "0b8e9be3f3e698fd097bfd2a4babe147719a5fde3a8120fa6e73cc0c735cb13f",
+    "app/integrations.py": "a0b3c92b1b5ee056b9a755da2f5ed3a4fbc67aa40b14656b2efc98632ff4e672",
     "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
     "app/layout_registry.py": "8305eba8900fbdb1aa51c61957f2ad61e1ac13fc1a0adfe27d35c88dbd8d6a04",
     "app/layouts.py": "a5ecdbaa94094ec40fbf25d4a1084270689b5d99cc9f65070c0294d0f7beb5bf",
@@ -120,13 +121,13 @@
     "app/meta.py": "3db97832987c367dfb1f74def467feae4e15569e6494566e152c5f46bcbd2bce",
     "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
     "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
-    "app/orchestration.py": "8f6f87e7e1a1cb0555dc3c506663d194f9c8af547b690fe3220e8cc0b3581693",
-    "app/platform.py": "8a8b2ad4029994a5d90d510a17935dfc5c1c0673edbacdde7c2f85787886dfd1",
+    "app/orchestration.py": "bf8be929e36d41eb4efa4d128f72e25531458b3edf209da14a83afcb7c2d4418",
+    "app/platform.py": "04b98b7ddc592e8ad8bc14017a8484c2bb81961cc3b876745cc5699c62a619b4",
     "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
     "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
-    "app/repository.py": "61fe005593348502f18befc89f65522167ccae6394f38401322705dc7eb8d51c",
+    "app/repository.py": "a3579eb7a33f608d368404e3649ebe0d2a9a5f92bb81878be809a46993841ff6",
     "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
-    "app/static/app.js": "4092c4a7e89065f8ef57c554310ff15aca1b9c58fbbf65f46b3f01e6eec22818",
+    "app/static/app.js": "5bef5d35246035786e54669051e9b4403d896a338bad43b42295a4c502fc8f89",
     "app/static/demo.css": "c9c615c3d002c1ec40542b326e8f812234c55de2da083c251b97e557e52f16c6",
     "app/static/demo.html": "e758daaaa93885e748366ce984be6be4e6acb3aa8e0f3101b8ba813876d5c369",
     "app/static/index.html": "15be743062084611140c609521a7f7cd5ae95a05f7feb6d50dc3191120e8ad06",
@@ -152,6 +153,7 @@
     "scripts/generate_layout_package.py": "781279609a31f8a4deea1f09f41bbd4e86087960bd471993645ad24f466677a2",
     "scripts/generate_ocr_fixtures.py": "0e30d6dc76e337709ab83a81b234f003959ed8bfec235f5a9db03ed749d66479",
     "scripts/hosted_draft_smoke.py": "12ae2beeb4b54319671d8128e919b3e9e317ae4c8b769682da20b2b550533966",
+    "scripts/hosted_ingestion_smoke.py": "392f43a1ed53f411a2d8360e63901b9bc667c741355335eac8c78d3a61c4658e",
     "scripts/hosted_layout_smoke.py": "9ccb508b4ad77c110693401e8a2191b9c82e95332b8f7f36199ce1432330eb60",
     "scripts/hosted_security_smoke.py": "6d28ad2b2e7d114218afc73df102e1d01e5b056fd933c961b10556e8d08c46ad",
     "scripts/hosted_smoke.py": "0041cc7b6c60d6fd254c3374617ba566dc6f004aea42467a7570f6cb3be1e329",
@@ -168,11 +170,11 @@
     "scripts/resource_benchmark.py": "ae53711ee6dc7cd375deac46ded7cc96e3df0970009ca01d494ff89f87761feb",
     "scripts/security_checks.py": "62143747b4f75b47a3c5768241c17b8589a6f0b872630d709871e7cbb7ecf7d7",
     "scripts/smoke.py": "55a2eb7a663e16d49bae34a338b8dd9938e790911a4d22c71660360476e18539",
-    "scripts/test_frontend.py": "37dd140f609a7abcbcb77d05cd7a15d0990c30491565c8ba0300b236f305a532",
+    "scripts/test_frontend.py": "4101773a4a66447f753c8359a5e9e34d4162395e05fcb5300e406394123eaabb",
     "scripts/validate_worker_config.py": "31b86216477e9e5979c3b9f0b08c18a80843162751f79872e6899d526184b1a4",
     "scripts/verify_demo.py": "d42f676153d3c440e9d46ae85526252333766a04cf01a0b2412956e933d5f27e",
     "scripts/worker_entrypoint.py": "8d59ebb943fa92aa382421c6b97854dcbe0f76c285b8f3030b6b144091c7958c",
-    "tests/frontend/ocr-http.test.mjs": "705396a7a4a26508483972d62780907b99d10152396438ee64942c6dd0026c2c",
+    "tests/frontend/ocr-http.test.mjs": "ec7c3389cb58d65a728c5089238e29feb7de0b9892d5e3c06acd498306f5ddbe",
     "tests/test_agent_evals.py": "c53f8245ea16991dc0c847b297fd3e5490b0e9f2806dd51e00050778eb14b8a1",
     "tests/test_api.py": "f7b607be41868c544bfbc47e3349f8738023a6736afb9e7b151aa0be88c07b5f",
     "tests/test_bank.py": "3fe2932a98a0d2c9a614c16f42824cb31e5bfc5e5c40bbd8d5f041f4b806d6b3",
@@ -181,23 +183,24 @@
     "tests/test_demo_media.py": "b01472114e7948b4197a4b1834f07b97335d07e287646ae76e912027622b98f1",
     "tests/test_drafts.py": "777684116b1ccd8b1968ac51dc520f5bea24d489cb76824d151f2268bd15573f",
     "tests/test_history.py": "c0ff320f3b8ddc1c0d26eadbcb011c1632d18da4047599dce0d29940c13dcd7e",
-    "tests/test_integrations.py": "57a06ad7e59583bfccee1f2467e0be1bf0dc4e6c9aed5fa66fa9f35de2876e30",
+    "tests/test_ingestion.py": "cfe807861f765bbeada97790da3bc1d81b99c269de00948ae2fc4a7a706e20ad",
+    "tests/test_integrations.py": "0528ed618e306f25fe0ec324cb1dc63ebb025493cba9cd2cd7276bb17059c9aa",
     "tests/test_layout_packages.py": "d49d5279ddbca3694964434a08da45204d410ffd6efc2f1526bc17608d46335e",
     "tests/test_layout_proposals.py": "54feef381c6abf317559744194becc33f66f859f78734cee72e6b48d32319d1d",
     "tests/test_layout_registry.py": "b09dda069757f8138b36f31f94f101ef448034c034cbe7cbcfbbd96523e13858",
     "tests/test_mcp.py": "bf390219b5e5c395d7624bb94fd55193453b01376d1c569393ac3f7b5d7dba3e",
     "tests/test_meta.py": "2b316885904f2ed7ea16e11d44073d2c40280c35298e15ae112ecc89c5dec4b5",
     "tests/test_ocr.py": "df6d16b6afe5dfab2957f6a757241aa57d980afe7e7aa70ff74979fa1bb36836",
-    "tests/test_ocr_jobs.py": "3a1e6ff569943d109cc90b89d28751a911b9e08efb14972081d6021fc689f4e9",
+    "tests/test_ocr_jobs.py": "98a0c7951c293f144a28e9eee35dae57912ce5b09996f6202714f3bd92845b98",
     "tests/test_orchestration.py": "274bb1fee7bdbf845214eed9886902c54c8be68610de8e10b00cbbb712dda26b",
-    "tests/test_postgres.py": "5e5044a745a1ad50d8430671594d029fdbb0201bbc5f1cdea634df1008ceb890",
-    "tests/test_privacy.py": "f38d0e98a841f42bc4bb8a92c2357ea929ebc02d0fec20c0c65755204764b448",
+    "tests/test_postgres.py": "39a40236983d521bc329b76edc8b7b982685248fc764eaf71958948d51962763",
+    "tests/test_privacy.py": "db4ff450133aef0b0863d39bad1bbc1b3f3eec59c712bf34f852f45be606e011",
     "tests/test_product.py": "2f81965b248ea78e734a541053814522d96301e2664038dd1270c5809ac91ba1",
     "tests/test_public_security.py": "f265014238ca51694122bafc21ca1889468d87f305b3e647a7b6d5613665ebc6",
     "tests/test_repository.py": "91b479e29ea9223750126b32fefbcfceecf614dabbc35d0b5ce6de3bcfc923e0",
     "tests/test_retention.py": "87bde5bb9d0e93c0cb8f31b97abd5fbbb6cb63139d28a841a69881d6def48c94",
     "tests/test_routing.py": "11730090c3dd75a9c89829999c187b8c19e8c3cb7145b25b6dd3bb8a1308abcd",
-    "tests/test_service.py": "397b217a66eca7e5fac7644d2c66b6b3347d6a6a34dda9b61903ea9cff3f6eb7",
+    "tests/test_service.py": "7b0ab0366e3d1af42185d27b744fbcebc5973fdbfeaf1a26fb00ad81c5ab2d40",
     "tests/test_worker_lifecycle.py": "a560c4398d1b894c435fffa6496ca90dcbeac817f6e38e3fb1d07370b36934ce"
   },
   "fixture_sha256": {
@@ -297,7 +300,7 @@
     "passed": true,
     "promoted": false,
     "baseline": {
-      "evaluated_at": "2026-11-02T04:34:27.553173+00:00",
+      "evaluated_at": "2026-11-02T13:37:14.772474+00:00",
       "mode": "offline",
       "model_calls": 0,
       "cases": [
@@ -417,7 +420,7 @@
     "regression": {
       "mode": "offline",
       "model_calls": 0,
-      "evaluated_at": "2026-11-02T04:34:28.215884+00:00",
+      "evaluated_at": "2026-11-02T13:37:15.586592+00:00",
       "manifest_sha256": "7c61d3fa9f2fb9a26852c76ed2bfe5013dc1fba6dd3c458179e0bc85de50c78d",
       "cases": [
         {
@@ -493,7 +496,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.96
+          "elapsed_ms": 15.71
         },
         {
           "case": "loan_columns_error",
@@ -568,7 +571,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 11.0
+          "elapsed_ms": 10.04
         },
         {
           "case": "loan_columns_contradiction",
@@ -643,7 +646,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 38.36
+          "elapsed_ms": 41.37
         },
         {
           "case": "loan_reverse_columns",
@@ -718,7 +721,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.69
+          "elapsed_ms": 9.11
         },
         {
           "case": "loan_cross_page",
@@ -793,7 +796,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.47
+          "elapsed_ms": 15.79
         },
         {
           "case": "loan_split_row",
@@ -869,7 +872,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.4
+          "elapsed_ms": 15.79
         },
         {
           "case": "loan_duplicate",
@@ -944,7 +947,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.47
+          "elapsed_ms": 9.59
         },
         {
           "case": "loan_partial",
@@ -1019,7 +1022,7 @@
             "precision": 1.0,
             "recall": 0.7777777777777778
           },
-          "elapsed_ms": 8.63
+          "elapsed_ms": 9.95
         },
         {
           "case": "bank_debit_credit",
@@ -1101,7 +1104,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 10.01
+          "elapsed_ms": 10.26
         },
         {
           "case": "bank_signed",
@@ -1183,7 +1186,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.7
+          "elapsed_ms": 9.14
         },
         {
           "case": "bank_cross_page",
@@ -1272,7 +1275,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 15.16
+          "elapsed_ms": 17.07
         },
         {
           "case": "bank_bad_carry",
@@ -1361,7 +1364,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 15.05
+          "elapsed_ms": 19.63
         },
         {
           "case": "injection_note",
@@ -1436,7 +1439,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 10.14
+          "elapsed_ms": 12.34
         },
         {
           "case": "identity_conflict",
@@ -1504,7 +1507,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.82
+          "elapsed_ms": 9.44
         },
         {
           "case": "ambiguous_date",
@@ -1572,7 +1575,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.4
+          "elapsed_ms": 8.59
         },
         {
           "case": "currency_guard",
@@ -1647,7 +1650,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 16.02
+          "elapsed_ms": 18.55
         },
         {
           "case": "missing_tranche",
@@ -1722,7 +1725,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.7
+          "elapsed_ms": 16.78
         },
         {
           "case": "corrupt_pdf",
@@ -1744,7 +1747,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 0.37
+          "elapsed_ms": 0.5
         },
         {
           "case": "oversized_pdf",
@@ -1766,7 +1769,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 10.44
+          "elapsed_ms": 12.39
         }
       ],
       "fields": {
@@ -1890,7 +1893,7 @@
           "report": {
             "mode": "offline",
             "model_calls": 0,
-            "evaluated_at": "2026-11-02T04:34:28.332661+00:00",
+            "evaluated_at": "2026-11-02T13:37:15.738477+00:00",
             "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
             "cases": [
               {
@@ -1967,7 +1970,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.24
+                "elapsed_ms": 10.05
               },
               {
                 "case": "loan_math_error",
@@ -2043,7 +2046,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.43
+                "elapsed_ms": 10.91
               },
               {
                 "case": "loan_contradiction",
@@ -2119,7 +2122,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 15.93
+                "elapsed_ms": 19.14
               },
               {
                 "case": "loan_partial",
@@ -2195,7 +2198,7 @@
                   "precision": 1.0,
                   "recall": 0.7777777777777778
                 },
-                "elapsed_ms": 7.69
+                "elapsed_ms": 9.28
               },
               {
                 "case": "loan_duplicate",
@@ -2271,7 +2274,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.33
+                "elapsed_ms": 9.99
               },
               {
                 "case": "loan_wrong_header",
@@ -2344,7 +2347,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 7.89
+                "elapsed_ms": 11.09
               },
               {
                 "case": "loan_missing_marker",
@@ -2417,7 +2420,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 8.8
+                "elapsed_ms": 9.56
               },
               {
                 "case": "loan_page_scope",
@@ -2490,7 +2493,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 10.83
+                "elapsed_ms": 13.49
               },
               {
                 "case": "loan_injection",
@@ -2566,7 +2569,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.91
+                "elapsed_ms": 14.42
               },
               {
                 "case": "bank_clean",
@@ -2649,7 +2652,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.98
+                "elapsed_ms": 17.58
               },
               {
                 "case": "bank_balance_error",
@@ -2732,7 +2735,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 10.24
+                "elapsed_ms": 15.02
               },
               {
                 "case": "bank_ambiguous_sides",
@@ -2815,7 +2818,7 @@
                   "precision": 1.0,
                   "recall": 0.8
                 },
-                "elapsed_ms": 9.25
+                "elapsed_ms": 11.09
               }
             ],
             "fields": {
@@ -2943,7 +2946,7 @@
     "manifest_sha256": "5e81a1ba1e9550f289c504598330931a739058e8d8f8668a0c727dbd6e8da2b1",
     "source_sha256": {
       "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
-      "app/core.py": "723d2606ba382c2f7f14d6af49219819a2501898378b47ef70c3cb72f3aeb564",
+      "app/core.py": "04fe4eb0358e38cc21e2647468ca86e3776ccb8c111e68112258afff65d23ef4",
       "app/layouts.py": "a5ecdbaa94094ec40fbf25d4a1084270689b5d99cc9f65070c0294d0f7beb5bf",
       "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210"
     },
@@ -2970,7 +2973,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 10375,
+          "duration_ms": 9359,
           "usable_lines": 9,
           "total_lines": 10,
           "field_candidates": []
@@ -3206,7 +3209,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 7187,
+          "duration_ms": 6594,
           "usable_lines": 6,
           "total_lines": 6,
           "field_candidates": [
@@ -3433,7 +3436,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3594,
+          "duration_ms": 5734,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
@@ -3489,7 +3492,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3813,
+          "duration_ms": 3703,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []

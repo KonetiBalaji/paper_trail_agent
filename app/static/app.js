@@ -45,10 +45,14 @@ $('upload').addEventListener('submit', async event => {
   form.append('mode', $('mode').value);
   try {
     report = await jsonRequest('/api/analyze', {method: 'POST', body: form});
-    location.hash = 'case=' + report.id;
+    if(location.hash !== '#case=' + report.id) history.pushState(null,'','#case=' + report.id);
     render();
     loadHistory();
-    $('message').textContent = 'Analysis complete. Review decisions do not change the original machine findings.';
+    $('message').textContent = report.intake_receipt?.reused_analysis
+      ? (report.intake_receipt.model_calls_this_request
+        ? `Concurrent duplicate reopened the saved analysis. ${report.intake_receipt.model_calls_this_request} model calls occurred before the duplicate commit; saved reviews are preserved.`
+        : 'Identical inputs reopened the saved analysis. No new model calls were made; saved review decisions are preserved.')
+      : 'Analysis complete. Review decisions do not change the original machine findings.';
   } catch (error) { $('message').textContent = error.message; }
   finally { $('analyze').disabled = false; }
 });
@@ -603,7 +607,7 @@ function setupAgentEvals() {
 }
 setupAgentEvals();
 function setupReviewedLayouts() {
-  for(const [fixture,label] of [['reviewed_math_error','Reviewed layout: $50 error'],['reviewed_contradiction','Reviewed layout: $25 contradiction'],['reviewed_bank_clean','Reviewed bank: clean']]) {
+  for(const [fixture,label] of [['reviewed_math_error','Reviewed layout: $50 error'],['reviewed_contradiction','Reviewed layout: $25 contradiction'],['reviewed_bank_clean','Reviewed bank: clean'],['duplicate_document','Duplicate PDF: review']]) {
     const demoButton=el('button',label,'secondary');demoButton.type='button';demoButton.dataset.fixture=fixture;$('demo-cases').append(demoButton);
   }
   const panel=el('section',undefined,'panel');panel.id='reviewed-layouts-panel';
@@ -668,8 +672,11 @@ for (const button of document.querySelectorAll('[data-fixture]')) button.onclick
   button.disabled = true; $('demo-message').textContent = 'Running calculator checks on fictional statements…';
   try {
     report = await jsonRequest('/api/platform/demo/cases/' + button.dataset.fixture, {method: 'POST'});
-    location.hash = 'case=' + report.id; render(); loadHistory();
-    $('demo-message').textContent = 'Synthetic case checked. Sources, trace, exports and human review are connected to the backend. No model call was made.';
+    if(location.hash !== '#case=' + report.id) history.pushState(null,'','#case=' + report.id);
+    render(); loadHistory();
+    $('demo-message').textContent = report.intake_receipt?.reused_analysis
+      ? 'Saved synthetic analysis reopened. Prior review decisions are preserved; no model calls were made.'
+      : 'Synthetic case checked. Sources, trace, exports and human review are connected to the backend. No model call was made.';
     $('results').scrollIntoView({behavior: 'smooth', block: 'start'});
   } catch (error) { $('demo-message').textContent = error.message; }
   finally { button.disabled = false; }

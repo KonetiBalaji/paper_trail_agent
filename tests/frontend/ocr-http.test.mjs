@@ -51,7 +51,7 @@ async function frontend(t) {
   doc.getElementById('login-password').value = 'synthetic-frontend-password-123';
   doc.getElementById('login-form').dispatchEvent(new w.Event('submit', {bubbles: true, cancelable: true}));
   await waitFor(() => doc.getElementById('identity-status').textContent.includes('· reviewer'), 'Synthetic reviewer sign-in failed');
-  const scan = await readFile(new URL('../../data/ocr/labeled_error.pdf', import.meta.url));
+  const scan = await readFile(new URL('../../data/ocr/' + (offline ? 'table_review.pdf' : 'labeled_error.pdf'), import.meta.url));
   Object.defineProperty(doc.getElementById('files'), 'files', {configurable: true, value: [new File([scan], 'fictional-scan.pdf', {type: 'application/pdf'})]});
   doc.getElementById('upload').dispatchEvent(new w.Event('submit', {bubbles: true, cancelable: true}));
   await waitFor(() => !doc.getElementById('results').hidden && !doc.getElementById('ocr-panel').hidden, 'Uploaded scan did not render');
@@ -102,6 +102,10 @@ test('real frontend queues OCR and reopens reviewed candidates through HTTP', {s
   const markdown = await (await ui.api('/api/cases/' + caseId + '/export?format=md')).text();
   assert.match(markdown, /Provisional OCR arithmetic/); assert.match(markdown, /uncalibrated/);
   assert.equal((await (await ui.api('/api/cases/' + caseId + '/audit')).json()).verified, true);
+  ui.doc.getElementById('upload').dispatchEvent(new ui.w.Event('submit', {bubbles:true,cancelable:true}));
+  await waitFor(()=>ui.doc.getElementById('message').textContent.includes('Identical inputs reopened'),'Duplicate upload did not report saved-analysis reuse');
+  assert.equal(ui.doc.getElementById('case-id').textContent,caseId);
+  assert.match(ui.doc.getElementById('findings').textContent,/revision 1/);
   ui.doc.getElementById('logout').click();
   await waitFor(() => ui.doc.getElementById('results').hidden, 'Logout did not hide the report');
   assert.equal((await ui.api('/api/cases/' + caseId)).status, 401);
@@ -173,10 +177,12 @@ test('admin issues and revokes an API key with real PDF submission and CSV expor
     form.append('files', new File([bytes], name, {type: 'application/pdf'}));
   }
   const result = await ui.api('/api/integrations/v1/cases', {method: 'POST',headers: auth,body: form});
-  assert.equal(result.status, 201); const receipt = await result.json();
+  assert.equal(result.status, 200); const receipt = await result.json();
+  assert.equal(receipt.created,false);
   const path = '/api/integrations/v1/cases/' + receipt.id;
   const report = await (await ui.api(path, {headers: auth})).json();
   assert.equal(report.findings[0].difference, '50.00');
+  assert.equal(report.findings[0].human_review.decision,'rejected');
   assert.equal(report.documents[0].statement.loan_id, '[REDACTED]');
   assert.equal((await ui.api(path)).status, 401);
   const exported = await ui.api(path + '/export?format=csv', {headers: auth});

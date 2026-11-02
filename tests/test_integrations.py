@@ -47,7 +47,10 @@ def submit(client,token,mode='local'):
 def test_api_scopes_redaction_and_no_cookie_or_billing_bypass(service):
     client,repo,_=service;issued,csrf=key(client);token=issued['token'];auth={'Authorization':'Bearer '+token}
     result=submit(client,token);assert result.status_code==201,result.text
-    receipt=result.json();assert set(receipt)=={'id','status','report_version','mode'}
+    receipt=result.json();assert set(receipt)=={'id','status','report_version','mode','created'}
+    assert receipt['created'] is True
+    repeated=submit(client,token)
+    assert repeated.status_code==200 and repeated.json()['id']==receipt['id'] and repeated.json()['created'] is False
     base='/api/integrations/v1/cases/'+receipt['id']
     report=client.get(base,headers=auth).json()
     assert report['findings'][0]['difference']=='50.00' and report['privacy']['redacted']

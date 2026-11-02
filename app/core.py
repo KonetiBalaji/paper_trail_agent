@@ -1,5 +1,6 @@
 """PDF evidence extraction and deterministic reconciliation. No LLM math."""
 import io
+from hashlib import sha256
 import re
 from datetime import date
 from decimal import Decimal, InvalidOperation
@@ -57,7 +58,20 @@ def read_pdf(raw, name, doc_id):
         raise
     except Exception as exc:
         raise ValueError('PDF could not be read; encrypted or damaged file') from exc
-    return {'id':doc_id,'name':name,'lines':lines,'issues':issues}
+    return {'id':doc_id,'name':name,'lines':lines,'issues':issues,'sha256':sha256(raw).hexdigest()}
+
+
+def mark_duplicate_documents(documents):
+    seen={}
+    for doc in documents:
+        digest=doc.get('sha256')
+        if not digest:continue
+        if digest in seen:
+            doc['duplicate_of']=seen[digest]
+            issue={'type':'duplicate_document','message':'This PDF repeats an earlier input; it is not independent comparison evidence.'}
+            if doc.get('lines'):issue['source']=doc['lines'][0]['id']
+            if issue not in doc.setdefault('issues',[]):doc['issues'].append(issue)
+        else:seen[digest]=doc['id']
 
 AMOUNT = r'([-+]?\$?[\d,]+\.\d{2}|\([\d,]+\.\d{2}\))'
 
@@ -103,6 +117,7 @@ def parse_statement(doc):
     return augment(doc,result)
 
 def reconcile(documents):
+    mark_duplicate_documents(documents)
     findings, calculations,blocked = [], [],set()
     def tranche_source(row,field):return row.get(field+'_source') or row['source']
     def add(kind, message, sources, severity='confirmed', **extra):

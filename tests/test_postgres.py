@@ -133,3 +133,32 @@ def test_postgres_ocr_commit_races_review_without_lost_updates(postgres,monkeypa
         assert current['findings'][0]['human_review']['history'][0]['note']=='Concurrent review'
     assert repo.get_case('team-a',case,1)==original
     assert repo.audit('team-a')['verified']
+
+
+def test_postgres_ingestion_deduplication_is_atomic(postgres):
+    import io
+    from pathlib import Path
+    from fastapi import UploadFile
+    from app.main import analyze_files
+    repo,_,_=postgres
+    paths=sorted((Path(__file__).resolve().parents[1]/'data/synthetic/math_error').glob('*.pdf'))
+    blobs=[p.read_bytes() for p in paths]
+    reports=[analyze_files([UploadFile(filename=p.name,file=io.BytesIO(raw)) for p,raw in zip(paths,blobs)],'local',persist=False) for _ in range(2)]
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results=list(pool.map(lambda r:repo.ingest_case('ingestion-team','actor','c'*64,r,blobs,'upload'),reports))
+    assert len({r[0]['id'] for r in results})==1 and sorted(r[1] for r in results)==[False,True]
+    assert repo.list_cases('ingestion-team')['total_in_window']==1
+    assert repo.audit('ingestion-team')['verified']
+
+
+def test_postgres_concurrent_schema_initialization_is_safe(postgres):
+    from app.repository import schema
+    repo,url,key=postgres
+    # The fixture's dedicated random schema is disposable; no public or user
+    # schema is dropped or used by this test.
+    with repo.engine.begin() as conn:schema.drop_all(conn)
+    def initialize(_):
+        peer=Repository(url.render_as_string(hide_password=False),key)
+        try:return peer.list_cases('empty')['total_in_window']
+        finally:peer.close()
+    with ThreadPoolExecutor(max_workers=4) as pool:assert list(pool.map(initialize,range(4)))==[0]*4

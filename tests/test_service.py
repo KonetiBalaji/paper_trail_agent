@@ -32,6 +32,20 @@ def upload(client,headers=None):
     return client.post('/api/analyze',files=[('files',(p.name,p.read_bytes(),'application/pdf'))
         for p in sorted((ROOT/'contradiction').glob('*.pdf'))],headers=headers or {})
 
+
+def test_http_duplicate_upload_reopens_latest_review_without_new_case(service):
+    client,repo,_=service;headers=login(client)
+    first=upload(client,headers).json();base='/api/cases/'+first['id']
+    saved=client.patch(base+'/findings/F1',headers=headers,json={'action':'confirm','note':'Synthetic check',
+        'expected_revision':0,'expected_case_version':1})
+    assert saved.status_code==200
+    retry=upload(client,headers)
+    assert retry.status_code==200 and retry.json()['id']==first['id']
+    assert retry.json()['intake_receipt']=={'created':False,'reused_analysis':True,'model_calls_this_request':0}
+    assert retry.json()['findings'][0]['human_review']['decision']=='confirmed'
+    assert retry.json()['report_version']==2 and repo.list_cases('team-a')['total_in_window']==1
+    assert repo.audit('team-a')['events'][-1]['action']=='intake_reused'
+
 def test_draft_approval_version_workspace_and_read_only_viewer(service):
     client,repo,_=service;headers=login(client)
     report=upload(client,headers).json();base='/api/cases/'+report['id'];path=base+'/findings/F1/draft'
@@ -68,6 +82,7 @@ def test_encrypted_service_case_review_versions_and_source(service):
     client,repo,_=service;headers=login(client)
     r=upload(client,headers);assert r.status_code==200,r.text
     report=r.json();case=report['id'];base='/api/cases/'+case
+    assert report.pop('intake_receipt')=={'created':True,'reused_analysis':False,'model_calls_this_request':0}
     assert client.get(base).json()==report
     assert client.get('/api/cases',params={'q':'DEMO-001','status':'discrepancies'}).json()['total_in_window']==1
     assert client.get(base+'/documents/doc1').content.startswith(b'%PDF-')
@@ -182,7 +197,7 @@ def demo(client):
     assert response.json()['role']=='demo'
     return {'X-CSRF-Token':client.cookies['pta_csrf']}
 
-@pytest.mark.parametrize('fixture,status,difference',[('clean','consistent',None),('contradiction','discrepancies','25.00'),('math_error','discrepancies','50.00'),('messy','review',None)])
+@pytest.mark.parametrize('fixture,status,difference',[('clean','consistent',None),('contradiction','discrepancies','25.00'),('math_error','discrepancies','50.00'),('messy','review',None),('duplicate_document','review',None)])
 def test_public_demo_cases_are_real_and_grounded(service,fixture,status,difference):
     client,repo,_=service;headers=demo(client)
     result=client.post('/api/platform/demo/cases/'+fixture,headers=headers)
@@ -191,6 +206,7 @@ def test_public_demo_cases_are_real_and_grounded(service,fixture,status,differen
     assert report['demo']['model_calls']==0
     assert all(event['kind']!='model_call' for event in report['trace'])
     if difference:assert [f['difference'] for f in report['findings'] if f['severity']=='confirmed']==[difference]
+    assert report.pop('intake_receipt')=={'created':True,'reused_analysis':False,'model_calls_this_request':0}
     assert client.get('/api/cases/'+report['id']).json()==report
     assert client.get('/api/cases/'+report['id']+'/documents/doc1/page/1').content.startswith(b'\x89PNG')
     if report['findings']:
@@ -231,14 +247,30 @@ def test_demo_rate_limit_and_token_tampering(service):
 
 def test_demo_retention_purges_only_guest_synthetic_cases(service):
     import time
-    from sqlalchemy import update
-    from app.repository import cases
+    from sqlalchemy import update,select,func
+    from app.repository import cases,intake_sets,statement_sources
     client,repo,_=service
     owner_headers=login(client);private=upload(client,owner_headers).json()['id']
     headers=demo(client);guest=client.post('/api/platform/demo/cases/clean',headers=headers).json()['id']
+    guest_workspace=client.get('/api/platform/auth/me').json()['workspace']
     with repo.transaction() as connection:
         connection.execute(update(cases).values(created_at='2020-01-01T00:00:00+00:00'))
     assert repo.expire_demo_data()==1
     assert client.get('/api/cases/'+guest).status_code==404
+    with repo.engine.connect() as connection:
+        for table in (intake_sets,statement_sources):
+            assert connection.execute(select(func.count()).select_from(table).where(table.c.workspace==guest_workspace)).scalar_one()==0
     login(client)
     assert client.get('/api/cases/'+private).status_code==200
+
+
+def test_demo_repeated_fixture_preserves_human_review(service):
+    client,repo,_=service;headers=demo(client)
+    first=client.post('/api/platform/demo/cases/math_error',headers=headers).json();base='/api/cases/'+first['id']
+    reviewed=client.patch(base+'/findings/F1',headers=headers,json={'action':'confirm','note':'Synthetic original checked',
+        'expected_revision':0,'expected_case_version':1})
+    assert reviewed.status_code==200
+    retry=client.post('/api/platform/demo/cases/math_error',headers=headers).json()
+    assert retry['id']==first['id'] and retry['report_version']==2
+    assert retry['intake_receipt']['reused_analysis'] and retry['intake_receipt']['model_calls_this_request']==0
+    assert retry['findings'][0]['human_review']['decision']=='confirmed'

@@ -99,7 +99,7 @@ def main():
             finally:
                 if worker is not None:stop(worker)
                 stop(server);repo.close()
-    source=['app/layout_registry.py','app/layout_proposals.py','app/platform.py','app/main.py','app/agent_evals.py','app/meta.py','app/mcp_server.py','app/mcp_client.py','app/orchestration.py','app/policies.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
+    source=['app/ingestion.py','app/layout_registry.py','app/layout_proposals.py','app/platform.py','app/main.py','app/agent_evals.py','app/meta.py','app/mcp_server.py','app/mcp_client.py','app/orchestration.py','app/policies.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
             'app/static/index.html','tests/frontend/ocr-http.test.mjs','scripts/test_frontend.py']
     report={'passed':True,'checked_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':round(time.monotonic()-started,2),
             'scope':'Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.',
@@ -111,7 +111,8 @@ def main():
                          'data notice','retention enable acknowledgement','expired case deletion and source removal','retention disable',
                          'internal stage timeline and critic verdict','public synthetic MCP discovery and real tool call log',
                          'agent scorecard field/layout metrics and explicit 50 percent retrieval precision',
-                         'source-bound reviewed-layout status and real synthetic $50 case with receipt provenance'],
+                         'source-bound reviewed-layout status and real synthetic $50 case with receipt provenance',
+                         'identical upload reuses case and preserves OCR-derived review'],
             'source_sha256':{name:hashlib.sha256((ROOT/name).read_text(encoding='utf-8').encode()).hexdigest() for name in source}}
     output=Path(args.report);output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(report,indent=2)+'\n')
     print('Frontend-to-HTTP OCR scenarios passed; evidence saved to',output)

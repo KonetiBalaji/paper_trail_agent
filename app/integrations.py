@@ -23,18 +23,14 @@ def create_router(resources,analyze_files,service_mode):
             return actor
         return authenticate
 
-    @router.post('/cases',status_code=201)
-    def submit(files:list[UploadFile]=File(...),mode:Literal['local']=Form('local'),actor=Depends(access('cases:submit'))):
+    @router.post('/cases',status_code=201,responses={200:{'description':'Existing identical analysis reused'}})
+    def submit(response:Response,files:list[UploadFile]=File(...),mode:Literal['local']=Form('local'),actor=Depends(access('cases:submit'))):
         repo,_=resources();repo.consume('analysis:'+actor.workspace,20,3600)
-        if not 1<=len(files)<=8:raise HTTPException(422,'Upload 1 to 8 PDFs')
-        blobs=[]
-        for file in files:
-            raw=file.file.read(10*1024*1024+1)
-            if len(raw)>10*1024*1024:raise HTTPException(413,'Maximum 10 MB per PDF')
-            blobs.append(raw);file.file.seek(0)
-        report=analyze_files(files,mode,persist=False)
-        repo.create_case(actor.workspace,actor.id,report,blobs)
-        return {'id':report['id'],'status':report['status'],'report_version':1,'mode':'local'}
+        from .ingestion import intake
+        report=intake(repo,actor.workspace,actor.id,files,mode,'api',analyze_files)
+        response.status_code=201 if report['intake_receipt']['created'] else 200
+        return {'id':report['id'],'status':report['status'],'report_version':report['report_version'],'mode':report.get('mode','local'),
+                'created':report['intake_receipt']['created']}
 
     @router.get('/cases/{case_id}')
     def read(case_id,version:int|None=None,actor=Depends(access('cases:read'))):
