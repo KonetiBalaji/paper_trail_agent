@@ -16,7 +16,13 @@
   tags, inferred identity rejection, legacy originals, failed-model retry and
   deletion/retention cleanup. Email/portal adapters and continuous monitoring
   remain pending. See `docs/INGESTION.md` for exact reuse semantics.
-- GitHub CI and hosted intake checks for this increment are pending publication.
+- Published implementation: `b752f557fd23fa50a70aeb774931fffe7b030514`.
+  Vercel production passed 17 owned synthetic intake checks, 29 reviewed-layout
+  checks and 20 video checks. Records are in `docs/hosted-ingestion-results.json`,
+  `docs/hosted-layout-results.json` and `docs/hosted-video-results.json`.
+  Local security scans passed with zero findings. All five release CI jobs pass
+  in Actions runs 41455238762 (application) and 41455238815 (security), including
+  PostgreSQL concurrent intake/bootstrap, actual OCR/frontend and worker image.
 
 ## Read-only layout registry - November 1, 2026
 

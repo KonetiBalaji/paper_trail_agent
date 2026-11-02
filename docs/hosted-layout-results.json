@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "passed": true,
-  "checked_at": "2026-11-02T04:48:07.692572+00:00",
+  "checked_at": "2026-11-02T13:43:06.953181+00:00",
   "base_url": "https://paper-trail-agent.vercel.app",
-  "source_commit": "0d84ffecb7c85dddfb802519558bf2b527c4bb95",
-  "receipt_sha256": "7abdd5e343eaea0cb05ab2d44e83353025ffa873f0b7654a52b6eb8aa3e71567",
+  "source_commit": "b752f557fd23fa50a70aeb774931fffe7b030514",
+  "receipt_sha256": "406831f7dd3d216937a9169d539b31b31edf1b88c224a0c4ecef80e9039141b9",
   "checks": [
     {
       "check": "active_source_bound_registry",

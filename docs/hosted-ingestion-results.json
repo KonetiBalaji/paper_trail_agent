@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "checked_at": "2026-11-02T13:42:56.664053+00:00",
+  "base_url": "https://paper-trail-agent.vercel.app",
+  "source_commit": "b752f557fd23fa50a70aeb774931fffe7b030514",
+  "checks": [
+    {
+      "check": "isolated_demo_session",
+      "passed": true
+    },
+    {
+      "check": "isolated_demo_session",
+      "passed": true
+    },
+    {
+      "check": "first_intake_created",
+      "passed": true
+    },
+    {
+      "check": "same_case_reused",
+      "passed": true
+    },
+    {
+      "check": "saved_review_preserved",
+      "passed": true
+    },
+    {
+      "check": "reuse_has_no_new_model_calls",
+      "passed": true
+    },
+    {
+      "check": "no_cross_workspace_reuse",
+      "passed": true
+    },
+    {
+      "check": "cross_workspace_report_denied",
+      "passed": true
+    },
+    {
+      "check": "duplicate_document_review",
+      "passed": true
+    },
+    {
+      "check": "self_comparison_skipped",
+      "passed": true
+    },
+    {
+      "check": "single_unique_source",
+      "passed": true
+    },
+    {
+      "check": "no_paid_or_ocr_calls",
+      "passed": true
+    },
+    {
+      "check": "verified_intake_audit",
+      "passed": true
+    },
+    {
+      "check": "original_version_unchanged",
+      "passed": true
+    },
+    {
+      "check": "delete_owned_synthetic_case",
+      "passed": true
+    },
+    {
+      "check": "delete_owned_synthetic_case",
+      "passed": true
+    },
+    {
+      "check": "delete_owned_synthetic_case",
+      "passed": true
+    }
+  ],
+  "scope": "Two isolated synthetic guests only; saved-review reuse, source duplication, tenant denial and cleanup. No uploads, private account login, OCR or paid model calls."
+}
