@@ -453,3 +453,26 @@ def test_prior_statement_sources_deduplicate_before_paging(service):
         'team-a', current, 'doc1', limit=1, after=cursor_page['next_cursor'], by_digest=True,
     )
     assert [row['case_id'] for row in remaining['sources']] == ['second']
+
+def test_monitor_claim_refreshes_worker_readiness(service, monkeypatch):
+    from app import historical
+    from app.repository import jobs
+    from app.worker import run_once
+    import time
+
+    _, repo, _ = service
+    worker_id = 'a' * 32
+    with repo.transaction() as conn:
+        conn.execute(jobs.insert().values(
+            id='monitor-fixture', workspace='team-a', kind='monitor', state='queued',
+            payload=repo.seal({'case_id': 'fixture', 'documents': ['doc1']}),
+            created_at=time.time(),
+        ))
+
+    def compare(*args, **kwargs):
+        assert repo.worker_status(now=time.time() + 100)['monitor']
+        return {'comparisons': [], 'next_cursor': None}
+
+    monkeypatch.setattr(historical, 'prior_case_history', compare)
+    assert run_once(repo, kinds=['monitor'], worker_id=worker_id)
+    assert repo.get_job('team-a', 'monitor-fixture')['state'] == 'completed'

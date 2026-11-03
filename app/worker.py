@@ -13,9 +13,14 @@ from .repository import Conflict, Missing
 def capabilities():
     return ['eval','monitor','ocr'] if importlib.util.find_spec('rapidocr_onnxruntime') is not None else ['eval','monitor']
 
-def run_once(repo,kinds=None):
-    job=repo.claim_job(lease_seconds=120,kinds=kinds)
+JOB_LEASE_SECONDS = 120
+
+
+def run_once(repo,kinds=None,*,worker_id=None):
+    job=repo.claim_job(lease_seconds=JOB_LEASE_SECONDS,kinds=kinds)
     if job is None:return False
+    if worker_id is not None:
+        repo.touch_worker(worker_id, kinds, ttl=JOB_LEASE_SECONDS)
     detections = []
     try:
         if job['kind']=='eval':
@@ -87,7 +92,7 @@ def serve(repo,kinds,stop,once=False,poll_seconds=1):
             if time.monotonic()-last_heartbeat>=30:
                 repo.touch_worker(worker_id,kinds);last_heartbeat=time.monotonic()
             if stop.is_set():break
-            worked=run_once(repo,kinds=kinds)
+            worked=run_once(repo,kinds=kinds,worker_id=worker_id)
             if once:return
             if not worked:stop.wait(poll_seconds)
     finally:repo.retire_worker(worker_id)
