@@ -70,8 +70,8 @@ def test_queue_permissions_worker_availability_and_dedup(service):
 def test_worker_heartbeat_expires_and_capability_filtered_claim(repo):
     repo.touch_worker('a'*32,['eval'],now=100)
     repo.touch_worker('b'*32,['ocr'],now=100)
-    assert repo.worker_status(now=189)=={'eval':True,'ocr':True}
-    assert repo.worker_status(now=190)=={'eval':False,'ocr':False}
+    assert repo.worker_status(now=189)=={'eval':True,'ocr':True,'monitor':False}
+    assert repo.worker_status(now=190)=={'eval':False,'ocr':False,'monitor':False}
     repo.retire_worker('b'*32)
     assert not repo.worker_status(now=101)['ocr']
     job=repo.enqueue('team-a','alice','ocr',{})
