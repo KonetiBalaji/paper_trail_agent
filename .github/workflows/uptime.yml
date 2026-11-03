@@ -1,0 +1,27 @@
+name: Public uptime
+
+on:
+  schedule:
+    - cron: '11,41 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check public service and database-backed layout status
+        shell: bash
+        env:
+          PUBLIC_ORIGIN: https://paper-trail-agent.vercel.app
+        run: |
+          set -euo pipefail
+          probe() {
+            curl --fail --silent --show-error --max-time 15 --retry 2 --retry-max-time 45 \
+              "$PUBLIC_ORIGIN/$1" | jq -e --arg expected "$2" '.status == $expected' >/dev/null
+            printf 'Passed /%s\n' "$1"
+          }
+          probe api/health ok
+          probe api/layouts active
