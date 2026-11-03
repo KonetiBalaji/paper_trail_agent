@@ -23,14 +23,22 @@ def create_router(resources,analyze_files,service_mode):
             return actor
         return authenticate
 
-    @router.post('/cases',status_code=201,responses={200:{'description':'Existing identical analysis reused'}})
-    def submit(response:Response,files:list[UploadFile]=File(...),mode:Literal['local']=Form('local'),actor=Depends(access('cases:submit'))):
+    def submit_files(response, files, mode, actor, origin):
         repo,_=resources();repo.consume('analysis:'+actor.workspace,20,3600)
         from .ingestion import intake
-        report=intake(repo,actor.workspace,actor.id,files,mode,'api',analyze_files)
+        report=intake(repo,actor.workspace,actor.id,files,mode,origin,analyze_files)
         response.status_code=201 if report['intake_receipt']['created'] else 200
         return {'id':report['id'],'status':report['status'],'report_version':report['report_version'],'mode':report.get('mode','local'),
                 'created':report['intake_receipt']['created']}
+
+    @router.post('/cases',status_code=201,responses={200:{'description':'Existing identical analysis reused'}})
+    def submit(response:Response,files:list[UploadFile]=File(...),mode:Literal['local']=Form('local'),actor=Depends(access('cases:submit'))):
+        return submit_files(response, files, mode, actor, 'api')
+
+    @router.post('/email', status_code=201, responses={200: {'description': 'Existing identical analysis reused'}})
+    def submit_email(response: Response, message: UploadFile = File(...), actor=Depends(access('cases:submit'))):
+        from .email_intake import pdf_attachments
+        return submit_files(response, pdf_attachments(message), 'local', actor, 'email')
 
     @router.get('/cases/{case_id}')
     def read(case_id,version:int|None=None,actor=Depends(access('cases:read'))):

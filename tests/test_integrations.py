@@ -132,3 +132,37 @@ def test_csv_has_exact_values_and_neutralizes_text_formulas(service):
     assert sum(float(r['amount']) for r in rows)==-25.0
     report['documents'][0]['statement']['transactions'][0]['id']='=DANGEROUS()'
     assert "'=DANGEROUS()" in csv_report(report,accounting=True)
+
+
+def test_email_intake_authentication_privacy_and_cross_channel_dedup(service):
+    from email.message import EmailMessage
+
+    client, repo, _ = service
+    issued, _ = key(client)
+    auth = {'Authorization': 'Bearer ' + issued['token']}
+    message = EmailMessage()
+    message['From'] = 'private-sender@example.invalid'
+    message['Subject'] = 'Private subject canary'
+    message.set_content('Private body canary')
+    endpoint = '/api/integrations/v1/email'
+
+    def send(headers):
+        return client.post(endpoint, headers=headers,
+                           files={'message': ('private-name.eml', message.as_bytes(), 'message/rfc822')})
+
+    assert send({}).status_code == 401
+    assert send(auth).status_code == 422
+    for path in sorted((ROOT / 'math_error').glob('*.pdf')):
+        message.add_attachment(path.read_bytes(), maintype='application', subtype='pdf', filename='private-name.pdf')
+    result = send(auth)
+    assert result.status_code == 201, result.text
+    case_id = result.json()['id']
+    assert repo.get_case('a', case_id)['ingestion']['origin'] == 'email'
+    exported = client.get('/api/integrations/v1/cases/' + case_id, headers=auth)
+    assert exported.status_code == 200
+    for value in ('private-sender', 'Private subject canary', 'Private body canary', 'private-name'):
+        assert value not in exported.text
+    repeated = submit(client, issued['token'])
+    assert repeated.status_code == 200 and repeated.json()['id'] == case_id
+    read_key, _ = key(client, ('cases:read',))
+    assert send({'Authorization': 'Bearer ' + read_key['token']}).status_code == 401

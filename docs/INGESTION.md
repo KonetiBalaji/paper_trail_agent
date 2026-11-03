@@ -35,6 +35,13 @@ This is logical identity indexing, not physical blob deduplication.
 The public demo adds a fixed duplicate-PDF review case. It still accepts no
 uploads and makes no paid model calls. Existing guest quotas remain enforced.
 
-Email and lender/bank portal adapters, background ingestion, continuous
-cross-case monitoring and historical reconciliation remain unimplemented.
-This increment does not complete roadmap item 21.
+An authenticated connector can post a MIME message as the `message` multipart
+field to `POST /api/integrations/v1/email` using a `cases:submit` bearer key.
+The endpoint extracts up to eight PDF attachments, uses generic filenames and
+runs local analysis. It discards the body, sender, subject and original
+attachment names. The message limit is 4 MB, subject to the hosted total
+request limit including multipart overhead. HTTP 201 indicates creation and
+HTTP 200 indicates reuse of the same PDFs from any supported intake channel.
+
+See [Historical rules](HISTORICAL-RULES.md) for the private monitoring workflow.
+Mailbox polling, portal connections and hosted email verification remain open.
