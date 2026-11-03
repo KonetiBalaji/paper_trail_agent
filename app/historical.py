@@ -12,6 +12,9 @@ from itertools import combinations
 from .core import money, calculate
 
 
+YEAR_FIRST_DATE = r'\d{4}(?:-\d{2}-\d{2}|/\d{2}/\d{2})'
+
+
 class ReviewRequired(ValueError):
     pass
 
@@ -52,9 +55,9 @@ def _snapshot(doc):
     # The application's exact two-decimal arithmetic does not represent JPY,
     # KWD or arbitrary currencies with a different minor-unit convention.
     if currency not in ('USD','EUR','GBP','INR'):raise ReviewRequired('unsupported_currency')
-    start,start_source=_one(lines,'Period start',r'\d{4}-\d{2}-\d{2}')
-    end,end_source=_one(lines,'Period end',r'\d{4}-\d{2}-\d{2}')
-    try:start=date.fromisoformat(start);end=date.fromisoformat(end)
+    start,start_source=_one(lines,'Period start',YEAR_FIRST_DATE)
+    end,end_source=_one(lines,'Period end',YEAR_FIRST_DATE)
+    try:start=date.fromisoformat(start.replace("/", "-"));end=date.fromisoformat(end.replace("/", "-"))
     except ValueError as exc:raise ReviewRequired('invalid_period') from exc
     if start>end:raise ReviewRequired('reversed_period')
     sources=[rule_source,identity_source,currency_source,start_source,end_source]
@@ -74,9 +77,9 @@ def _snapshot(doc):
         for line in lines:
             text=re.sub(r'^L\d+\s+','',line['text']).strip()
             if not re.match(r'^Transaction\s+',text,re.I) or re.match(r'^Transaction count:',text,re.I):continue
-            m=re.fullmatch(r'Transaction\s+([A-Za-z0-9_-]{1,80})\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*Amount:\s*([-+]?\d{1,16}\.\d{2})',text,re.I)
+            m=re.fullmatch(rf'Transaction\s+([A-Za-z0-9_-]{{1,80}})\s*\|\s*({YEAR_FIRST_DATE})\s*\|\s*Amount:\s*([-+]?\d{{1,16}}\.\d{{2}})',text,re.I)
             if not m:raise ReviewRequired('unparsed_transaction')
-            try:posted=date.fromisoformat(m[2]);value=money(m[3])
+            try:posted=date.fromisoformat(m[2].replace("/", "-"));value=money(m[3])
             except ValueError as exc:raise ReviewRequired('invalid_transaction') from exc
             if not start<=posted<=end:raise ReviewRequired('transaction_outside_period')
             entries.append((m[1],format(value,'.2f'),line['id']))

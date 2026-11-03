@@ -20,10 +20,11 @@ def document(doc_id,start='2026-09-01',end='2026-09-30',kind='bank',opening='100
     return read_pdf(buf.getvalue(),f'{doc_id}.pdf',doc_id)
 
 
+@pytest.mark.parametrize('separator',['-','/'])
 @pytest.mark.parametrize('kind',['bank','loan'])
-def test_real_pdfs_legitimate_payment_change_and_carry(kind):
+def test_real_pdfs_legitimate_payment_change_and_carry(kind, separator):
     previous=document('earlier',kind=kind)
-    later=document('later','2026-10-01','2026-10-31',kind,opening='900.00',closing='800.00')
+    later=document('later',f'2026{separator}10{separator}01',f'2026{separator}10{separator}31',kind,opening='900.00',closing='800.00')
     result=evaluate_history([later,previous])
     assert not result['review'] and all(c['result']=='passed' for c in result['checks'])
     pair=result['pairs'][0]
