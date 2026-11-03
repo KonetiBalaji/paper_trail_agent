@@ -363,3 +363,25 @@ def test_prior_history_separate_pdf_uploads(service):
     assert client.get(monitor).json()['entries'] == []
     login(client, 'other@example.invalid')
     assert client.get(path).status_code == 404
+
+
+def test_eval_candidate_is_versioned_and_reviewer_only(service):
+    client, _, _ = service
+    headers = login(client)
+    report = upload(client, headers).json()
+    base = '/api/cases/' + report['id'] + '/findings/F1'
+    candidate = base + '/eval-candidate'
+    assert client.get(candidate, params={'version': 1}).status_code == 409
+    updated = client.patch(base, headers=headers, json={'action': 'reject', 'note': 'private-canary-note',
+        'expected_revision': 0, 'expected_case_version': 1})
+    assert updated.status_code == 200
+    response = client.get(candidate, params={'version': 2})
+    assert response.status_code == 200
+    assert response.json()['review_decision'] == 'rejected'
+    assert response.json()['admission'] == 'pending_independent_ground_truth_and_regression'
+    assert 'private-canary-note' not in response.text
+    assert client.get(candidate, params={'version': 1}).status_code == 409
+    login(client, 'viewer@example.invalid')
+    assert client.get(candidate, params={'version': 2}).status_code == 403
+    login(client, 'other@example.invalid')
+    assert client.get(candidate, params={'version': 2}).status_code == 404

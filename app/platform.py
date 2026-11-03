@@ -309,6 +309,22 @@ def create_router(root_provider,analyze_files):
         from .historical import case_history
         return case_history(resources()[0].get_case(actor.workspace,case_id,version))
 
+    @router.get('/cases/{case_id}/findings/{finding_id}/eval-candidate')
+    def eval_candidate(case_id, finding_id, version: int, actor=Depends(principal)):
+        if actor.role not in ('admin', 'reviewer'):
+            raise HTTPException(403, 'Reviewer access required')
+        report = resources()[0].get_case(actor.workspace, case_id, version)
+        finding = next((item for item in report['findings'] if item['id'] == finding_id), None)
+        if finding is None:
+            raise Missing('Finding not found')
+        review = finding.get('human_review', {})
+        if review.get('decision') not in ('confirmed', 'rejected'):
+            raise HTTPException(409, 'Record a review decision before creating an eval candidate')
+        return {'case_id': case_id, 'report_version': version, 'finding_id': finding_id,
+                'finding_type': finding['type'], 'review_revision': review['revision'],
+                'review_decision': review['decision'], 'sources': finding['sources'],
+                'admission': 'pending_independent_ground_truth_and_regression'}
+
     @router.get('/cases/{case_id}/monitor')
     def monitor_timeline(case_id, offset: int = 0, actor=Depends(principal)):
         if offset < 0:

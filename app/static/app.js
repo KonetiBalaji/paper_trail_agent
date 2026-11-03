@@ -282,6 +282,16 @@ function render() {
     card.append(el('span', `${finding.id} · Machine: ${finding.severity}`, 'badge'), el('p', finding.message), sources(finding.sources), reviewControls(finding));
     if (finding.critic) card.append(el('p', `Verifier → Critic: ${finding.critic.decision}`, 'note'));
     const draft = draftControls(finding); if (draft) card.append(draft);
+    if (serviceEnabled && ['admin', 'reviewer'].includes(currentRole) && report.report_version
+        && ['confirmed', 'rejected'].includes(finding.human_review?.decision)) {
+      const candidate = el('a', 'Open eval candidate');
+      candidate.href = `/api/cases/${report.id}/findings/${finding.id}/eval-candidate?version=${report.report_version}`;
+      candidate.target = '_blank';
+      candidate.rel = 'noopener';
+      const feedback = el('p', undefined, 'note');
+      feedback.append(candidate, ' · Requires independent ground truth and regression validation.');
+      card.append(feedback);
+    }
     const related = (report.trace || []).filter(event => (event.finding_ids || []).includes(finding.id) || (event.document && finding.sources.some(source => source.startsWith(event.document + ':'))));
     const details = el('details'); details.append(el('summary', 'Related checks and review events'), traceTimeline(related)); card.append(details);
     const shared = (report.trace || []).filter(event => event.kind === 'model' || event.kind === 'tool' || (event.kind === 'validation' && event.name === 'agent_citations'));
