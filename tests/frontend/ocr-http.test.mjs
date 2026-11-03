@@ -295,3 +295,19 @@ test('monitor timeline loads evidence and saves review and resolution', {skip: o
   button('Mark resolved').click();
   await waitFor(() => ui.doc.getElementById('calculations').textContent.includes('Resolved '), 'Resolution did not persist');
 });
+
+test('Auto fallback shows verified local evidence and the reason for review', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t);
+  const previousCase = ui.doc.getElementById('case-id').textContent;
+  const files = await Promise.all(['statement_A.pdf', 'statement_B.pdf'].map(async name => {
+    const data = await readFile(new URL('../../data/synthetic/math_error/' + name, import.meta.url));
+    return new File([data], name, {type: 'application/pdf'});
+  }));
+  Object.defineProperty(ui.doc.getElementById('files'), 'files', {configurable: true, value: files});
+  ui.doc.getElementById('mode').value = 'auto';
+  ui.doc.getElementById('upload').dispatchEvent(new ui.w.Event('submit', {bubbles: true, cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('case-id').textContent !== previousCase, 'Fallback case did not open');
+  assert.match(ui.doc.getElementById('agent').textContent, /Meta is unavailable.*Local checks ran/);
+  assert.match(ui.doc.getElementById('findings').textContent, /50\.00/);
+  assert.equal(ui.doc.getElementById('status').textContent, 'Manual review needed');
+});
