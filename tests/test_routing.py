@@ -39,7 +39,10 @@ def test_auto_unknown_format_calls_grounded_model_extraction(client,monkeypatch)
     assert called==['doc1'] and response.json()['documents'][0]['routing']['selected']=='meta'
 
 def test_auto_failure_and_missing_key_never_become_clean(client,monkeypatch):
-    assert upload(client,'clean','auto').status_code==503
+    fallback = upload(client, 'clean', 'auto')
+    assert fallback.status_code == 200
+    assert fallback.json()['status'] == 'review'
+    assert fallback.json()['metrics']['attempted_model_calls'] == 0
     monkeypatch.setenv('MODEL_API_KEY','synthetic-key')
     def failed(*args,**kwargs):raise meta.MetaError('Synthetic provider failure')
     monkeypatch.setattr(meta,'reason',failed)
