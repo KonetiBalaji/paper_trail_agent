@@ -2,6 +2,13 @@
 
 Track: Indie Developer. Theme: Build for Your World. Builder: Balaji Koneti (solo).
 
+**Submitted and verified November 3, 2026.** After the builder approved the
+exact entry and publication permission, the submission was sent to Cerebral
+Valley. The event page changed to **View Submission** and the saved entry was
+reopened to verify the project name, repository and approved video link. The
+private receipt is retained locally. Submitted implementation: `b752f55`;
+verification/evidence release: `0a662f8`.
+
 ## Project description
 
 Paper Trail Agent checks financial statement PDFs for contradictions using calculator-verified totals and grounded source citations. It extracts principal, interest, dates and tranche amounts, recomputes totals using Python Decimal, and compares matching accounts, currencies and reporting periods. Each confirmed finding links to the original page and highlighted source line. Users can export an evidence-backed report and actionable checklist.
@@ -59,10 +66,10 @@ experience still needs the builder's own wording.
 
 The tested benchmark consists of synthetic documents. Local parsing supports labeled statements and documented strict loan/bank table layouts, including linked cross-page rows and carried balances. The extended fictional benchmark has 19 cases; it is not a real-world accuracy claim. This is not a universal financial PDF parser or an amortization engine. Image-only PDFs request review in the public demo. Authenticated OCR queueing, confidence display and versioned review are connected and tested with a separate CPU worker; no persistent hosted OCR worker is configured yet. OCR candidates remain review-only. The current live Meta benchmark covers the four loan cases. Public hosted guests use local checks; the live Meta evidence is a separate real-model test.
 
-## Complete before submitting
+## During judging
 
 - Keep the deployed application URL and public guest flow available through judging.
-- Owner approved the deployed 2:08 video after the watch/listen request. Confirm the actual form accepts the public player/MP4 URL.
-- Confirm track and contributor details in the actual submission form.
-- Write personal feedback on Meta products and any partner technologies actually used. Do not invent feedback or claim unused services.
-- Review the requested publication permission before submitting the form.
+- The saved submission uses the approved public player URL and lists Balaji
+  Koneti as the sole contributor. The partner field accurately states that
+  Fireworks, Modal and Baseten were not integrated.
+- Keep later roadmap changes separate from the submitted feature claims.
