@@ -44,9 +44,8 @@ def test_exact_carry_difference_and_independent_period_math(kind):
 
 @pytest.mark.parametrize('start,end,reason',[
     ('2026-11-01','2026-11-30','period_gap'),
-    ('2026-09-30','2026-10-31','overlapping_or_same_period'),
-    ('2026-09-01','2026-09-30','overlapping_or_same_period')])
-def test_gaps_overlap_and_same_period_are_not_balance_contradictions(start,end,reason):
+    ('2026-09-30','2026-10-31','overlapping_or_same_period')])
+def test_gaps_and_partial_overlap_require_review(start,end,reason):
     result=evaluate_history([document('a'),document('b',start,end,opening='900.00',closing='800.00')])
     assert result['pairs'][0]['result']=='review' and result['pairs'][0]['reason']==reason
     assert 'difference' not in result['pairs'][0]
@@ -146,3 +145,14 @@ def test_local_http_real_pdfs_history_sources_export_binding(tmp_path,monkeypatc
         assert image.status_code==200 and image.headers['content-type']=='image/png'
         assert client.get(base).json()==report  # Read-only policy evaluation.
         assert client.get('/api/cases/'+'0'*32+'/historical').status_code==404
+
+def test_same_period_balances_cite_both_sources():
+    pair, = evaluate_history([
+        document('a'), document('b', opening='950.00', closing='850.00'),
+    ])['pairs']
+    assert pair['result'] == 'discrepancy'
+    assert pair['reason'] == 'same_period_balances'
+    assert pair['balance_field'] == 'opening'
+    assert pair['difference'] == '50.00'
+    assert len(set(pair['balance_sources'])) == 2
+    assert [item['balance_field'] for item in pair['balance_differences']] == ['opening', 'closing']

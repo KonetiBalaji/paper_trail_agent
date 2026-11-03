@@ -101,7 +101,8 @@ def evaluate_history(documents):
     """Evaluate every input pair with evidence and explicit inclusive periods.
 
     A matching account/currency and adjacent periods permit carry comparison.
-    Gaps, overlap, same-period inputs, changed rule or incomplete evidence require
+    Identical periods permit matching balance comparisons. Gaps, partial
+    overlap, changed rule or incomplete evidence require
     review. End balances changing across periods are never contradictions alone.
     """
     snapshots={};reviews=[];checks=[];pairs=[]
@@ -127,7 +128,23 @@ def evaluate_history(documents):
             pair['reason']='account_currency_or_rule_mismatch'
         else:
             x,y=sorted([x,y],key=lambda v:v['start'])
-            if x['end']>=y['start']:pair['reason']='overlapping_or_same_period'
+            if (x['start'],x['end'])==(y['start'],y['end']):
+                differences = []
+                for field in ('opening', 'closing'):
+                    delta = money(y[field]) - money(x[field])
+                    if delta:
+                        differences.append(dict(
+                            balance_field=field, computed=x[field], stated=y[field],
+                            difference=format(abs(delta), '.2f'),
+                            balance_sources=[x[field+'_source'], y[field+'_source']],
+                        ))
+                pair.update(result='discrepancy' if differences else 'passed',
+                    reason='same_period_balances', currency=x['currency'],
+                    sources=list(dict.fromkeys(x['sources']+y['sources'])),
+                    balance_differences=differences)
+                if differences:
+                    pair.update(differences[0])
+            elif x['end']>=y['start']:pair['reason']='overlapping_or_same_period'
             elif x['end']==date.max or x['end']+timedelta(days=1)!=y['start']:
                 pair['reason']='period_gap'
             else:

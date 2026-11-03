@@ -50,7 +50,8 @@ arithmetic is independently replayed in integer cents.
 
 Every pair in the case is considered (maximum eight documents). Only equal
 account, currency and rules with consecutive periods may compare the earlier
-closing balance to the later opening balance. Gaps, overlapping/same periods,
+closing balance to the later opening balance. Identical periods compare opening and closing balances separately.
+Gaps, partially overlapping periods,
 different identities/currencies/rules, duplicate PDFs, repeated labels, OCR or
 incomplete evidence require review. A change between closing balances is never
 itself a contradiction. A passed named equation is not a clean account-history

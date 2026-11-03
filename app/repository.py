@@ -280,15 +280,22 @@ class Repository:
             )).mappings().one_or_none()
             if source is None or source['account_tag'] is None:
                 return {'identity_verified': False, 'sources': [], 'next_offset': None}
-            rows = conn.execute(select(statement_sources.c.case_id, statement_sources.c.document_id,
-                statement_sources.c.sha256).where(
+            source_order = (statement_sources.c.created_at, statement_sources.c.case_id,
+                            statement_sources.c.document_id)
+            candidates = select(*source_order, statement_sources.c.sha256,
+                func.row_number().over(
+                    partition_by=statement_sources.c.sha256, order_by=source_order,
+                ).label('copy_rank')).where(
                 statement_sources.c.workspace == workspace,
                 statement_sources.c.account_tag == source['account_tag'],
                 statement_sources.c.created_at < source['created_at'],
                 statement_sources.c.case_id != case_id,
                 statement_sources.c.sha256 != source['sha256'],
-            ).order_by(statement_sources.c.created_at, statement_sources.c.case_id,
-                statement_sources.c.document_id).offset(offset).limit(limit + 1)).mappings().all()
+            ).subquery()
+            rows = conn.execute(select(candidates.c.case_id, candidates.c.document_id,
+                candidates.c.sha256).where(candidates.c.copy_rank == 1).order_by(
+                    candidates.c.created_at, candidates.c.case_id, candidates.c.document_id,
+                ).offset(offset).limit(limit + 1)).mappings().all()
             return {'identity_verified': True, 'sources': [dict(row) for row in rows[:limit]],
                     'next_offset': offset + limit if len(rows) > limit else None}
 
@@ -531,6 +538,9 @@ class Repository:
                 self._case(conn, workspace, case_id)
                 self._case(conn, workspace, prior['case_id'])
                 identity = [case_id, detection['document_id'], prior['case_id'], prior['document_id']]
+                field = detection['comparison']['pair'].get('balance_field')
+                if field:
+                    identity.append(field)
                 self._insert_once(conn, monitor_discrepancies, {
                     'workspace': workspace, 'id': self._identity_tag(workspace, identity),
                     'case_id': case_id, 'prior_case_id': prior['case_id'],

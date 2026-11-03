@@ -34,7 +34,10 @@ def run_once(repo,kinds=None):
                     for comparison in page['comparisons']:
                         counts[comparison['pair']['result']] += 1
                         if comparison['pair']['result'] == 'discrepancy':
-                            detections.append({'document_id': document_id, 'comparison': comparison})
+                            pair = comparison['pair']
+                            for difference in pair.get('balance_differences', [{}]):
+                                evidence = {**comparison, 'pair': {**pair, **difference}}
+                                detections.append({'document_id': document_id, 'comparison': evidence})
                     offset = page['next_offset']
             result = {'comparison_counts': counts}
             failed = False

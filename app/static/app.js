@@ -210,9 +210,12 @@ function renderMonitor(caseId) {
       for (const entry of result.entries) {
         const card = el('article', undefined, 'panel');
         const pair = entry.comparison.pair;
-        card.append(el('p', `Carry discrepancy ${pair.difference} ${pair.currency}. First seen ${entry.first_seen}.`));
-        card.append(el('p', `Expected opening ${pair.computed} ${pair.currency}. Stated opening ${pair.stated} ${pair.currency}.`));
-        for (const [index, citation] of (pair.carry_sources || []).entries()) {
+        const samePeriod = pair.reason === 'same_period_balances';
+        const label = samePeriod ? 'Same-period balance' : 'Carry';
+        const field = pair.balance_field || 'opening';
+        card.append(el('p', `${label} discrepancy ${pair.difference} ${pair.currency}. First seen ${entry.first_seen}.`));
+        card.append(el('p', `${samePeriod ? 'Prior' : 'Expected'} ${field} ${pair.computed} ${pair.currency}. Stated ${field} ${pair.stated} ${pair.currency}.`));
+        for (const [index, citation] of (pair.balance_sources || pair.carry_sources || []).entries()) {
           const separator = citation.indexOf('/');
           const sourceCase = separator < 0 ? caseId : citation.slice(0, separator);
           const source = separator < 0 ? citation : citation.slice(separator + 1);

@@ -361,6 +361,26 @@ def test_prior_history_separate_pdf_uploads(service):
         assert image.status_code == 200 and image.headers['content-type'] == 'image/png'
     assert client.delete(f'/api/cases/{earlier}', headers=headers).status_code == 200
     assert client.get(monitor).json()['entries'] == []
+    revised = upload_period('2026-10-01', '2026-10-31', '975.00', '875.00')
+    assert run_once(repo, kinds=['monitor'])
+    entries = client.get(f'/api/cases/{revised}/monitor').json()['entries']
+    assert len({entry['id'] for entry in entries}) == 2
+    pairs = {entry['comparison']['pair']['balance_field']: entry['comparison']['pair']
+             for entry in entries}
+    assert {field: pair['difference'] for field, pair in pairs.items()} == {
+        'opening': '25.00', 'closing': '25.00',
+    }
+    for field, pair in pairs.items():
+        prior_source, current_source = pair['balance_sources']
+        assert prior_source.startswith(later + '/')
+        for case, source, value in (
+            (later, prior_source.split('/', 1)[1], pair['computed']),
+            (revised, current_source, pair['stated']),
+        ):
+            lines = client.get(f'/api/cases/{case}').json()['documents'][0]['lines']
+            assert next(line['text'] for line in lines if line['id'] == source) == (
+                f'{field.capitalize()} balance: {value}'
+            )
     login(client, 'other@example.invalid')
     assert client.get(path).status_code == 404
 
@@ -385,3 +405,26 @@ def test_eval_candidate_is_versioned_and_reviewer_only(service):
     assert client.get(candidate, params={'version': 2}).status_code == 403
     login(client, 'other@example.invalid')
     assert client.get(candidate, params={'version': 2}).status_code == 404
+
+def test_prior_statement_sources_deduplicate_before_paging(service):
+    from app.repository import statement_sources
+
+    client, repo, _ = service
+    current = upload(client, login(client)).json()['id']
+    with repo.transaction() as conn:
+        conn.execute(statement_sources.delete().where(statement_sources.c.case_id == current))
+        for case_id, digest, day in (
+            ('first', 'a', 1), ('copy', 'a', 2), ('second', 'b', 3),
+            ('self-copy', 'c', 4), (current, 'c', 5),
+        ):
+            conn.execute(statement_sources.insert().values(
+                workspace='team-a', case_id=case_id, document_id='doc1',
+                sha256=digest * 64, account_tag='account', identity=b'fixture',
+                created_at=f'2026-09-0{day}T00:00:00+00:00',
+            ))
+    first = repo.prior_statement_sources('team-a', current, 'doc1', limit=1)
+    assert [row['case_id'] for row in first['sources']] == ['first']
+    assert first['next_offset'] == 1
+    second = repo.prior_statement_sources('team-a', current, 'doc1', limit=1, offset=1)
+    assert [row['case_id'] for row in second['sources']] == ['second']
+    assert second['next_offset'] is None
