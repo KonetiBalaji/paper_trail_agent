@@ -64,11 +64,13 @@ development environment. Keep it private and recoverable; losing it makes
 stored reports unreadable. Neither `.env` nor `.env.*` files are committed or
 included in Vercel source uploads.
 
-Run `python -m app.worker` on a separate persistent worker host for durable eval
-jobs and, with optional OCR dependencies, OCR jobs. Vercel request functions do
-not provide a continuously running worker. Persistent hosted worker setup,
-ingestion/monitor handlers, hosted uptime monitoring and provider backup
-restoration remain pending. A Dockerfile is an optional worker packaging draft;
-container execution has not been verified. Do not claim production readiness
-for real financial documents before the remaining privacy, retention and
-security gates pass.
+Run `python -m app.worker` on a persistent worker host for durable eval and
+monitoring jobs. With the optional OCR dependencies, the same worker processes
+OCR jobs. See [Worker hosting](WORKER-HOSTING.md) for the tested worker image.
+The timeline reports whether a monitoring worker has an active heartbeat.
+Persistent hosted worker setup and email and portal intake remain open.
+
+The PostgreSQL CI restore drill verifies a disposable database, original PDFs,
+report versions and audit integrity. Provider backup recovery remains open.
+The public uptime workflow is available on the review branch. GitHub schedules
+it after it reaches the default branch.
