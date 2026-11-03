@@ -16,4 +16,7 @@ targetRules = ["generic-api-key"]
 condition = "AND"
 paths = ['''(^|/)docs/layout-package-results\.json$''']
 regexTarget = "secret"
-regexes = ['''^f7b607be41868c544bfbc47e3349f8738023a6736afb9e7b151aa0be88c07b5f$''']
+regexes = [
+  '''^f7b607be41868c544bfbc47e3349f8738023a6736afb9e7b151aa0be88c07b5f$''',
+  '''^c4d131398f20ba002517334296e1a809b47465a941da3d7406e3c900065884f5$''',
+]
