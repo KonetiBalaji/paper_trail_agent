@@ -134,7 +134,7 @@ def validate_statement(data, doc):
             if money(transaction['amount'])!=money(known['amount']) or transaction['date']!=known['date']:raise EvidenceError('Transaction does not match validated column semantics')
         else:grounded(transaction['amount'],transaction['source'])
         date.fromisoformat(transaction['date'])
-        if transaction['date'] not in lines[transaction['source']]:raise EvidenceError('Ungrounded transaction date')
+        if not known and transaction['date'] not in lines[transaction['source']]:raise EvidenceError('Ungrounded transaction date')
         if transaction['id'] not in lines[transaction['source']]:raise EvidenceError('Ungrounded transaction identifier')
         transaction['amount']=format(money(transaction['amount']),'.2f')
     if parsed['period_end']:

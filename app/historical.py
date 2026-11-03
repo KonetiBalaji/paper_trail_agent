@@ -9,10 +9,7 @@ from pathlib import Path
 from datetime import date, timedelta
 from decimal import Decimal
 from itertools import combinations
-from .core import money, calculate
-
-
-YEAR_FIRST_DATE = r'\d{4}(?:-\d{2}-\d{2}|/\d{2}/\d{2})'
+from .core import YEAR_FIRST_DATE, money, calculate
 
 
 class ReviewRequired(ValueError):
