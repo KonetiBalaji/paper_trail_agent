@@ -97,6 +97,12 @@ test('real frontend queues OCR and reopens reviewed candidates through HTTP', {s
   assert.equal(current.report_version, 3);
   assert.equal(current.findings[0].human_review.history[0].note, 'Synthetic frontend verification');
   assert.equal(current.status, 'review');
+  ui.doc.getElementById('history-query').value = 'exclude this case';
+  ui.button('Pending review queue').click();
+  assert.equal(ui.doc.getElementById('history-query').value, '');
+  assert.equal(ui.doc.getElementById('history-decision').value, 'pending');
+  await waitFor(() => ui.button('Open ' + caseId.slice(0, 8)), 'Pending case missing from queue');
+
   ui.button('Check historical rules').click();
   await waitFor(() => ui.doc.getElementById('calculations').textContent.includes('native-period-v1'), 'Historical backend result did not render');
   assert.match(ui.doc.getElementById('calculations').textContent, /document requires review/);

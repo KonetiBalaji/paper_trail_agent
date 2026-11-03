@@ -521,6 +521,12 @@ async function loadHistory() {
   } catch (error) { $('history-results').replaceChildren(); $('history-message').textContent = error.message; }
 }
 $('history-form').onsubmit = event => { event.preventDefault(); loadHistory(); };
+$('pending-review').onclick = () => {
+  $('history-form').reset();
+  $('history-decision').value = 'pending';
+  loadHistory();
+};
+
 
 function renderAPIKeys() {
   const generation = ++keyRenderGeneration;
