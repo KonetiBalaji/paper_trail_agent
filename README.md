@@ -6,6 +6,11 @@ compared against itself. API submissions return 201 when created and 200 when
 reused. See [intake behavior and limits](docs/INGESTION.md). Email/portal
 adapters and continuous historical monitoring remain pending.
 
+Historical checks within a case now have explicit bank movement and allocated
+loan principal rules, version-bound JSON and a **Check historical rules** panel.
+Gaps, overlaps, unknown payment allocation and OCR request review. See
+[historical rule contracts and pending monitoring](docs/HISTORICAL-RULES.md).
+
 Reviewed fictional layouts use a read-only deployment registry. The exact
 mapping, review, PDF/truth fixtures, application source and installed dependencies
 must still match a passing 41-case regression receipt; otherwise the layout

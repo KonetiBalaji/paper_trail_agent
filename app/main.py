@@ -156,6 +156,11 @@ def analyze_files(files,mode='local',persist=True):
 @app.get('/api/cases/{case_id}')
 def get_case(case_id): return load(case_id)
 
+@app.get('/api/cases/{case_id}/historical')
+def historical_checks(case_id):
+    from .historical import case_history
+    return case_history(load(case_id))
+
 @app.get('/api/cases')
 def local_history(q:str='',status:str|None=None,decision:str|None=None,limit:int=50,offset:int=0):
     if status and status not in ('consistent','discrepancies','review'):raise HTTPException(422,'Invalid status')

@@ -57,6 +57,11 @@ class UserCreate(Login):
     workspace:str=Field(min_length=1,max_length=80)
     role:Literal['admin','reviewer','viewer']
 
+class MonitorReview(BaseModel):
+    action: Literal['review', 'resolve']
+    expected_revision: int = Field(ge=0, le=1, strict=True)
+
+
 class Review(BaseModel):
     model_config=ConfigDict(extra='forbid',str_strip_whitespace=True)
     action:Literal['confirm','reject','note']
@@ -298,6 +303,31 @@ def create_router(root_provider,analyze_files):
     @router.get('/cases/{case_id}')
     def case(case_id,version:int|None=None,actor=Depends(principal)):
         return private_report_view(resources()[0].get_case(actor.workspace,case_id,version))
+
+    @router.get('/cases/{case_id}/historical')
+    def historical_checks(case_id,version:int|None=None,actor=Depends(principal)):
+        from .historical import case_history
+        return case_history(resources()[0].get_case(actor.workspace,case_id,version))
+
+    @router.get('/cases/{case_id}/monitor')
+    def monitor_timeline(case_id, offset: int = 0, actor=Depends(principal)):
+        if offset < 0:
+            raise HTTPException(422, 'Offset must be nonnegative')
+        return resources()[0].monitor_timeline(actor.workspace, case_id, offset)
+
+    @router.patch('/cases/{case_id}/monitor/{entry_id}')
+    def review_monitor(case_id, entry_id, data: MonitorReview, actor=Depends(write_principal)):
+        if actor.role == 'demo':
+            raise HTTPException(403, 'Reviewer access required')
+        return resources()[0].review_monitor(actor.workspace, actor.id, case_id, entry_id,
+                                             data.action, data.expected_revision)
+
+    @router.get('/cases/{case_id}/documents/{document_id}/historical')
+    def prior_history(case_id, document_id, offset: int = 0, actor=Depends(principal)):
+        from .historical import prior_case_history
+        if offset < 0:
+            raise HTTPException(422, 'Offset must be nonnegative')
+        return prior_case_history(resources()[0], actor.workspace, case_id, document_id, offset=offset)
 
     @router.patch('/cases/{case_id}/findings/{finding_id}')
     def review(case_id,finding_id,data:Review,actor=Depends(write_principal)):

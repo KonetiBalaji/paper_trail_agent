@@ -97,6 +97,11 @@ test('real frontend queues OCR and reopens reviewed candidates through HTTP', {s
   assert.equal(current.report_version, 3);
   assert.equal(current.findings[0].human_review.history[0].note, 'Synthetic frontend verification');
   assert.equal(current.status, 'review');
+  ui.button('Check historical rules').click();
+  await waitFor(() => ui.doc.getElementById('calculations').textContent.includes('native-period-v1'), 'Historical backend result did not render');
+  assert.match(ui.doc.getElementById('calculations').textContent, /document requires review/);
+  assert.equal(ui.doc.getElementById('status').textContent, 'Manual review needed');
+  assert.ok(ui.requests.some(r => r.path.endsWith('/historical') && r.status === 200));
   const prior = await (await ui.api('/api/cases/' + caseId + '/export?format=json&version=1')).json();
   assert.equal(prior.report_version, 1); assert.equal(prior.documents[0].lines.length, 0);
   const markdown = await (await ui.api('/api/cases/' + caseId + '/export?format=md')).text();
@@ -268,4 +273,25 @@ test('public synthetic MCP check discovers real tools and shows server call resu
   ui.doc.getElementById('logout').click();
   await waitFor(()=>ui.doc.getElementById('mcp-demo').hidden,'MCP panel remained after sign out');
   assert.equal(ui.doc.getElementById('mcp-demo-output').textContent,'');
+});
+
+test('monitor timeline loads evidence and saves review and resolution', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t);
+  const id = process.env.PAPER_TRAIL_UI_MONITOR_CASE;
+  ui.w.history.replaceState(null, '', '#case=' + id);
+  await ui.w.restoreCase();
+  assert.equal(ui.doc.getElementById('case-id').textContent, id);
+  const button = text => [...ui.doc.querySelectorAll('button')].find(node => node.textContent === text);
+  button('Load monitoring timeline').click();
+  await waitFor(() => button('Mark reviewed'), 'Monitor evidence did not load');
+  const links = [...ui.doc.querySelectorAll('a')].filter(link => ['Earlier closing balance', 'Later opening balance'].includes(link.textContent));
+  assert.equal(links.length, 2);
+  for (const link of links) {
+    const url = new URL(link.href);
+    assert.equal((await ui.api(url.pathname + url.search)).status, 200);
+  }
+  button('Mark reviewed').click();
+  await waitFor(() => button('Mark resolved'), 'Review did not persist');
+  button('Mark resolved').click();
+  await waitFor(() => ui.doc.getElementById('calculations').textContent.includes('Resolved '), 'Resolution did not persist');
 });

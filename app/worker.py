@@ -8,17 +8,36 @@ import threading
 from pathlib import Path
 from .platform import runtime
 from .evals import evaluate_suite
+from .repository import Conflict, Missing
 
 def capabilities():
-    return ['eval','ocr'] if importlib.util.find_spec('rapidocr_onnxruntime') is not None else ['eval']
+    return ['eval','monitor','ocr'] if importlib.util.find_spec('rapidocr_onnxruntime') is not None else ['eval','monitor']
 
 def run_once(repo,kinds=None):
     job=repo.claim_job(lease_seconds=120,kinds=kinds)
     if job is None:return False
+    detections = []
     try:
         if job['kind']=='eval':
             result=evaluate_suite()
             failed=bool(result['summary']['failed'])
+        elif job['kind']=='monitor':
+            from .historical import prior_case_history
+            counts = {'passed': 0, 'discrepancy': 0, 'review': 0}
+            deadline = time.monotonic() + 90
+            for document_id in job['payload']['documents']:
+                offset = 0
+                while offset is not None:
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError('Monitor lease budget exceeded')
+                    page = prior_case_history(repo, job['workspace'], job['payload']['case_id'], document_id, offset=offset)
+                    for comparison in page['comparisons']:
+                        counts[comparison['pair']['result']] += 1
+                        if comparison['pair']['result'] == 'discrepancy':
+                            detections.append({'document_id': document_id, 'comparison': comparison})
+                    offset = page['next_offset']
+            result = {'comparison_counts': counts}
+            failed = False
         elif job['kind']=='ocr':
             from .ocr_case import build_report
             derived=build_report(repo,job)
@@ -35,8 +54,22 @@ def run_once(repo,kinds=None):
         else:
             result={'error':'Job failed; reopen the case and inspect sanitized service diagnostics.'};failed=True
     # Never retry a completion whose database outcome could be unknown.
-    if job['kind']=='ocr' and not failed:repo.complete_ocr(job['id'],job['lease_token'],derived)
-    else:repo.complete_job(job['id'],job['lease_token'],result,failed=failed)
+    try:
+        if job['kind']=='ocr' and not failed:
+            repo.complete_ocr(job['id'],job['lease_token'],derived)
+        else:
+            try:
+                repo.complete_job(job['id'],job['lease_token'],result,failed=failed,
+                                  detections=detections if not failed else ())
+            except Missing:
+                if job['kind'] != 'monitor':
+                    raise
+                # A source was deleted before the evidence transaction committed.
+                repo.complete_job(job['id'], job['lease_token'],
+                                  {'error': 'A source case was removed during monitoring.'}, failed=True)
+    except Conflict:
+        # An expired lease belongs to another worker. Its result wins.
+        pass
     return True
 
 def serve(repo,kinds,stop,once=False,poll_seconds=1):

@@ -60,6 +60,23 @@ def main():
         from app.main import analyze_files
         from app.repository import cases
         from sqlalchemy import update
+        from reportlab.pdfgen import canvas
+        from app.worker import run_once
+        for month, end, opening, closing in [('09', 30, 1000, 900), ('10', 31, 950, 850)]:
+            buffer = io.BytesIO()
+            pdf = canvas.Canvas(buffer, invariant=True)
+            lines = ['Historical rules: PTA-BANK-PERIOD-V1', 'Account: FICTIONAL-001', 'Currency: USD',
+                     f'Period start: 2026-{month}-01', f'Period end: 2026-{month}-{end}',
+                     f'Opening balance: {opening}.00', 'Transaction count: 1',
+                     f'Transaction PAYMENT-1 | 2026-{month}-{end} | Amount: -100.00',
+                     f'Closing balance: {closing}.00']
+            for index, line in enumerate(lines):
+                pdf.drawString(40, 750 - index * 20, line)
+            pdf.save()
+            raw = buffer.getvalue()
+            monitored = analyze_files([UploadFile(filename='statement.pdf', file=io.BytesIO(raw))], persist=False)
+            repo.ingest_case('frontend-synthetic', 'fixture-seeder', month, monitored, [raw], 'upload')
+            assert run_once(repo, kinds=['monitor'])
         old=analyze_files([UploadFile(filename=p.name,file=io.BytesIO(p.read_bytes())) for p in sorted((ROOT/'data/synthetic/math_error').glob('*.pdf'))],persist=False)
         repo.create_case('frontend-synthetic','fixture-seeder',old,[p.read_bytes() for p in sorted((ROOT/'data/synthetic/math_error').glob('*.pdf'))])
         with repo.transaction() as conn:conn.execute(update(cases).where(cases.c.id==old['id']).values(created_at='2000-01-01T00:00:00+00:00'))
@@ -68,6 +85,7 @@ def main():
         base=f'http://127.0.0.1:{port}'
         env={**os.environ,'DATABASE_URL':url,'DATA_ENCRYPTION_KEY':key,'PAPER_TRAIL_MODE':'service',
              'MODEL_API_KEY':'','PAPER_TRAIL_UI_BASE':base,'PAPER_TRAIL_STORAGE':str(folder),'PAPER_TRAIL_UI_RETENTION_CASE':old['id']}
+        env['PAPER_TRAIL_UI_MONITOR_CASE'] = monitored['id']
         env.pop('VERCEL',None);env.pop('TEST_DATABASE_URL',None)
         creation={'creationflags':subprocess.CREATE_NO_WINDOW} if os.name=='nt' else {}
         with (folder/'server.log').open('w') as log:
@@ -99,7 +117,7 @@ def main():
             finally:
                 if worker is not None:stop(worker)
                 stop(server);repo.close()
-    source=['app/ingestion.py','app/layout_registry.py','app/layout_proposals.py','app/platform.py','app/main.py','app/agent_evals.py','app/meta.py','app/mcp_server.py','app/mcp_client.py','app/orchestration.py','app/policies.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
+    source=['app/historical.py','app/ingestion.py','app/layout_registry.py','app/layout_proposals.py','app/platform.py','app/main.py','app/agent_evals.py','app/meta.py','app/mcp_server.py','app/mcp_client.py','app/orchestration.py','app/policies.py','app/drafts.py','app/integrations.py','app/exports.py','app/security.py','app/repository.py','app/ocr_case.py','app/worker.py','app/static/app.js',
             'app/static/index.html','tests/frontend/ocr-http.test.mjs','scripts/test_frontend.py']
     report={'passed':True,'checked_at':datetime.now(timezone.utc).isoformat(),'duration_seconds':round(time.monotonic()-started,2),
             'scope':'Actual application DOM handlers and real loopback HTTP API with disposable SQLite, signed sessions and real CPU OCR. No browser layout/visual proof, hosted worker or paid model calls.',
@@ -112,7 +130,8 @@ def main():
                          'internal stage timeline and critic verdict','public synthetic MCP discovery and real tool call log',
                          'agent scorecard field/layout metrics and explicit 50 percent retrieval precision',
                          'source-bound reviewed-layout status and real synthetic $50 case with receipt provenance',
-                         'identical upload reuses case and preserves OCR-derived review'],
+                         'identical upload reuses case and preserves OCR-derived review',
+                         'version-bound historical HTTP checks render and withhold OCR evidence'],
             'source_sha256':{name:hashlib.sha256((ROOT/name).read_text(encoding='utf-8').encode()).hexdigest() for name in source}}
     output=Path(args.report);output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(report,indent=2)+'\n')
     print('Frontend-to-HTTP OCR scenarios passed; evidence saved to',output)
