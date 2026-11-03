@@ -361,7 +361,7 @@ def test_prior_history_separate_pdf_uploads(service):
         assert image.status_code == 200 and image.headers['content-type'] == 'image/png'
     assert client.delete(f'/api/cases/{earlier}', headers=headers).status_code == 200
     assert client.get(monitor).json()['entries'] == []
-    revised = upload_period('2026-10-01', '2026-10-31', '975.00', '875.00')
+    revised = upload_period('2026/10/01', '2026/10/31', '975.00', '875.00')
     assert run_once(repo, kinds=['monitor'])
     entries = client.get(f'/api/cases/{revised}/monitor').json()['entries']
     assert len({entry['id'] for entry in entries}) == 2

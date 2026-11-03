@@ -16,7 +16,7 @@ rules version and normalized policy-source SHA-256 for reproducibility.
 
 These are explicit native-text contracts, not inferred lender meanings. Each
 document must contain exactly one `Historical rules:` declaration, `Account:`,
-`Currency:`, `Period start:` and `Period end:`. Dates are ISO YYYY-MM-DD and
+`Currency:`, `Period start:` and `Period end:`. Dates use YYYY-MM-DD or YYYY/MM/DD and
 period endpoints are inclusive. Supported two-decimal currencies are USD, EUR,
 GBP and INR. There is no exchange-rate conversion.
 
