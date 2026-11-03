@@ -46,6 +46,25 @@ def test_http_duplicate_upload_reopens_latest_review_without_new_case(service):
     assert retry.json()['report_version']==2 and repo.list_cases('team-a')['total_in_window']==1
     assert repo.audit('team-a')['events'][-1]['action']=='intake_reused'
 
+
+def test_historical_endpoint_is_versioned_read_only_and_workspace_scoped(service):
+    client,repo,_=service;headers=login(client)
+    report=upload(client,headers).json();base='/api/cases/'+report['id']
+    first=client.get(base+'/historical?version=1')
+    assert first.status_code==200 and first.json()['report_version']==1
+    assert first.json()['review'] and not first.json()['checks']
+    assert client.patch(base+'/findings/F1',headers=headers,json={'action':'note','note':'History test',
+        'expected_revision':0,'expected_case_version':1}).status_code==200
+    assert client.get(base+'/historical').json()['report_version']==2
+    assert client.get(base+'/historical?version=1').json()==first.json()
+    login(client,'viewer@example.invalid')
+    assert client.get(base+'/historical').status_code==200
+    login(client,'other@example.invalid')
+    assert client.get(base+'/historical').status_code==404
+    assert client.get(base+'/historical?version=1').status_code==404
+    client.post('/api/platform/auth/logout',headers={'X-CSRF-Token':client.cookies['pta_csrf']})
+    assert client.get(base+'/historical').status_code==401
+
 def test_draft_approval_version_workspace_and_read_only_viewer(service):
     client,repo,_=service;headers=login(client)
     report=upload(client,headers).json();base='/api/cases/'+report['id'];path=base+'/findings/F1/draft'
@@ -274,3 +293,186 @@ def test_demo_repeated_fixture_preserves_human_review(service):
     assert retry['id']==first['id'] and retry['report_version']==2
     assert retry['intake_receipt']['reused_analysis'] and retry['intake_receipt']['model_calls_this_request']==0
     assert retry['findings'][0]['human_review']['decision']=='confirmed'
+
+
+def test_prior_history_separate_pdf_uploads(service, monkeypatch):
+    import io
+    from reportlab.pdfgen import canvas
+    from app.worker import run_once
+
+    client, repo, _ = service
+    headers = login(client)
+
+    def upload_period(start, end, opening, closing):
+        raw = io.BytesIO()
+        pdf = canvas.Canvas(raw, invariant=True)
+        lines = [
+            'Historical rules: PTA-BANK-PERIOD-V1', 'Account: FICTIONAL-001',
+            'Currency: USD', f'Period start: {start}', f'Period end: {end}',
+            f'Opening balance: {opening}', 'Transaction count: 1',
+            f'Transaction PAYMENT-1 | {end} | Amount: -100.00', f'Closing balance: {closing}',
+        ]
+        for index, line in enumerate(lines):
+            pdf.drawString(40, 750 - index * 20, line)
+        pdf.save()
+        response = client.post('/api/analyze', headers=headers,
+            files={'files': ('statement.pdf', raw.getvalue(), 'application/pdf')})
+        assert response.status_code == 200, response.text
+        return response.json()['id']
+
+    earlier = upload_period('2026-09-01', '2026-09-30', '1000.00', '900.00')
+    later = upload_period('2026-10-01', '2026-10-31', '950.00', '850.00')
+    path = f'/api/cases/{later}/documents/doc1/historical'
+    response = client.get(path)
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result['identity_verified'] and result['next_offset'] is None
+    comparison, = result['comparisons']
+    assert comparison['prior']['case_id'] == earlier
+    assert comparison['pair']['difference'] == '50.00'
+    job_ids = [event['payload']['job_id'] for event in repo.audit('team-a')['events']
+               if event['action'] == 'job_queued' and event['payload']['kind'] == 'monitor']
+    assert len(job_ids) == 2
+    assert run_once(repo, kinds=['monitor']) and run_once(repo, kinds=['monitor'])
+    assert repo.get_job('team-a', job_ids[-1])['result']['comparison_counts']['discrepancy'] == 1
+    monitor = f'/api/cases/{later}/monitor'
+    assert client.get(monitor).json()['worker_available'] is False
+    worker_id = '9' * 32
+    repo.touch_worker(worker_id, ['monitor'])
+    assert client.get(monitor).json()['worker_available'] is True
+    repo.retire_worker(worker_id)
+    assert client.get(monitor).json()['worker_available'] is False
+    entry, = client.get(monitor).json()['entries']
+    entry_path = f"{monitor}/{entry['id']}"
+    assert client.patch(entry_path, headers=headers, json={'action': 'resolve', 'expected_revision': 0}).status_code == 409
+    for revision, action in enumerate(('review', 'resolve')):
+        assert client.patch(entry_path, headers=headers, json={'action': action, 'expected_revision': revision}).status_code == 200
+    saved, = client.get(monitor).json()['entries']
+    assert saved['comparison'] == entry['comparison']
+    assert [event['action'] for event in saved['history']] == ['review', 'resolve']
+    closing, opening = saved['comparison']['pair']['carry_sources']
+    assert closing.startswith(earlier + '/')
+    for case_id, source, label in [(earlier, closing.split('/', 1)[1], 'Closing balance: 900.00'),
+                                   (later, opening, 'Opening balance: 950.00')]:
+        report = client.get(f'/api/cases/{case_id}').json()
+        line = next(line for line in report['documents'][0]['lines'] if line['id'] == source)
+        assert line['text'] == label
+        image = client.get(f'/api/cases/{case_id}/documents/doc1/page/1', params={'source': source})
+        assert image.status_code == 200 and image.headers['content-type'] == 'image/png'
+    assert client.delete(f'/api/cases/{earlier}', headers=headers).status_code == 200
+    assert client.get(monitor).json()['entries'] == []
+    revised = upload_period('2026/10/01', '2026/10/31', '975.00', '875.00')
+    assert run_once(repo, kinds=['monitor'])
+    entries = client.get(f'/api/cases/{revised}/monitor').json()['entries']
+    assert len({entry['id'] for entry in entries}) == 2
+    pairs = {entry['comparison']['pair']['balance_field']: entry['comparison']['pair']
+             for entry in entries}
+    assert {field: pair['difference'] for field, pair in pairs.items()} == {
+        'opening': '25.00', 'closing': '25.00',
+    }
+    for field, pair in pairs.items():
+        prior_source, current_source = pair['balance_sources']
+        assert prior_source.startswith(later + '/')
+        for case, source, value in (
+            (later, prior_source.split('/', 1)[1], pair['computed']),
+            (revised, current_source, pair['stated']),
+        ):
+            lines = client.get(f'/api/cases/{case}').json()['documents'][0]['lines']
+            assert next(line['text'] for line in lines if line['id'] == source) == (
+                f'{field.capitalize()} balance: {value}'
+            )
+    latest = upload_period('2026-10-01', '2026-10-31', '990.00', '890.00')
+    complete_job = repo.complete_job
+
+    def delete_before_save(job_id, token, result, **kwargs):
+        assert len(kwargs['detections']) == 4
+        assert client.delete(f'/api/cases/{revised}', headers=headers).status_code == 200
+        complete_job(job_id, token, result, **kwargs)
+        saved_job = repo.get_job('team-a', job_id)
+        assert saved_job['state'] == 'completed'
+        assert saved_job['result']['findings_with_deleted_sources'] == 2
+
+    with monkeypatch.context() as patch:
+        patch.setattr(repo, 'complete_job', delete_before_save)
+        assert run_once(repo, kinds=['monitor'])
+    surviving = client.get(f'/api/cases/{latest}/monitor').json()['entries']
+    assert len(surviving) == 2
+    assert {item['comparison']['prior']['case_id'] for item in surviving} == {later}
+    login(client, 'other@example.invalid')
+    assert client.get(path).status_code == 404
+
+
+def test_eval_candidate_is_versioned_and_reviewer_only(service):
+    client, _, _ = service
+    headers = login(client)
+    report = upload(client, headers).json()
+    base = '/api/cases/' + report['id'] + '/findings/F1'
+    candidate = base + '/eval-candidate'
+    assert client.get(candidate, params={'version': 1}).status_code == 409
+    updated = client.patch(base, headers=headers, json={'action': 'reject', 'note': 'private-canary-note',
+        'expected_revision': 0, 'expected_case_version': 1})
+    assert updated.status_code == 200
+    response = client.get(candidate, params={'version': 2})
+    assert response.status_code == 200
+    assert response.json()['review_decision'] == 'rejected'
+    assert response.json()['admission'] == 'pending_independent_ground_truth_and_regression'
+    assert 'private-canary-note' not in response.text
+    assert client.get(candidate, params={'version': 1}).status_code == 409
+    login(client, 'viewer@example.invalid')
+    assert client.get(candidate, params={'version': 2}).status_code == 403
+    login(client, 'other@example.invalid')
+    assert client.get(candidate, params={'version': 2}).status_code == 404
+
+def test_prior_statement_sources_deduplicate_before_paging(service):
+    from app.repository import statement_sources
+
+    client, repo, _ = service
+    current = upload(client, login(client)).json()['id']
+    with repo.transaction() as conn:
+        conn.execute(statement_sources.delete().where(statement_sources.c.case_id == current))
+        for case_id, digest, day in (
+            ('first', 'a', 1), ('copy', 'a', 2), ('second', 'b', 3),
+            ('self-copy', 'c', 4), (current, 'c', 5),
+        ):
+            conn.execute(statement_sources.insert().values(
+                workspace='team-a', case_id=case_id, document_id='doc1',
+                sha256=digest * 64, account_tag='account', identity=b'fixture',
+                created_at=f'2026-09-0{day}T00:00:00+00:00',
+            ))
+    first = repo.prior_statement_sources('team-a', current, 'doc1', limit=1)
+    assert [row['case_id'] for row in first['sources']] == ['first']
+    assert first['next_offset'] == 1
+    second = repo.prior_statement_sources('team-a', current, 'doc1', limit=1, offset=1)
+    assert [row['case_id'] for row in second['sources']] == ['second']
+    assert second['next_offset'] is None
+
+    cursor_page = repo.prior_statement_sources('team-a', current, 'doc1', limit=1, by_digest=True)
+    with repo.transaction() as conn:
+        conn.execute(statement_sources.delete().where(statement_sources.c.case_id == 'first'))
+    remaining = repo.prior_statement_sources(
+        'team-a', current, 'doc1', limit=1, after=cursor_page['next_cursor'], by_digest=True,
+    )
+    assert [row['case_id'] for row in remaining['sources']] == ['second']
+
+def test_monitor_claim_refreshes_worker_readiness(service, monkeypatch):
+    from app import historical
+    from app.repository import jobs
+    from app.worker import run_once
+    import time
+
+    _, repo, _ = service
+    worker_id = 'a' * 32
+    with repo.transaction() as conn:
+        conn.execute(jobs.insert().values(
+            id='monitor-fixture', workspace='team-a', kind='monitor', state='queued',
+            payload=repo.seal({'case_id': 'fixture', 'documents': ['doc1']}),
+            created_at=time.time(),
+        ))
+
+    def compare(*args, **kwargs):
+        assert repo.worker_status(now=time.time() + 100)['monitor']
+        return {'comparisons': [], 'next_cursor': None}
+
+    monkeypatch.setattr(historical, 'prior_case_history', compare)
+    assert run_once(repo, kinds=['monitor'], worker_id=worker_id)
+    assert repo.get_job('team-a', 'monitor-fixture')['state'] == 'completed'

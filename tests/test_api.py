@@ -132,3 +132,13 @@ def test_bank_upload_export_and_source(client):
     base='/api/cases/'+report['id']
     assert 'doc1.pdf: closing balance is 25.00 USD too high.' in client.get(base+'/export?format=md').text
     assert client.get(base+'/documents/doc1/page/1',params={'source':finding['sources'][0]}).status_code==200
+
+
+def test_auto_without_credentials_keeps_local_evidence_in_review(client):
+    response = upload(client, case='math_error', mode='auto')
+    assert response.status_code == 200
+    report = response.json()
+    assert (report['requested_mode'], report['mode'], report['status']) == ('auto', 'local', 'review')
+    assert report['metrics']['attempted_model_calls'] == 0
+    assert any(finding.get('difference') == '50.00' for finding in report['findings'])
+    assert any(event['name'] == 'local_fallback' for event in report['trace'])

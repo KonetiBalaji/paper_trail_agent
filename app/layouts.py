@@ -5,11 +5,13 @@ months; ambiguous slash dates remain unsupported.
 """
 import re
 from datetime import date
-from .core import AMOUNT,money
+from .core import AMOUNT,YEAR_FIRST_DATE,money
 
 MONTHS={month:index for index,month in enumerate(('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'),1)}
 
 def statement_date(value):
+    if re.fullmatch(YEAR_FIRST_DATE,value):
+        value=value.replace("/", "-")
     try:return date.fromisoformat(value).isoformat()
     except ValueError:
         match=re.fullmatch(r'(\d{1,2}) ([A-Za-z]{3}) (\d{4})',value)

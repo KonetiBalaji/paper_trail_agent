@@ -75,6 +75,9 @@ def mark_duplicate_documents(documents):
 
 AMOUNT = r'([-+]?\$?[\d,]+\.\d{2}|\([\d,]+\.\d{2}\))'
 
+YEAR_FIRST_DATE = r'\d{4}(?:-\d{2}-\d{2}|/\d{2}/\d{2})'
+
+
 def parse_statement(doc):
     """Conservative baseline for labeled statements; unknown layouts require Meta extraction."""
     result = {'loan_id':None,'currency':None,'period_end':None,'tranches':[],
@@ -86,9 +89,9 @@ def parse_statement(doc):
         if m: result['loan_id'] = m[1]
         m = re.search(r'^(?:(?:Document:\s*[\w-]+\s*\|\s*)?(?:Loan|Account):\s*[\w-]+\s*(?:\|\s*)?)?Currency:\s*([A-Z]{3})', text)
         if m: result['currency'] = m[1]
-        m = re.search(r'^(?:Statement\s+)?(?:period end|as of):\s*(\d{4}-\d{2}-\d{2})', text, re.I)
+        m = re.search(r'^(?:Statement\s+)?(?:period end|as of):\s*(' + YEAR_FIRST_DATE + r')', text, re.I)
         if m:
-            try: result['period_end'] = date.fromisoformat(m[1]).isoformat()
+            try: result['period_end'] = date.fromisoformat(m[1].replace("/", "-")).isoformat()
             except ValueError: pass
         m = re.search(r'^Tranche\s+([\w-]+)\s*\|\s*Principal:\s*'+AMOUNT+r'\s*\|\s*Interest:\s*'+AMOUNT, text, re.I)
         if m:
@@ -103,9 +106,9 @@ def parse_statement(doc):
             if m:
                 result[field+'_balance']=format(money(m[1]),'.2f')
                 result[field+'_source']=source
-        m = re.search(r'^Transaction\s+([\w-]+)\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*Amount:\s*'+AMOUNT,text,re.I)
+        m = re.search(r'^Transaction\s+([\w-]+)\s*\|\s*(' + YEAR_FIRST_DATE + r')\s*\|\s*Amount:\s*'+AMOUNT,text,re.I)
         if m:
-            try: transaction_date=date.fromisoformat(m[2]).isoformat()
+            try: transaction_date=date.fromisoformat(m[2].replace("/", "-")).isoformat()
             except ValueError:
                 doc.setdefault('issues',[]).append({'type':'partial_extraction','message':'Transaction date is invalid; review required.'})
                 continue

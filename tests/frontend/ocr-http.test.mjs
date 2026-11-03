@@ -97,6 +97,26 @@ test('real frontend queues OCR and reopens reviewed candidates through HTTP', {s
   assert.equal(current.report_version, 3);
   assert.equal(current.findings[0].human_review.history[0].note, 'Synthetic frontend verification');
   assert.equal(current.status, 'review');
+  ui.doc.getElementById('history-query').value = 'exclude this case';
+  ui.button('Pending review queue').click();
+  for (const id of ['history-results', 'eval-results', 'benchmark-results']) {
+    const region = ui.doc.getElementById(id);
+    assert.equal(region.getAttribute('role'), 'region');
+    assert.ok(region.getAttribute('aria-label'));
+    assert.equal(region.tabIndex, 0);
+    region.focus();
+    assert.equal(ui.doc.activeElement, region);
+  }
+
+  assert.equal(ui.doc.getElementById('history-query').value, '');
+  assert.equal(ui.doc.getElementById('history-decision').value, 'pending');
+  await waitFor(() => ui.button('Open ' + caseId.slice(0, 8)), 'Pending case missing from queue');
+
+  ui.button('Check historical rules').click();
+  await waitFor(() => ui.doc.getElementById('calculations').textContent.includes('native-period-v1'), 'Historical backend result did not render');
+  assert.match(ui.doc.getElementById('calculations').textContent, /document requires review/);
+  assert.equal(ui.doc.getElementById('status').textContent, 'Manual review needed');
+  assert.ok(ui.requests.some(r => r.path.endsWith('/historical') && r.status === 200));
   const prior = await (await ui.api('/api/cases/' + caseId + '/export?format=json&version=1')).json();
   assert.equal(prior.report_version, 1); assert.equal(prior.documents[0].lines.length, 0);
   const markdown = await (await ui.api('/api/cases/' + caseId + '/export?format=md')).text();
@@ -136,6 +156,12 @@ test('approved lender draft uses real backend evidence and is removed after reje
   assert.ok(prepare()?.disabled, 'Draft requires human approval');
   ui.doc.querySelector('[aria-label="Approve F1"]').click();
   await waitFor(() => prepare() && !prepare().disabled, 'Approval did not enable the draft');
+  const candidate = [...ui.doc.querySelectorAll('a')].find(link => link.textContent === 'Open eval candidate');
+  assert.ok(candidate, 'Saved review did not expose an eval candidate');
+  const candidateURL = new URL(candidate.href);
+  const candidateResponse = await ui.api(candidateURL.pathname + candidateURL.search);
+  assert.equal(candidateResponse.status, 200);
+  assert.equal((await candidateResponse.json()).review_decision, 'confirmed');
   prepare().click();
   await waitFor(() => ui.doc.getElementById('draft-F1'), 'Backend draft did not render');
   const text = ui.doc.getElementById('draft-F1');
@@ -268,4 +294,41 @@ test('public synthetic MCP check discovers real tools and shows server call resu
   ui.doc.getElementById('logout').click();
   await waitFor(()=>ui.doc.getElementById('mcp-demo').hidden,'MCP panel remained after sign out');
   assert.equal(ui.doc.getElementById('mcp-demo-output').textContent,'');
+});
+
+test('monitor timeline loads evidence and saves review and resolution', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t);
+  const id = process.env.PAPER_TRAIL_UI_MONITOR_CASE;
+  ui.w.history.replaceState(null, '', '#case=' + id);
+  await ui.w.restoreCase();
+  assert.equal(ui.doc.getElementById('case-id').textContent, id);
+  const button = text => [...ui.doc.querySelectorAll('button')].find(node => node.textContent === text);
+  button('Load monitoring timeline').click();
+  await waitFor(() => button('Mark reviewed'), 'Monitor evidence did not load');
+  const links = [...ui.doc.querySelectorAll('a')].filter(link => ['Earlier closing balance', 'Later opening balance'].includes(link.textContent));
+  assert.equal(links.length, 2);
+  for (const link of links) {
+    const url = new URL(link.href);
+    assert.equal((await ui.api(url.pathname + url.search)).status, 200);
+  }
+  button('Mark reviewed').click();
+  await waitFor(() => button('Mark resolved'), 'Review did not persist');
+  button('Mark resolved').click();
+  await waitFor(() => ui.doc.getElementById('calculations').textContent.includes('Resolved '), 'Resolution did not persist');
+});
+
+test('Auto fallback shows verified local evidence and the reason for review', {skip: offline, timeout: 45000}, async t => {
+  const ui = await frontend(t);
+  const previousCase = ui.doc.getElementById('case-id').textContent;
+  const files = await Promise.all(['statement_A.pdf', 'statement_B.pdf'].map(async name => {
+    const data = await readFile(new URL('../../data/synthetic/math_error/' + name, import.meta.url));
+    return new File([data], name, {type: 'application/pdf'});
+  }));
+  Object.defineProperty(ui.doc.getElementById('files'), 'files', {configurable: true, value: files});
+  ui.doc.getElementById('mode').value = 'auto';
+  ui.doc.getElementById('upload').dispatchEvent(new ui.w.Event('submit', {bubbles: true, cancelable: true}));
+  await waitFor(() => ui.doc.getElementById('case-id').textContent !== previousCase, 'Fallback case did not open');
+  assert.match(ui.doc.getElementById('agent').textContent, /Meta is unavailable.*Local checks ran/);
+  assert.match(ui.doc.getElementById('findings').textContent, /50\.00/);
+  assert.equal(ui.doc.getElementById('status').textContent, 'Manual review needed');
 });

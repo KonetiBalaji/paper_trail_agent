@@ -75,6 +75,15 @@ statement_sources=Table('statement_sources',schema,Column('workspace',String(80)
     Column('period_tag',String(64),index=True),Column('identity',LargeBinary,nullable=False),
     Column('created_at',String(40),nullable=False))
 
+monitor_discrepancies = Table('monitor_discrepancies', schema,
+    Column('workspace', String(80), primary_key=True),
+    Column('id', String(64), primary_key=True),
+    Column('case_id', String(32), nullable=False, index=True),
+    Column('prior_case_id', String(32), nullable=False, index=True),
+    Column('first_seen', String(40), nullable=False),
+    Column('evidence', LargeBinary, nullable=False))
+
+
 class Repository:
     def __init__(self,url,key):
         self.cipher=Fernet(key.encode() if isinstance(key,str) else key)
@@ -232,6 +241,7 @@ class Repository:
             report['ingestion']={'origin':origin,'unique_sources':len(set(hashes)),'previously_seen_sources':len(known)}
             self._insert_case(conn,workspace,actor,report,blobs,synthetic)
             valid={d['document'] for d in report.get('orchestration',{}).get('extractor',{}).get('documents',[]) if d['validation']=='passed'}
+            monitor_documents = []
             for doc,digest in zip(report['documents'],hashes):
                 s=doc['statement'];identity={k:s.get(k) for k in ('loan_id','currency','period_end')}
                 grounded=doc['id'] in valid and all(identity.values()) and not doc.get('issues')
@@ -242,12 +252,59 @@ class Repository:
                     grounded=not native_doc['issues'] and all(native.get(k)==value for k,value in identity.items())
                 account=self._identity_tag(workspace,[identity['loan_id'],identity['currency']]) if grounded else None
                 period=self._identity_tag(workspace,list(identity.values())) if grounded else None
+                if grounded:
+                    monitor_documents.append(doc['id'])
                 conn.execute(statement_sources.insert().values(workspace=workspace,sha256=digest,case_id=report['id'],
                     document_id=doc['id'],account_tag=account,period_tag=period,identity=self.seal(identity),created_at=utc()))
             conn.execute(delete(intake_sets).where(and_(intake_sets.c.workspace==workspace,intake_sets.c.fingerprint==fingerprint)))
             if cacheable:conn.execute(intake_sets.insert().values(workspace=workspace,fingerprint=fingerprint,case_id=report['id']))
             self._audit(conn,workspace,actor,'intake_created',report['id'],report['ingestion'])
+            if monitor_documents and not synthetic:
+                job_id = uuid.uuid4().hex
+                payload = {'case_id': report['id'], 'documents': monitor_documents}
+                conn.execute(jobs.insert().values(id=job_id, workspace=workspace, kind='monitor', state='queued',
+                    payload=self.seal(payload), attempts=0, lease_until=0, created_at=time.time()))
+                self._audit(conn,workspace,actor,'job_queued',report['id'],{'job_id':job_id,'kind':'monitor'})
             return report,True
+
+    def prior_statement_sources(self, workspace, case_id, document_id, *, limit=100, offset=0, after=None, by_digest=False):
+        """Page through earlier source references for one verified account."""
+        if not 1 <= limit <= 100 or offset < 0:
+            raise ValueError('Invalid source page bounds')
+        with self.engine.connect() as conn:
+            self._case(conn, workspace, case_id)
+            source = conn.execute(select(statement_sources).where(
+                statement_sources.c.workspace == workspace,
+                statement_sources.c.case_id == case_id,
+                statement_sources.c.document_id == document_id,
+            )).mappings().one_or_none()
+            if source is None or source['account_tag'] is None:
+                return {'identity_verified': False, 'sources': [], 'next_offset': None}
+            source_order = (statement_sources.c.created_at, statement_sources.c.case_id,
+                            statement_sources.c.document_id)
+            candidates = select(*source_order, statement_sources.c.sha256,
+                func.row_number().over(
+                    partition_by=statement_sources.c.sha256, order_by=source_order,
+                ).label('copy_rank')).where(
+                statement_sources.c.workspace == workspace,
+                statement_sources.c.account_tag == source['account_tag'],
+                statement_sources.c.created_at < source['created_at'],
+                statement_sources.c.case_id != case_id,
+                statement_sources.c.sha256 != source['sha256'],
+            ).subquery()
+            order = (candidates.c.created_at, candidates.c.case_id, candidates.c.document_id)
+            query = select(*order, candidates.c.sha256).where(candidates.c.copy_rank == 1)
+            if by_digest:
+                order = (candidates.c.sha256,)
+                if after is not None:
+                    query = query.where(candidates.c.sha256 > after)
+            rows = conn.execute(query.order_by(*order).offset(offset).limit(limit + 1)).mappings().all()
+            has_more = len(rows) > limit
+            next_cursor = rows[limit - 1]['sha256'] if by_digest and has_more else None
+            return {'identity_verified': True, 'sources': [
+                {key: row[key] for key in ('case_id', 'document_id', 'sha256')} for row in rows[:limit]
+            ], 'next_offset': offset + limit if has_more else None, 'next_cursor': next_cursor}
+
 
     def get_case(self,workspace,case_id,version=None):
         with self.engine.connect() as conn:
@@ -339,6 +396,7 @@ class Repository:
         with self.transaction() as conn:
             self._case(conn,workspace,case_id)
             conn.execute(delete(intake_sets).where(intake_sets.c.case_id==case_id))
+            self._delete_monitor_evidence(conn, case_id)
             conn.execute(delete(statement_sources).where(statement_sources.c.case_id==case_id))
             conn.execute(delete(documents).where(documents.c.case_id==case_id))
             conn.execute(delete(versions).where(versions.c.case_id==case_id))
@@ -379,6 +437,7 @@ class Repository:
                               .order_by(cases.c.created_at,cases.c.id).limit(25).with_for_update(skip_locked=True)).scalars().all()
             for case_id in rows:
                 conn.execute(delete(intake_sets).where(intake_sets.c.case_id==case_id))
+                self._delete_monitor_evidence(conn, case_id)
                 conn.execute(delete(statement_sources).where(statement_sources.c.case_id==case_id))
                 conn.execute(delete(documents).where(documents.c.case_id==case_id))
                 conn.execute(delete(versions).where(versions.c.case_id==case_id))
@@ -431,11 +490,76 @@ class Repository:
             return {'id':row['id'],'workspace':row['workspace'],'kind':row['kind'],'payload':self.unseal(row['payload']),
                     'lease_token':token,'attempt':row['attempts']+1}
 
-    def complete_job(self,job_id,lease_token,result,failed=False):
+    def monitor_timeline(self, workspace, case_id, offset=0):
+        with self.engine.connect() as conn:
+            self._case(conn, workspace, case_id)
+            rows = conn.execute(select(monitor_discrepancies).where(
+                monitor_discrepancies.c.workspace == workspace,
+                monitor_discrepancies.c.case_id == case_id,
+            ).order_by(monitor_discrepancies.c.first_seen, monitor_discrepancies.c.id)
+                .offset(offset).limit(21)).mappings().all()
+            return {'entries': [{'id': row['id'], 'first_seen': row['first_seen'],
+                                **self.unseal(row['evidence'])} for row in rows[:20]],
+                    'next_offset': offset + 20 if len(rows) > 20 else None}
+
+    def review_monitor(self, workspace, actor, case_id, entry_id, action, expected_revision):
         with self.transaction() as conn:
+            conn.execute(select(audit_heads).where(audit_heads.c.workspace == workspace).with_for_update()).first()
+            self._case(conn, workspace, case_id)
+            scope = and_(monitor_discrepancies.c.workspace == workspace,
+                         monitor_discrepancies.c.case_id == case_id,
+                         monitor_discrepancies.c.id == entry_id)
+            row = conn.execute(select(monitor_discrepancies).where(scope).with_for_update()).mappings().one_or_none()
+            if row is None:
+                raise Missing('Discrepancy not found')
+            evidence = self.unseal(row['evidence'])
+            history = evidence.setdefault('history', [])
+            if len(history) != expected_revision:
+                raise Conflict('Discrepancy revision changed')
+            expected_action = {0: 'review', 1: 'resolve'}.get(len(history))
+            if expected_action is None or action != expected_action:
+                raise Conflict('Discrepancy action is out of sequence')
+            event = {'action': action, 'actor': actor, 'timestamp': utc()}
+            history.append(event)
+            conn.execute(update(monitor_discrepancies).where(scope).values(evidence=self.seal(evidence)))
+            self._audit(conn, workspace, actor, 'monitor_' + action, case_id, {'entry_id': entry_id})
+            return {'id': entry_id, 'first_seen': row['first_seen'], **evidence}
+
+    def _delete_monitor_evidence(self, conn, case_id):
+        conn.execute(delete(monitor_discrepancies).where(
+            (monitor_discrepancies.c.case_id == case_id) |
+            (monitor_discrepancies.c.prior_case_id == case_id)))
+
+    def complete_job(self,job_id,lease_token,result,failed=False,*,detections=()):
+        with self.transaction() as conn:
+            if detections:
+                workspace = conn.execute(select(jobs.c.workspace).where(jobs.c.id == job_id)).scalar_one_or_none()
+                conn.execute(select(audit_heads).where(audit_heads.c.workspace == workspace).with_for_update()).first()
             row=conn.execute(select(jobs).where(jobs.c.id==job_id).with_for_update()).mappings().first()
             if not row or row['state']!='running' or row['lease_token']!=lease_token or row['lease_until']<time.time():
                 raise Conflict('Job lease lost')
+            removed_findings = 0
+            for detection in detections:
+                payload = self.unseal(row['payload'])
+                case_id = payload['case_id']
+                prior = detection['comparison']['prior']
+                self._case(conn, workspace, case_id)
+                try:
+                    self._case(conn, workspace, prior['case_id'])
+                except Missing:
+                    removed_findings += 1
+                    continue
+                identity = [case_id, detection['document_id'], prior['case_id'], prior['document_id']]
+                field = detection['comparison']['pair'].get('balance_field')
+                if field:
+                    identity.append(field)
+                self._insert_once(conn, monitor_discrepancies, {
+                    'workspace': workspace, 'id': self._identity_tag(workspace, identity),
+                    'case_id': case_id, 'prior_case_id': prior['case_id'],
+                    'first_seen': utc(), 'evidence': self.seal(detection),
+                })
+            if removed_findings:
+                result = {**result, 'findings_with_deleted_sources': removed_findings}
             conn.execute(update(jobs).where(jobs.c.id==job_id).values(state='failed' if failed else 'completed',result=self.seal(result),lease_until=0,lease_token=None))
 
     def get_job(self,workspace,job_id):
@@ -446,7 +570,7 @@ class Repository:
                     'result':self.unseal(row['result']) if row['result'] else None}
 
     def touch_worker(self,worker_id,capabilities,ttl=90,now=None):
-        if len(worker_id)!=32 or not 1<=ttl<=120 or not capabilities or set(capabilities)-{'eval','ocr'}:
+        if len(worker_id)!=32 or not 1<=ttl<=120 or not capabilities or set(capabilities)-{'eval','ocr','monitor'}:
             raise ValueError('Invalid worker heartbeat')
         expires=(time.time() if now is None else now)+ttl
         with self.transaction() as conn:
@@ -457,7 +581,7 @@ class Repository:
     def worker_status(self,now=None):
         with self.engine.connect() as conn:
             active=conn.execute(select(workers.c.capabilities).where(workers.c.expires_at>(time.time() if now is None else now))).scalars().all()
-        return {kind:any(kind in value.split(',') for value in active) for kind in ('eval','ocr')}
+        return {kind:any(kind in value.split(',') for value in active) for kind in ('eval','ocr','monitor')}
 
     def retire_worker(self,worker_id):
         with self.transaction() as conn:conn.execute(delete(workers).where(workers.c.id==worker_id))

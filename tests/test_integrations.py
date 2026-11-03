@@ -132,3 +132,99 @@ def test_csv_has_exact_values_and_neutralizes_text_formulas(service):
     assert sum(float(r['amount']) for r in rows)==-25.0
     report['documents'][0]['statement']['transactions'][0]['id']='=DANGEROUS()'
     assert "'=DANGEROUS()" in csv_report(report,accounting=True)
+
+
+def test_email_intake_authentication_privacy_and_cross_channel_dedup(service):
+    from email.message import EmailMessage
+
+    client, repo, _ = service
+    issued, _ = key(client)
+    auth = {'Authorization': 'Bearer ' + issued['token']}
+    message = EmailMessage()
+    message['From'] = 'private-sender@example.invalid'
+    message['Subject'] = 'Private subject canary'
+    message.set_content('Private body canary')
+    endpoint = '/api/integrations/v1/email'
+
+    def send(headers):
+        return client.post(endpoint, headers=headers,
+                           files={'message': ('private-name.eml', message.as_bytes(), 'message/rfc822')})
+
+    assert send({}).status_code == 401
+    assert send(auth).status_code == 422
+    for path in sorted((ROOT / 'math_error').glob('*.pdf')):
+        message.add_attachment(path.read_bytes(), maintype='application', subtype='pdf', filename='private-name.pdf')
+    result = send(auth)
+    assert result.status_code == 201, result.text
+    case_id = result.json()['id']
+    assert repo.get_case('a', case_id)['ingestion']['origin'] == 'email'
+    exported = client.get('/api/integrations/v1/cases/' + case_id, headers=auth)
+    assert exported.status_code == 200
+    for value in ('private-sender', 'Private subject canary', 'Private body canary', 'private-name'):
+        assert value not in exported.text
+    repeated = submit(client, issued['token'])
+    assert repeated.status_code == 200 and repeated.json()['id'] == case_id
+    read_key, _ = key(client, ('cases:read',))
+    assert send({'Authorization': 'Bearer ' + read_key['token']}).status_code == 401
+
+
+def test_mailbox_cursor_advances_only_after_authenticated_intake(service, tmp_path):
+    from email.message import EmailMessage
+    from scripts.poll_statement_mailbox import poll
+
+    client, _, _ = service
+    issued, _ = key(client)
+    message = EmailMessage()
+    message.set_content('Fictional mailbox test')
+    pdf = next((ROOT / 'math_error').glob('*.pdf'))
+    message.add_attachment(pdf.read_bytes(), maintype='application', subtype='pdf')
+
+    class Mailbox:
+        def response(self, code):
+            return code, [b'1234']
+
+        def uid(self, command, *args):
+            if command == 'SEARCH':
+                return 'OK', [b'7']
+            assert command == 'FETCH' and args[0] == '7'
+            return 'OK', [(b'1 (UID 7 BODY[]<0>', message.as_bytes()), b')']
+
+    cursor = tmp_path / 'mailbox.json'
+    endpoint = '/api/integrations/v1/email'
+    scope = ['example.invalid', 'test', 'Statements', 'https://testserver']
+    with pytest.raises(RuntimeError, match='HTTP 401'):
+        poll(Mailbox(), client, endpoint, cursor, scope)
+    assert not cursor.exists()
+    client.headers['Authorization'] = 'Bearer ' + issued['token']
+    assert poll(Mailbox(), client, endpoint, cursor, scope) == 1
+    assert poll(Mailbox(), client, endpoint, cursor, scope) == 0
+    with pytest.raises(RuntimeError, match='identity changed'):
+        poll(Mailbox(), client, endpoint, cursor, scope + ['changed'])
+
+
+def test_portal_connector_imports_pdf_without_following_redirects(service):
+    import httpx
+    from scripts.pull_portal_statement import pull
+
+    client, repo, _ = service
+    issued, _ = key(client)
+    client.headers['Authorization'] = 'Bearer ' + issued['token']
+    url = 'https://portal.example.invalid/statement.pdf'
+    endpoint = '/api/integrations/v1/portal'
+    pdf = next((ROOT / 'math_error').glob('*.pdf')).read_bytes()
+
+    def provider(request):
+        assert request.headers['authorization'] == 'Bearer synthetic-portal-token'
+        if request.url.path == '/redirect':
+            return httpx.Response(302, headers={'Location': 'https://other.example.invalid/statement.pdf'})
+        assert str(request.url) == url
+        return httpx.Response(200, content=pdf)
+
+    with httpx.Client(transport=httpx.MockTransport(provider),
+                      headers={'Authorization': 'Bearer synthetic-portal-token'}) as portal:
+        imported = pull(portal, client, url, endpoint)
+        assert imported['created'] is True
+        assert repo.get_case('a', imported['id'])['ingestion']['origin'] == 'portal'
+        assert pull(portal, client, url, endpoint)['id'] == imported['id']
+        with pytest.raises(RuntimeError, match='HTTP 302'):
+            pull(portal, client, 'https://portal.example.invalid/redirect', endpoint)

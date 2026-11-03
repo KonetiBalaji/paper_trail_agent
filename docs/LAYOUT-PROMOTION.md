@@ -145,3 +145,18 @@ mapping cannot inherit the old record. Activation requires the validated,
 source-bound promotion receipt and registry. This mapping review does
 not replace the existing human approval required for financial communication or
 money decisions.
+## From reviewer feedback to a benchmark case
+
+Open the eval candidate from a confirmed or rejected finding. Use its report
+version and cited source IDs to reproduce the behavior within the workspace.
+Create a fictional PDF that preserves the relevant layout and arithmetic. Keep
+the original report, private notes and PDFs in the workspace.
+
+Derive expected fields, citations and finding outcomes independently from the
+fictional PDF. Record the derivation in the package review. Run the candidate
+and full native and OCR regression with `scripts/evaluate_layout_package.py
+--with-ocr --report docs/layout-package-results.json`. After the gate passes,
+run `scripts/promote_layouts.py` to write the receipt and rerun it with
+`--check` to verify the registry.
+A reviewer decision starts this process. The ground truth and regression
+results determine admission.

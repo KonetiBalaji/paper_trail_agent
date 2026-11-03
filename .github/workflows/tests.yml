@@ -96,6 +96,8 @@ jobs:
           cache: pip
       - run: python -m pip install -r requirements-lock.txt
       - run: python -m pytest tests/test_postgres.py -q
+        env:
+          PTA_TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
   verify:
     runs-on: ubuntu-latest
     steps:

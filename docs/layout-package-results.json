@@ -102,40 +102,45 @@
   },
   "source_sha256": {
     ".github/workflows/security.yml": "05ac3e05d2cf630bd0ee4563700e557b725f96eb2d374c9df22a076317b1a47c",
-    ".github/workflows/tests.yml": "b516002673d09bd96cdd8b214e52b452f58d547338056595bb6cdfa8d6ec68da",
+    ".github/workflows/tests.yml": "c5e6174f921a9f1fe5382aadaa5542e1e409bf6fbf9fa7d5e94a79c14f68cbd0",
     ".github/workflows/uptime.yml": "19715552bc5de8e67a2973ff8275f2c7dd10055b0a4c62d25c4600e241fadb3a",
     "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "app/agent_evals.py": "dbba8f90598c287a7958d237e8d189b628accba0569b4399dc43dbc226fd2f85",
     "app/benchmark.py": "76f3fc9deaf71f887e3c95c895397303de6e8186c83cef2e45092d371640bbfb",
-    "app/core.py": "04fe4eb0358e38cc21e2647468ca86e3776ccb8c111e68112258afff65d23ef4",
+    "app/core.py": "5fb3a8e0a876855eb00a3a538dac3bd6d1c192283bd2ca5341f5e0d42fc224f4",
     "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
+    "app/email_intake.py": "1307c5d6bea5f01ca46fecb900071a68933dab1c0ae54a619316174fa2ea3649",
     "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
     "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
+    "app/historical.py": "765ccf32662fc59fd27a6bc563b2c21ebfb74cdcb3aafd3d08cf78de0201ff33",
     "app/ingestion.py": "0b8e9be3f3e698fd097bfd2a4babe147719a5fde3a8120fa6e73cc0c735cb13f",
-    "app/integrations.py": "a0b3c92b1b5ee056b9a755da2f5ed3a4fbc67aa40b14656b2efc98632ff4e672",
+    "app/integrations.py": "35d2002a5606ef3bce47d7a79e5e4b2ae8b6dd44937f17b6f8f5d2aa98157573",
     "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
     "app/layout_registry.py": "8305eba8900fbdb1aa51c61957f2ad61e1ac13fc1a0adfe27d35c88dbd8d6a04",
-    "app/layouts.py": "a5ecdbaa94094ec40fbf25d4a1084270689b5d99cc9f65070c0294d0f7beb5bf",
-    "app/main.py": "4af3afb81639bc6b2af76b65767599656b424d2adc11eea45bbb6a5042d6e631",
+    "app/layouts.py": "22ad01cdb17b43e36667050478f55c2bd871a0d51c965dc6e919f7749b736f41",
+    "app/main.py": "bd120d51413d40ccdde51f5069b7b59c94dae97f8e0456cd91175d564c35df87",
     "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
     "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",
-    "app/meta.py": "3db97832987c367dfb1f74def467feae4e15569e6494566e152c5f46bcbd2bce",
+    "app/meta.py": "878a18b69ec9c90cfe25d84f4e10521ee73b73411bdcf765df06b96436d9a02a",
     "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
     "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
     "app/orchestration.py": "bf8be929e36d41eb4efa4d128f72e25531458b3edf209da14a83afcb7c2d4418",
-    "app/platform.py": "04b98b7ddc592e8ad8bc14017a8484c2bb81961cc3b876745cc5699c62a619b4",
+    "app/platform.py": "173a13ae8faabed779f16a2ed4f2993660fdce798eff0c275b587f8d9d55c5c4",
     "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
     "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
-    "app/repository.py": "a3579eb7a33f608d368404e3649ebe0d2a9a5f92bb81878be809a46993841ff6",
+    "app/repository.py": "4ce92aea0e26249d73a08fbc372b7b441aca60ff87371fbc361898302c2aee37",
     "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
-    "app/static/app.js": "5bef5d35246035786e54669051e9b4403d896a338bad43b42295a4c502fc8f89",
+    "app/static/app.js": "f8dac5c387a8b68c9d88f58335e5e6b94c2d674aa868df48531a18d44f27a696",
     "app/static/demo.css": "c9c615c3d002c1ec40542b326e8f812234c55de2da083c251b97e557e52f16c6",
     "app/static/demo.html": "e758daaaa93885e748366ce984be6be4e6acb3aa8e0f3101b8ba813876d5c369",
-    "app/static/index.html": "15be743062084611140c609521a7f7cd5ae95a05f7feb6d50dc3191120e8ad06",
-    "app/static/style.css": "0132e38193d7b03f24162cf40ef14712cc91d09225a6d16416d04873d423615f",
+    "app/static/help.html": "3197882b54265a37e6c44f50469779f5edf46eaa51349d00f14610379d7bbe62",
+    "app/static/index.html": "d56f438becb134f73ed064f8cc6cb2eca99f41fcf1501e87b313f4f42d137045",
+    "app/static/status.html": "336f4848736e076199c7c82be5e9cef215b15e6610862b22f6aa95e3cce7dd4b",
+    "app/static/status.js": "9b1439708a0e124822934bf7154fe6448cd0e9a723c1f64c33983b9e4a7b3830",
+    "app/static/style.css": "b126513ec56baa0a16b3ea19980cf0c55f44ceb1aad7da09e18229dff127231b",
     "app/telemetry.py": "5212a9f9fcdc3e8949bee3386ed98f1b559a7523ea37d2a9b995aac70a9ac182",
     "app/trace.py": "25943af20fe5fe5aebad4857bdcb04f9b99f50c0ca86eae196619fcf4e37763f",
-    "app/worker.py": "1b1f3a66ed32a95f78b9c047e38fa027adda2110ccef31d49e6f2e60170d3ded",
+    "app/worker.py": "f44b4c5047d590d27625989b36748f3bea63b567ab245e540c463ed19e349991",
     "requirements-lock.txt": "27afd724f9be0a4f08aaeb091e43b2a6311e17822c2c8908f6df42e6bc10739e",
     "requirements-ocr-lock.txt": "bd06cbb7e481c4c32bfe2d54928c84c196900499aa709b1a09c9d21b776f891b",
     "requirements-ocr.txt": "98de2f8e47db59c864f8d1b6a2352326a50d3702d1f0121faa0caa28092a19d8",
@@ -160,48 +165,51 @@
     "scripts/hosted_smoke.py": "0041cc7b6c60d6fd254c3374617ba566dc6f004aea42467a7570f6cb3be1e329",
     "scripts/hosted_video_smoke.py": "410734984f131d725e8a0e84b5eef9a049afebbc99c8e8de1a2c358e258c55f6",
     "scripts/live_layout_test.py": "8a77089705489dfc9f9e93ff8f1a9e0a95128fb9120557cedc93e9b71d55aee4",
-    "scripts/live_meta_test.py": "375e512d7f32bcd16d8e7a229e4f5cd265b72a6909f279a1099a02e3b658d0dc",
+    "scripts/live_meta_test.py": "26f1b4b29eaa834ccff46fe419a340b06bc7a389507fdebfb2795acf8c5dbef2",
     "scripts/manage_users.py": "3e556943ae5f84f5be40b1ab97d17bc90a48e02afe2235f5ab63f5cacfb4f083",
     "scripts/ocr_smoke.py": "db1d8075f8c5ed76d7abe5da73efd99e339d70bb0c6ddf2623dca51a3fa92c91",
+    "scripts/poll_statement_mailbox.py": "b74f28241ee509e6ee974620a22ff4e95eac57faf9d3049068238815ead76852",
     "scripts/prepare_demo.py": "f4e695011f438418ee402cc292ce2f028bec92adab01b5b025f870adc982c971",
     "scripts/prepare_mcp_case.py": "f2ede92f664a56de7a17111d35ca71e8b265fbf4042d0b406d4cca4286aad685",
     "scripts/promote_layouts.py": "a8074ea271b6f93893c2c5082a076a8faddac51dd304f3fec8186717bab8cb16",
+    "scripts/pull_portal_statement.py": "f19ed1d29f705da2c646ce91bece4112764eff570896b301a4e5eace27383378",
     "scripts/render_demo.py": "55065722d40230d32ba5919630ff8e5c9f5aac3ec6719bf5b65a80c57816d5ee",
     "scripts/render_layout_review.py": "cbc660abffd9153d2ff28d48f25dfe2ae023566eef8de8c47fc412ecd883d2bb",
     "scripts/resource_benchmark.py": "ae53711ee6dc7cd375deac46ded7cc96e3df0970009ca01d494ff89f87761feb",
     "scripts/security_checks.py": "62143747b4f75b47a3c5768241c17b8589a6f0b872630d709871e7cbb7ecf7d7",
     "scripts/smoke.py": "55a2eb7a663e16d49bae34a338b8dd9938e790911a4d22c71660360476e18539",
-    "scripts/test_frontend.py": "4101773a4a66447f753c8359a5e9e34d4162395e05fcb5300e406394123eaabb",
+    "scripts/test_frontend.py": "3697d00d5860b91912b26157f025374fd98283370e570e7b8313f3b091dcf31b",
     "scripts/validate_worker_config.py": "31b86216477e9e5979c3b9f0b08c18a80843162751f79872e6899d526184b1a4",
     "scripts/verify_demo.py": "d42f676153d3c440e9d46ae85526252333766a04cf01a0b2412956e933d5f27e",
     "scripts/worker_entrypoint.py": "8d59ebb943fa92aa382421c6b97854dcbe0f76c285b8f3030b6b144091c7958c",
-    "tests/frontend/ocr-http.test.mjs": "ec7c3389cb58d65a728c5089238e29feb7de0b9892d5e3c06acd498306f5ddbe",
+    "tests/frontend/ocr-http.test.mjs": "f5502c4cd559535def539ee90d3c0d11656e5788ae2adb1f07f92e9c9ce10402",
     "tests/test_agent_evals.py": "c53f8245ea16991dc0c847b297fd3e5490b0e9f2806dd51e00050778eb14b8a1",
-    "tests/test_api.py": "f7b607be41868c544bfbc47e3349f8738023a6736afb9e7b151aa0be88c07b5f",
+    "tests/test_api.py": "c4d131398f20ba002517334296e1a809b47465a941da3d7406e3c900065884f5",
     "tests/test_bank.py": "3fe2932a98a0d2c9a614c16f42824cb31e5bfc5e5c40bbd8d5f041f4b806d6b3",
     "tests/test_benchmark.py": "e4bc71552543e95aaa7a8a887a6be37f14e43f3baa94d285ccfd9141121ac562",
     "tests/test_core.py": "6c6907c8a0d58f86a3a788cbda4ac593b7f8c726e966e402c281ce06aaa1bc9d",
     "tests/test_demo_media.py": "b01472114e7948b4197a4b1834f07b97335d07e287646ae76e912027622b98f1",
     "tests/test_drafts.py": "777684116b1ccd8b1968ac51dc520f5bea24d489cb76824d151f2268bd15573f",
+    "tests/test_historical.py": "70bf9c4727437a4b2fe40b742445104ec09763d2776ce25f484ef88be515a0b9",
     "tests/test_history.py": "c0ff320f3b8ddc1c0d26eadbcb011c1632d18da4047599dce0d29940c13dcd7e",
     "tests/test_ingestion.py": "cfe807861f765bbeada97790da3bc1d81b99c269de00948ae2fc4a7a706e20ad",
-    "tests/test_integrations.py": "0528ed618e306f25fe0ec324cb1dc63ebb025493cba9cd2cd7276bb17059c9aa",
+    "tests/test_integrations.py": "af620f22040eb4cc5fd17b631044f7e8e48620573d3bdfc357e494a509b80690",
     "tests/test_layout_packages.py": "d49d5279ddbca3694964434a08da45204d410ffd6efc2f1526bc17608d46335e",
     "tests/test_layout_proposals.py": "54feef381c6abf317559744194becc33f66f859f78734cee72e6b48d32319d1d",
     "tests/test_layout_registry.py": "b09dda069757f8138b36f31f94f101ef448034c034cbe7cbcfbbd96523e13858",
     "tests/test_mcp.py": "bf390219b5e5c395d7624bb94fd55193453b01376d1c569393ac3f7b5d7dba3e",
     "tests/test_meta.py": "2b316885904f2ed7ea16e11d44073d2c40280c35298e15ae112ecc89c5dec4b5",
     "tests/test_ocr.py": "df6d16b6afe5dfab2957f6a757241aa57d980afe7e7aa70ff74979fa1bb36836",
-    "tests/test_ocr_jobs.py": "98a0c7951c293f144a28e9eee35dae57912ce5b09996f6202714f3bd92845b98",
+    "tests/test_ocr_jobs.py": "10ae7e346368eb0cfddc344f7e76d44a14e8c7ff6d43bce9e7b0ba0841fb968c",
     "tests/test_orchestration.py": "274bb1fee7bdbf845214eed9886902c54c8be68610de8e10b00cbbb712dda26b",
-    "tests/test_postgres.py": "39a40236983d521bc329b76edc8b7b982685248fc764eaf71958948d51962763",
+    "tests/test_postgres.py": "d59fb98a3f9f6a433de384869b97c2297868fa5d645294ffbe38bf4a0816f0ea",
     "tests/test_privacy.py": "db4ff450133aef0b0863d39bad1bbc1b3f3eec59c712bf34f852f45be606e011",
     "tests/test_product.py": "2f81965b248ea78e734a541053814522d96301e2664038dd1270c5809ac91ba1",
     "tests/test_public_security.py": "f265014238ca51694122bafc21ca1889468d87f305b3e647a7b6d5613665ebc6",
     "tests/test_repository.py": "91b479e29ea9223750126b32fefbcfceecf614dabbc35d0b5ce6de3bcfc923e0",
     "tests/test_retention.py": "87bde5bb9d0e93c0cb8f31b97abd5fbbb6cb63139d28a841a69881d6def48c94",
-    "tests/test_routing.py": "11730090c3dd75a9c89829999c187b8c19e8c3cb7145b25b6dd3bb8a1308abcd",
-    "tests/test_service.py": "7b0ab0366e3d1af42185d27b744fbcebc5973fdbfeaf1a26fb00ad81c5ab2d40",
+    "tests/test_routing.py": "c6836ec0631fed05db3caaa71f988e4bb13b70c7f13a199b53622ffbbf2af7ef",
+    "tests/test_service.py": "a10c0f8d13c6580f08782f9cb38326b83aa5650e95b410d6830adf34fae8e59a",
     "tests/test_worker_lifecycle.py": "a560c4398d1b894c435fffa6496ca90dcbeac817f6e38e3fb1d07370b36934ce"
   },
   "fixture_sha256": {
@@ -301,7 +309,7 @@
     "passed": true,
     "promoted": false,
     "baseline": {
-      "evaluated_at": "2026-11-03T13:51:12.469265+00:00",
+      "evaluated_at": "2026-11-03T13:50:36.583368+00:00",
       "mode": "offline",
       "model_calls": 0,
       "cases": [
@@ -421,7 +429,7 @@
     "regression": {
       "mode": "offline",
       "model_calls": 0,
-      "evaluated_at": "2026-11-03T13:51:13.048349+00:00",
+      "evaluated_at": "2026-11-03T13:50:37.125729+00:00",
       "manifest_sha256": "7c61d3fa9f2fb9a26852c76ed2bfe5013dc1fba6dd3c458179e0bc85de50c78d",
       "cases": [
         {
@@ -497,7 +505,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 17.11
+          "elapsed_ms": 13.83
         },
         {
           "case": "loan_columns_error",
@@ -572,7 +580,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.86
+          "elapsed_ms": 27.67
         },
         {
           "case": "loan_columns_contradiction",
@@ -647,7 +655,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 36.62
+          "elapsed_ms": 14.88
         },
         {
           "case": "loan_reverse_columns",
@@ -722,7 +730,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.3
+          "elapsed_ms": 7.48
         },
         {
           "case": "loan_cross_page",
@@ -797,7 +805,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 15.34
+          "elapsed_ms": 13.41
         },
         {
           "case": "loan_split_row",
@@ -873,7 +881,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.5
+          "elapsed_ms": 13.56
         },
         {
           "case": "loan_duplicate",
@@ -948,7 +956,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.07
+          "elapsed_ms": 8.01
         },
         {
           "case": "loan_partial",
@@ -1023,7 +1031,7 @@
             "precision": 1.0,
             "recall": 0.7777777777777778
           },
-          "elapsed_ms": 8.34
+          "elapsed_ms": 8.21
         },
         {
           "case": "bank_debit_credit",
@@ -1105,7 +1113,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.73
+          "elapsed_ms": 8.4
         },
         {
           "case": "bank_signed",
@@ -1187,7 +1195,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.17
+          "elapsed_ms": 8.2
         },
         {
           "case": "bank_cross_page",
@@ -1276,7 +1284,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.65
+          "elapsed_ms": 14.24
         },
         {
           "case": "bank_bad_carry",
@@ -1365,7 +1373,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 16.74
+          "elapsed_ms": 15.13
         },
         {
           "case": "injection_note",
@@ -1440,7 +1448,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 10.04
+          "elapsed_ms": 10.1
         },
         {
           "case": "identity_conflict",
@@ -1508,7 +1516,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.07
+          "elapsed_ms": 7.86
         },
         {
           "case": "ambiguous_date",
@@ -1576,7 +1584,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.77
+          "elapsed_ms": 7.55
         },
         {
           "case": "currency_guard",
@@ -1651,7 +1659,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 17.35
+          "elapsed_ms": 16.66
         },
         {
           "case": "missing_tranche",
@@ -1726,7 +1734,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 15.54
+          "elapsed_ms": 15.05
         },
         {
           "case": "corrupt_pdf",
@@ -1748,7 +1756,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 0.42
+          "elapsed_ms": 0.36
         },
         {
           "case": "oversized_pdf",
@@ -1770,7 +1778,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 11.69
+          "elapsed_ms": 10.26
         }
       ],
       "fields": {
@@ -1894,7 +1902,7 @@
           "report": {
             "mode": "offline",
             "model_calls": 0,
-            "evaluated_at": "2026-11-03T13:51:13.168782+00:00",
+            "evaluated_at": "2026-11-03T13:50:37.241776+00:00",
             "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
             "cases": [
               {
@@ -1971,7 +1979,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.38
+                "elapsed_ms": 8.23
               },
               {
                 "case": "loan_math_error",
@@ -2047,7 +2055,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.56
+                "elapsed_ms": 9.19
               },
               {
                 "case": "loan_contradiction",
@@ -2123,7 +2131,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 16.72
+                "elapsed_ms": 16.13
               },
               {
                 "case": "loan_partial",
@@ -2199,7 +2207,7 @@
                   "precision": 1.0,
                   "recall": 0.7777777777777778
                 },
-                "elapsed_ms": 8.65
+                "elapsed_ms": 7.99
               },
               {
                 "case": "loan_duplicate",
@@ -2275,7 +2283,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.57
+                "elapsed_ms": 8.34
               },
               {
                 "case": "loan_wrong_header",
@@ -2348,7 +2356,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 9.73
+                "elapsed_ms": 9.06
               },
               {
                 "case": "loan_missing_marker",
@@ -2421,7 +2429,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 8.15
+                "elapsed_ms": 7.59
               },
               {
                 "case": "loan_page_scope",
@@ -2494,7 +2502,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 11.13
+                "elapsed_ms": 10.82
               },
               {
                 "case": "loan_injection",
@@ -2570,7 +2578,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 10.01
+                "elapsed_ms": 9.71
               },
               {
                 "case": "bank_clean",
@@ -2653,7 +2661,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 10.54
+                "elapsed_ms": 9.01
               },
               {
                 "case": "bank_balance_error",
@@ -2736,7 +2744,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.15
+                "elapsed_ms": 10.49
               },
               {
                 "case": "bank_ambiguous_sides",
@@ -2819,7 +2827,7 @@
                   "precision": 1.0,
                   "recall": 0.8
                 },
-                "elapsed_ms": 8.91
+                "elapsed_ms": 8.49
               }
             ],
             "fields": {
@@ -2947,8 +2955,8 @@
     "manifest_sha256": "5e81a1ba1e9550f289c504598330931a739058e8d8f8668a0c727dbd6e8da2b1",
     "source_sha256": {
       "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
-      "app/core.py": "04fe4eb0358e38cc21e2647468ca86e3776ccb8c111e68112258afff65d23ef4",
-      "app/layouts.py": "a5ecdbaa94094ec40fbf25d4a1084270689b5d99cc9f65070c0294d0f7beb5bf",
+      "app/core.py": "5fb3a8e0a876855eb00a3a538dac3bd6d1c192283bd2ca5341f5e0d42fc224f4",
+      "app/layouts.py": "22ad01cdb17b43e36667050478f55c2bd871a0d51c965dc6e919f7749b736f41",
       "scripts/evaluate_ocr.py": "8ad0a0142954bb370ce814516db45254d9cfc2cc6ccfc4b3e43de088e861f210"
     },
     "model_sha256": {
@@ -2974,7 +2982,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 6093,
+          "duration_ms": 6031,
           "usable_lines": 9,
           "total_lines": 10,
           "field_candidates": []
@@ -3210,7 +3218,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 4782,
+          "duration_ms": 4875,
           "usable_lines": 6,
           "total_lines": 6,
           "field_candidates": [
@@ -3437,7 +3445,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3406,
+          "duration_ms": 3422,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
@@ -3493,7 +3501,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3437,
+          "duration_ms": 3407,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []

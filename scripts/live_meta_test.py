@@ -112,6 +112,12 @@ def main():
                 evidence['status']='failed'
                 evidence['cases'].append({'case':case,'result':'failed','report_status':report.get('status'),
                     'finding_types':[f['type'] for f in report.get('findings',[])],
+                    'extraction_errors':[issue['message'] for doc in report.get('documents',[])
+                                         for issue in doc.get('issues',[])
+                                         if issue.get('type')=='model_extraction_failed'
+                                         and issue.get('message','').startswith((
+                                             'Meta API returned HTTP ', 'Meta API unavailable or response format invalid.',
+                                             'Model extraction failed evidence validation;', 'Invalid model message;'))],
                     'failed_validations':[{'name':e['name'],'document':e.get('document'),'output':e.get('output')}
                                           for e in report.get('trace',[]) if e['kind']=='validation' and e['validation']=='failed'],
                     'attempted_model_calls':report.get('metrics',{}).get('attempted_model_calls')})

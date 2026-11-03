@@ -120,7 +120,11 @@ def analyze_files(files,mode='local',persist=True):
     analysis_started=time.perf_counter()
     if mode not in ('local','meta','auto'): raise HTTPException(422,'Choose local, meta or auto mode')
     if not 1<=len(files)<=8: raise HTTPException(422,'Upload 1 to 8 PDFs')
-    if mode in ('meta','auto') and not meta.configured(): raise HTTPException(503,'Set MODEL_API_KEY in .env and restart before using Meta or auto mode.')
+    requested_mode = mode
+    if mode == 'meta' and not meta.configured():
+        raise HTTPException(503, 'Set MODEL_API_KEY in .env and restart before using Meta mode.')
+    if mode == 'auto' and not meta.configured():
+        mode = 'local'
     from .orchestration import extract_documents,run
     events=[]
     docs,blobs=extract_documents(files,mode,events)
@@ -140,6 +144,11 @@ def analyze_files(files,mode='local',persist=True):
         'trace':events,'harness':{'max_model_turns':meta.MAX_TURNS,'max_tool_calls_total':meta.MAX_TOOL_CALLS,
                                 'request_timeout_seconds':60,'cost':None},
         'agent':None,'limitations':['No OCR: image-only pages require review.','Local mode supports labeled statements and documented strict table layouts; unsupported or ambiguous rows require review.']}
+    if requested_mode != mode:
+        report['requested_mode'] = requested_mode
+        report['agent_error'] = 'Meta is unavailable. Local checks ran and the case requires review.'
+        report['status'] = 'review'
+        record(events, 'routing', 'local_fallback', {'requested': requested_mode}, {'effective': mode}, 'review')
     if mode in ('meta','auto'):
         try: report['agent']=meta.reason(docs,findings,calculations,trace=events)
         except meta.MetaError as exc:
@@ -155,6 +164,11 @@ def analyze_files(files,mode='local',persist=True):
 
 @app.get('/api/cases/{case_id}')
 def get_case(case_id): return load(case_id)
+
+@app.get('/api/cases/{case_id}/historical')
+def historical_checks(case_id):
+    from .historical import case_history
+    return case_history(load(case_id))
 
 @app.get('/api/cases')
 def local_history(q:str='',status:str|None=None,decision:str|None=None,limit:int=50,offset:int=0):

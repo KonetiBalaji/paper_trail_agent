@@ -193,6 +193,82 @@ function draftControls(finding) {
   kind.onchange = () => { output.replaceChildren(); feedback.textContent = 'Prepare a new draft for the selected purpose.'; };
   wrapper.append(kindLabel, button, feedback, output); return wrapper;
 }
+function renderMonitor(caseId) {
+  const panel = el('section', undefined, 'panel');
+  const output = el('div');
+  output.setAttribute('aria-live', 'polite');
+  const refresh = el('button', 'Load monitoring timeline', 'secondary');
+  refresh.type = 'button';
+  const path = `/api/cases/${caseId}/monitor`;
+  async function load(offset = 0) {
+    refresh.disabled = true;
+    try {
+      const result = await jsonRequest(`${path}?offset=${offset}`);
+      output.replaceChildren();
+      if (!result.worker_available) output.append(el('p', 'Monitoring worker is offline. Pending comparisons will run when a worker is available.'));
+      if (!result.entries.length) output.append(el('p', 'No discrepancy entries recorded.'));
+      for (const entry of result.entries) {
+        const card = el('article', undefined, 'panel');
+        const pair = entry.comparison.pair;
+        const samePeriod = pair.reason === 'same_period_balances';
+        const label = samePeriod ? 'Same-period balance' : 'Carry';
+        const field = pair.balance_field || 'opening';
+        card.append(el('p', `${label} discrepancy ${pair.difference} ${pair.currency}. First seen ${entry.first_seen}.`));
+        card.append(el('p', `${samePeriod ? 'Prior' : 'Expected'} ${field} ${pair.computed} ${pair.currency}. Stated ${field} ${pair.stated} ${pair.currency}.`));
+        for (const [index, citation] of (pair.balance_sources || pair.carry_sources || []).entries()) {
+          const separator = citation.indexOf('/');
+          const sourceCase = separator < 0 ? caseId : citation.slice(0, separator);
+          const source = separator < 0 ? citation : citation.slice(separator + 1);
+          const match = /^(doc\d+):p(\d+):l\d+$/.exec(source);
+          if (!match || !/^[a-f0-9]{32}$/.test(sourceCase)) continue;
+          const link = el('a', index === 0 ? 'Earlier closing balance' : 'Later opening balance');
+          link.href = `/api/cases/${sourceCase}/documents/${match[1]}/page/${match[2]}?source=${encodeURIComponent(source)}`;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          const paragraph = el('p');
+          paragraph.append(link);
+          card.append(paragraph);
+        }
+        for (const event of entry.history || []) {
+          card.append(el('p', `${event.action === 'review' ? 'Reviewed' : 'Resolved'} ${event.timestamp}.`));
+        }
+        const revision = (entry.history || []).length;
+        if (['admin', 'reviewer'].includes(currentRole) && revision < 2) {
+          const action = revision === 0 ? 'review' : 'resolve';
+          const button = el('button', revision === 0 ? 'Mark reviewed' : 'Mark resolved', 'secondary');
+          button.type = 'button';
+          button.onclick = async () => {
+            button.disabled = true;
+            try {
+              await jsonRequest(`${path}/${entry.id}`, {method: 'PATCH', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({action, expected_revision: revision})});
+              await load(offset);
+            } catch (error) {
+              card.append(el('p', error.message));
+              button.disabled = false;
+            }
+          };
+          card.append(button);
+        }
+        output.append(card);
+      }
+      if (result.next_offset !== null) {
+        const next = el('button', 'Next timeline page', 'secondary');
+        next.type = 'button';
+        next.onclick = () => load(result.next_offset);
+        output.append(next);
+      }
+    } catch (error) {
+      output.replaceChildren(el('p', error.message));
+    } finally {
+      refresh.disabled = false;
+    }
+  }
+  refresh.onclick = () => load();
+  panel.append(el('h3', 'Monitoring timeline'), refresh, output);
+  $('calculations').append(panel);
+}
+
 function render() {
   const selectedDoc = $('document').value;
   $('results').hidden = false;
@@ -209,6 +285,16 @@ function render() {
     card.append(el('span', `${finding.id} · Machine: ${finding.severity}`, 'badge'), el('p', finding.message), sources(finding.sources), reviewControls(finding));
     if (finding.critic) card.append(el('p', `Verifier → Critic: ${finding.critic.decision}`, 'note'));
     const draft = draftControls(finding); if (draft) card.append(draft);
+    if (serviceEnabled && ['admin', 'reviewer'].includes(currentRole) && report.report_version
+        && ['confirmed', 'rejected'].includes(finding.human_review?.decision)) {
+      const candidate = el('a', 'Open eval candidate');
+      candidate.href = `/api/cases/${report.id}/findings/${finding.id}/eval-candidate?version=${report.report_version}`;
+      candidate.target = '_blank';
+      candidate.rel = 'noopener';
+      const feedback = el('p', undefined, 'note');
+      feedback.append(candidate, ' · Requires independent ground truth and regression validation.');
+      card.append(feedback);
+    }
     const related = (report.trace || []).filter(event => (event.finding_ids || []).includes(finding.id) || (event.document && finding.sources.some(source => source.startsWith(event.document + ':'))));
     const details = el('details'); details.append(el('summary', 'Related checks and review events'), traceTimeline(related)); card.append(details);
     const shared = (report.trace || []).filter(event => event.kind === 'model' || event.kind === 'tool' || (event.kind === 'validation' && event.name === 'agent_citations'));
@@ -228,6 +314,36 @@ function render() {
     $('calculations').append(card);
   }
   if (!report.calculations.length) $('calculations').append(el('p', 'No calculator checks were accepted for this report. Review the trace and original evidence.'));
+  const historyChecks = el('section', undefined, 'panel');
+  historyChecks.append(el('h3', 'Historical period checks'), el('p', 'Explicit bank movements and allocated loan principal only. A change in balance alone is not a contradiction. Checks do not change the machine report or saved reviews.', 'note'));
+  const historyButton = el('button', 'Check historical rules', 'secondary'); historyButton.type = 'button';
+  const historyOutput = el('div'); historyOutput.setAttribute('aria-live', 'polite');
+  const historyCase = report.id; const historyVersion = report.report_version;
+  historyButton.onclick = async () => {
+    historyButton.disabled = true; historyOutput.replaceChildren(el('p', 'Checking original evidence…'));
+    const historyURL = `/api/cases/${historyCase}/historical${historyVersion ? `?version=${historyVersion}` : ''}`;
+    try {
+      const result = await jsonRequest(historyURL);
+      if (report?.id !== historyCase || report.report_version !== historyVersion) return;
+      historyOutput.replaceChildren(el('p', result.scope, 'note'));
+      for (const check of [...result.checks, ...result.pairs]) {
+        const card = el('article', undefined, 'panel');
+        card.append(el('strong', `${check.type || 'Period comparison'} · ${check.result}`));
+        if (check.reason) card.append(el('p', check.reason.replaceAll('_', ' ')));
+        if (check.computed !== undefined) card.append(el('p', `Computed ${check.computed}; stated ${check.stated}; difference ${check.difference} ${check.currency}.`));
+        if (check.operands) card.append(el('p', `${check.operands.join(' + ')} = ${check.computed}`));
+        if (check.sources?.length) card.append(sources(check.sources));
+        historyOutput.append(card);
+      }
+      for (const item of result.review) historyOutput.append(el('p', `${item.document}: review required (${item.reason.replaceAll('_', ' ')}).`));
+      if (!result.checks.length && !result.pairs.length) historyOutput.append(el('p', 'No historical equation could be checked.'));
+      const download = el('a', 'Open version-bound historical JSON'); download.href = historyURL; download.target = '_blank'; download.rel = 'noopener';
+      historyOutput.append(download, el('p', `Rules ${result.rules_version}; policy ${result.policy_sha256}; report version ${result.report_version}.`, 'note'));
+    } catch (error) { historyOutput.replaceChildren(el('p', error.message)); }
+    finally { historyButton.disabled = false; }
+  };
+  historyChecks.append(historyButton, historyOutput); $('calculations').append(historyChecks);
+  if (serviceEnabled && ['admin', 'reviewer', 'viewer'].includes(currentRole)) renderMonitor(historyCase);
   $('agent').replaceChildren();
   if (report.agent) {
     $('agent').append(el('p', report.agent.summary));
@@ -405,6 +521,12 @@ async function loadHistory() {
   } catch (error) { $('history-results').replaceChildren(); $('history-message').textContent = error.message; }
 }
 $('history-form').onsubmit = event => { event.preventDefault(); loadHistory(); };
+$('pending-review').onclick = () => {
+  $('history-form').reset();
+  $('history-decision').value = 'pending';
+  loadHistory();
+};
+
 
 function renderAPIKeys() {
   const generation = ++keyRenderGeneration;
