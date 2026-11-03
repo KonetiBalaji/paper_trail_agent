@@ -57,5 +57,15 @@ after an accepted or deduplicated submission. A failed message stops the batch
 at the previous cursor. Review the message in the dedicated folder before
 resuming. A UID validity change also stops the connector for operator review.
 The cursor contains mailbox configuration identifiers and belongs in private
-storage. Live mailbox and hosted email verification remain open, along with
-lender and bank portal connections.
+storage. Live mailbox and hosted email verification remain open.
+
+For a lender or bank with a direct PDF endpoint, configure
+`PTA_PORTAL_STATEMENT_URL` and `PTA_PORTAL_TOKEN` for the provider. Set
+`PTA_INTAKE_ORIGIN` and `PTA_INTAKE_KEY` separately for Paper Trail Agent.
+Run `python scripts/pull_portal_statement.py` from a trusted connector host.
+It downloads one PDF per run, caps it at 3.9 MB, rejects redirects, and sends it
+to `POST /api/integrations/v1/portal` with a `cases:submit` key. Schedule it
+against a provider endpoint that serves the latest statement to import new
+versions. Repeated bytes reuse the saved case. The verified flow uses a
+simulated provider. Interactive provider authentication and live portal
+verification remain open.

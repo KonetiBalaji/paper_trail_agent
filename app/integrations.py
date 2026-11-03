@@ -35,6 +35,10 @@ def create_router(resources,analyze_files,service_mode):
     def submit(response:Response,files:list[UploadFile]=File(...),mode:Literal['local']=Form('local'),actor=Depends(access('cases:submit'))):
         return submit_files(response, files, mode, actor, 'api')
 
+    @router.post('/portal', status_code=201, responses={200: {'description': 'Existing identical analysis reused'}})
+    def submit_portal(response: Response, files: list[UploadFile] = File(...), actor=Depends(access('cases:submit'))):
+        return submit_files(response, files, 'local', actor, 'portal')
+
     @router.post('/email', status_code=201, responses={200: {'description': 'Existing identical analysis reused'}})
     def submit_email(response: Response, message: UploadFile = File(...), actor=Depends(access('cases:submit'))):
         from .email_intake import pdf_attachments

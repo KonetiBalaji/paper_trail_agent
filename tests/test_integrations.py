@@ -200,3 +200,31 @@ def test_mailbox_cursor_advances_only_after_authenticated_intake(service, tmp_pa
     assert poll(Mailbox(), client, endpoint, cursor, scope) == 0
     with pytest.raises(RuntimeError, match='identity changed'):
         poll(Mailbox(), client, endpoint, cursor, scope + ['changed'])
+
+
+def test_portal_connector_imports_pdf_without_following_redirects(service):
+    import httpx
+    from scripts.pull_portal_statement import pull
+
+    client, repo, _ = service
+    issued, _ = key(client)
+    client.headers['Authorization'] = 'Bearer ' + issued['token']
+    url = 'https://portal.example.invalid/statement.pdf'
+    endpoint = '/api/integrations/v1/portal'
+    pdf = next((ROOT / 'math_error').glob('*.pdf')).read_bytes()
+
+    def provider(request):
+        assert request.headers['authorization'] == 'Bearer synthetic-portal-token'
+        if request.url.path == '/redirect':
+            return httpx.Response(302, headers={'Location': 'https://other.example.invalid/statement.pdf'})
+        assert str(request.url) == url
+        return httpx.Response(200, content=pdf)
+
+    with httpx.Client(transport=httpx.MockTransport(provider),
+                      headers={'Authorization': 'Bearer synthetic-portal-token'}) as portal:
+        imported = pull(portal, client, url, endpoint)
+        assert imported['created'] is True
+        assert repo.get_case('a', imported['id'])['ingestion']['origin'] == 'portal'
+        assert pull(portal, client, url, endpoint)['id'] == imported['id']
+        with pytest.raises(RuntimeError, match='HTTP 302'):
+            pull(portal, client, 'https://portal.example.invalid/redirect', endpoint)
