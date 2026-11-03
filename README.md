@@ -415,3 +415,5 @@ See [security verification](docs/SECURITY-VERIFICATION.md),
 These are bounded automated checks, not independent penetration-test or
 real-document-readiness claims. The public demo continues to accept fixed
 fictional fixtures only.
+
+Historical reconciliation accepts year-first dates in either YYYY-MM-DD or YYYY/MM/DD for period boundaries and signed bank transactions. The historical rules compare amounts in the same declared currency. See [historical reconciliation rules](docs/HISTORICAL-RULES.md) for the supported statement labels and evidence requirements.
