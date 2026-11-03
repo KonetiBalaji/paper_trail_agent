@@ -99,6 +99,15 @@ test('real frontend queues OCR and reopens reviewed candidates through HTTP', {s
   assert.equal(current.status, 'review');
   ui.doc.getElementById('history-query').value = 'exclude this case';
   ui.button('Pending review queue').click();
+  for (const id of ['history-results', 'eval-results', 'benchmark-results']) {
+    const region = ui.doc.getElementById(id);
+    assert.equal(region.getAttribute('role'), 'region');
+    assert.ok(region.getAttribute('aria-label'));
+    assert.equal(region.tabIndex, 0);
+    region.focus();
+    assert.equal(ui.doc.activeElement, region);
+  }
+
   assert.equal(ui.doc.getElementById('history-query').value, '');
   assert.equal(ui.doc.getElementById('history-decision').value, 'pending');
   await waitFor(() => ui.button('Open ' + caseId.slice(0, 8)), 'Pending case missing from queue');
