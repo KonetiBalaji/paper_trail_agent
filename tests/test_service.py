@@ -295,7 +295,7 @@ def test_demo_repeated_fixture_preserves_human_review(service):
     assert retry['findings'][0]['human_review']['decision']=='confirmed'
 
 
-def test_prior_history_separate_pdf_uploads(service):
+def test_prior_history_separate_pdf_uploads(service, monkeypatch):
     import io
     from reportlab.pdfgen import canvas
     from app.worker import run_once
@@ -381,6 +381,23 @@ def test_prior_history_separate_pdf_uploads(service):
             assert next(line['text'] for line in lines if line['id'] == source) == (
                 f'{field.capitalize()} balance: {value}'
             )
+    latest = upload_period('2026-10-01', '2026-10-31', '990.00', '890.00')
+    complete_job = repo.complete_job
+
+    def delete_before_save(job_id, token, result, **kwargs):
+        assert len(kwargs['detections']) == 4
+        assert client.delete(f'/api/cases/{revised}', headers=headers).status_code == 200
+        complete_job(job_id, token, result, **kwargs)
+        saved_job = repo.get_job('team-a', job_id)
+        assert saved_job['state'] == 'completed'
+        assert saved_job['result']['findings_with_deleted_sources'] == 2
+
+    with monkeypatch.context() as patch:
+        patch.setattr(repo, 'complete_job', delete_before_save)
+        assert run_once(repo, kinds=['monitor'])
+    surviving = client.get(f'/api/cases/{latest}/monitor').json()['entries']
+    assert len(surviving) == 2
+    assert {item['comparison']['prior']['case_id'] for item in surviving} == {later}
     login(client, 'other@example.invalid')
     assert client.get(path).status_code == 404
 

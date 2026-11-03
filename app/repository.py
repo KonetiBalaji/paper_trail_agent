@@ -538,12 +538,17 @@ class Repository:
             row=conn.execute(select(jobs).where(jobs.c.id==job_id).with_for_update()).mappings().first()
             if not row or row['state']!='running' or row['lease_token']!=lease_token or row['lease_until']<time.time():
                 raise Conflict('Job lease lost')
+            removed_findings = 0
             for detection in detections:
                 payload = self.unseal(row['payload'])
                 case_id = payload['case_id']
                 prior = detection['comparison']['prior']
                 self._case(conn, workspace, case_id)
-                self._case(conn, workspace, prior['case_id'])
+                try:
+                    self._case(conn, workspace, prior['case_id'])
+                except Missing:
+                    removed_findings += 1
+                    continue
                 identity = [case_id, detection['document_id'], prior['case_id'], prior['document_id']]
                 field = detection['comparison']['pair'].get('balance_field')
                 if field:
@@ -553,6 +558,8 @@ class Repository:
                     'case_id': case_id, 'prior_case_id': prior['case_id'],
                     'first_seen': utc(), 'evidence': self.seal(detection),
                 })
+            if removed_findings:
+                result = {**result, 'findings_with_deleted_sources': removed_findings}
             conn.execute(update(jobs).where(jobs.c.id==job_id).values(state='failed' if failed else 'completed',result=self.seal(result),lease_until=0,lease_token=None))
 
     def get_job(self,workspace,job_id):

@@ -174,7 +174,10 @@ def prior_case_history(repo, workspace, case_id, document_id, *, limit=20, offse
     page = repo.prior_statement_sources(workspace, case_id, document_id, limit=limit, offset=offset, after=after, by_digest=by_digest)
     comparisons = []
     for reference in page['sources']:
-        previous = repo.get_case(workspace, reference['case_id'], version=1)
+        try:
+            previous = repo.get_case(workspace, reference['case_id'], version=1)
+        except Missing:
+            continue
         prior_document = next(doc for doc in previous['documents'] if doc['id'] == reference['document_id'])
         prior_document = deepcopy(prior_document)
         prior_document['id'] = f"{reference['case_id']}/{reference['document_id']}"
