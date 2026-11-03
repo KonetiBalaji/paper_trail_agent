@@ -37,7 +37,7 @@ This ledger preserves the full goal. A code stub, passing narrow fixture or depl
 | 30 | Accessibility, mobile and readable exports | Responsive baseline; systematic verification pending |
 | 31 | International formats/languages and currency policy | Currency mismatch review exists; explicit supported-format tests pending |
 | 32 | CSV/accounting exports and scoped API keys/limits | Redacted facts CSV and neutral bank-transaction accounting worksheet implemented with exact amounts/currencies/sources and text-formula escaping. Server-to-server submit/read API, workspace isolation, expiring/revocable scoped HMAC keys, encrypted labels, quotas and admin UI implemented; local API, real DOM/HTTP and PostgreSQL concurrency tests pass. Hosted CSV, cookie/Bearer separation and guest-key denial pass; production admin key/client walkthrough pending. No vendor mapping or automatic journal posting |
-| 33 | Onboarding, pricing/support/status and reviewer feedback loop | Pending |
+| 33 | Onboarding, pricing/support/status and reviewer feedback loop | Review branch includes a free demo guide, issue and security support links, status page and version-bound eval candidate exports. Candidate permissions, private-note omission and reviewer frontend flow pass. Paid pricing, production status and admission of real reviewer feedback remain open |
 
 ## Implementation sequence
 
