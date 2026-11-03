@@ -26,11 +26,11 @@ def run_once(repo,kinds=None):
             counts = {'passed': 0, 'discrepancy': 0, 'review': 0}
             deadline = time.monotonic() + 90
             for document_id in job['payload']['documents']:
-                offset = 0
-                while offset is not None:
+                cursor = None
+                while True:
                     if time.monotonic() >= deadline:
                         raise RuntimeError('Monitor lease budget exceeded')
-                    page = prior_case_history(repo, job['workspace'], job['payload']['case_id'], document_id, offset=offset)
+                    page = prior_case_history(repo, job['workspace'], job['payload']['case_id'], document_id, after=cursor, by_digest=True)
                     for comparison in page['comparisons']:
                         counts[comparison['pair']['result']] += 1
                         if comparison['pair']['result'] == 'discrepancy':
@@ -38,7 +38,9 @@ def run_once(repo,kinds=None):
                             for difference in pair.get('balance_differences', [{}]):
                                 evidence = {**comparison, 'pair': {**pair, **difference}}
                                 detections.append({'document_id': document_id, 'comparison': evidence})
-                    offset = page['next_offset']
+                    cursor = page['next_cursor']
+                    if cursor is None:
+                        break
             result = {'comparison_counts': counts}
             failed = False
         elif job['kind']=='ocr':

@@ -428,3 +428,11 @@ def test_prior_statement_sources_deduplicate_before_paging(service):
     second = repo.prior_statement_sources('team-a', current, 'doc1', limit=1, offset=1)
     assert [row['case_id'] for row in second['sources']] == ['second']
     assert second['next_offset'] is None
+
+    cursor_page = repo.prior_statement_sources('team-a', current, 'doc1', limit=1, by_digest=True)
+    with repo.transaction() as conn:
+        conn.execute(statement_sources.delete().where(statement_sources.c.case_id == 'first'))
+    remaining = repo.prior_statement_sources(
+        'team-a', current, 'doc1', limit=1, after=cursor_page['next_cursor'], by_digest=True,
+    )
+    assert [row['case_id'] for row in remaining['sources']] == ['second']

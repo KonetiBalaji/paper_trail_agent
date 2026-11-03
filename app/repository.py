@@ -267,7 +267,7 @@ class Repository:
                 self._audit(conn,workspace,actor,'job_queued',report['id'],{'job_id':job_id,'kind':'monitor'})
             return report,True
 
-    def prior_statement_sources(self, workspace, case_id, document_id, *, limit=100, offset=0):
+    def prior_statement_sources(self, workspace, case_id, document_id, *, limit=100, offset=0, after=None, by_digest=False):
         """Page through earlier source references for one verified account."""
         if not 1 <= limit <= 100 or offset < 0:
             raise ValueError('Invalid source page bounds')
@@ -292,12 +292,19 @@ class Repository:
                 statement_sources.c.case_id != case_id,
                 statement_sources.c.sha256 != source['sha256'],
             ).subquery()
-            rows = conn.execute(select(candidates.c.case_id, candidates.c.document_id,
-                candidates.c.sha256).where(candidates.c.copy_rank == 1).order_by(
-                    candidates.c.created_at, candidates.c.case_id, candidates.c.document_id,
-                ).offset(offset).limit(limit + 1)).mappings().all()
-            return {'identity_verified': True, 'sources': [dict(row) for row in rows[:limit]],
-                    'next_offset': offset + limit if len(rows) > limit else None}
+            order = (candidates.c.created_at, candidates.c.case_id, candidates.c.document_id)
+            query = select(*order, candidates.c.sha256).where(candidates.c.copy_rank == 1)
+            if by_digest:
+                order = (candidates.c.sha256,)
+                if after is not None:
+                    query = query.where(candidates.c.sha256 > after)
+            rows = conn.execute(query.order_by(*order).offset(offset).limit(limit + 1)).mappings().all()
+            has_more = len(rows) > limit
+            next_cursor = rows[limit - 1]['sha256'] if by_digest and has_more else None
+            return {'identity_verified': True, 'sources': [
+                {key: row[key] for key in ('case_id', 'document_id', 'sha256')} for row in rows[:limit]
+            ], 'next_offset': offset + limit if has_more else None, 'next_cursor': next_cursor}
+
 
     def get_case(self,workspace,case_id,version=None):
         with self.engine.connect() as conn:

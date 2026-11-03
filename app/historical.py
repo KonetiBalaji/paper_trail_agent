@@ -162,7 +162,7 @@ def evaluate_history(documents):
         'scope':'Explicit native-text bank signed movements or allocated loan principal only; inclusive adjacent dates; no inferred FX, amortization, interest allocation or whole-history clean verdict.'}
 
 
-def prior_case_history(repo, workspace, case_id, document_id, *, limit=20, offset=0):
+def prior_case_history(repo, workspace, case_id, document_id, *, limit=20, offset=0, after=None, by_digest=False):
     """Evaluate a page of prior statements against a single immutable source."""
     from copy import deepcopy
     from .repository import Missing
@@ -171,7 +171,7 @@ def prior_case_history(repo, workspace, case_id, document_id, *, limit=20, offse
     document = next((doc for doc in current['documents'] if doc['id'] == document_id), None)
     if document is None:
         raise Missing('Document not found')
-    page = repo.prior_statement_sources(workspace, case_id, document_id, limit=limit, offset=offset)
+    page = repo.prior_statement_sources(workspace, case_id, document_id, limit=limit, offset=offset, after=after, by_digest=by_digest)
     comparisons = []
     for reference in page['sources']:
         previous = repo.get_case(workspace, reference['case_id'], version=1)
@@ -185,7 +185,7 @@ def prior_case_history(repo, workspace, case_id, document_id, *, limit=20, offse
                             'checks': evaluation['checks'], 'review': evaluation['review']})
     return {'case_id': case_id, 'document_id': document_id, 'report_version': 1,
             'identity_verified': page['identity_verified'], 'next_offset': page['next_offset'],
-            'comparisons': comparisons}
+            'next_cursor': page.get('next_cursor'), 'comparisons': comparisons}
 
 
 def case_history(report):
