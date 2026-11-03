@@ -141,6 +141,12 @@ test('approved lender draft uses real backend evidence and is removed after reje
   assert.ok(prepare()?.disabled, 'Draft requires human approval');
   ui.doc.querySelector('[aria-label="Approve F1"]').click();
   await waitFor(() => prepare() && !prepare().disabled, 'Approval did not enable the draft');
+  const candidate = [...ui.doc.querySelectorAll('a')].find(link => link.textContent === 'Open eval candidate');
+  assert.ok(candidate, 'Saved review did not expose an eval candidate');
+  const candidateURL = new URL(candidate.href);
+  const candidateResponse = await ui.api(candidateURL.pathname + candidateURL.search);
+  assert.equal(candidateResponse.status, 200);
+  assert.equal((await candidateResponse.json()).review_decision, 'confirmed');
   prepare().click();
   await waitFor(() => ui.doc.getElementById('draft-F1'), 'Backend draft did not render');
   const text = ui.doc.getElementById('draft-F1');
