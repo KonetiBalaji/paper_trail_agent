@@ -161,7 +161,7 @@
     "scripts/hosted_smoke.py": "0041cc7b6c60d6fd254c3374617ba566dc6f004aea42467a7570f6cb3be1e329",
     "scripts/hosted_video_smoke.py": "410734984f131d725e8a0e84b5eef9a049afebbc99c8e8de1a2c358e258c55f6",
     "scripts/live_layout_test.py": "8a77089705489dfc9f9e93ff8f1a9e0a95128fb9120557cedc93e9b71d55aee4",
-    "scripts/live_meta_test.py": "375e512d7f32bcd16d8e7a229e4f5cd265b72a6909f279a1099a02e3b658d0dc",
+    "scripts/live_meta_test.py": "26f1b4b29eaa834ccff46fe419a340b06bc7a389507fdebfb2795acf8c5dbef2",
     "scripts/manage_users.py": "3e556943ae5f84f5be40b1ab97d17bc90a48e02afe2235f5ab63f5cacfb4f083",
     "scripts/ocr_smoke.py": "db1d8075f8c5ed76d7abe5da73efd99e339d70bb0c6ddf2623dca51a3fa92c91",
     "scripts/prepare_demo.py": "f4e695011f438418ee402cc292ce2f028bec92adab01b5b025f870adc982c971",
@@ -303,7 +303,7 @@
     "passed": true,
     "promoted": false,
     "baseline": {
-      "evaluated_at": "2026-11-03T09:46:46.723834+00:00",
+      "evaluated_at": "2026-11-03T09:52:16.838398+00:00",
       "mode": "offline",
       "model_calls": 0,
       "cases": [
@@ -423,7 +423,7 @@
     "regression": {
       "mode": "offline",
       "model_calls": 0,
-      "evaluated_at": "2026-11-03T09:46:47.264755+00:00",
+      "evaluated_at": "2026-11-03T09:52:17.542284+00:00",
       "manifest_sha256": "7c61d3fa9f2fb9a26852c76ed2bfe5013dc1fba6dd3c458179e0bc85de50c78d",
       "cases": [
         {
@@ -499,7 +499,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.27
+          "elapsed_ms": 17.19
         },
         {
           "case": "loan_columns_error",
@@ -574,7 +574,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 27.66
+          "elapsed_ms": 47.81
         },
         {
           "case": "loan_columns_contradiction",
@@ -649,7 +649,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.78
+          "elapsed_ms": 31.45
         },
         {
           "case": "loan_reverse_columns",
@@ -724,7 +724,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.52
+          "elapsed_ms": 12.5
         },
         {
           "case": "loan_cross_page",
@@ -799,7 +799,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.76
+          "elapsed_ms": 25.15
         },
         {
           "case": "loan_split_row",
@@ -875,7 +875,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 13.33
+          "elapsed_ms": 20.43
         },
         {
           "case": "loan_duplicate",
@@ -950,7 +950,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.06
+          "elapsed_ms": 10.19
         },
         {
           "case": "loan_partial",
@@ -1025,7 +1025,7 @@
             "precision": 1.0,
             "recall": 0.7777777777777778
           },
-          "elapsed_ms": 8.49
+          "elapsed_ms": 12.9
         },
         {
           "case": "bank_debit_credit",
@@ -1107,7 +1107,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.51
+          "elapsed_ms": 9.59
         },
         {
           "case": "bank_signed",
@@ -1189,7 +1189,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 7.88
+          "elapsed_ms": 9.96
         },
         {
           "case": "bank_cross_page",
@@ -1278,7 +1278,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 14.34
+          "elapsed_ms": 16.73
         },
         {
           "case": "bank_bad_carry",
@@ -1367,7 +1367,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 15.12
+          "elapsed_ms": 20.0
         },
         {
           "case": "injection_note",
@@ -1442,7 +1442,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 10.62
+          "elapsed_ms": 12.67
         },
         {
           "case": "identity_conflict",
@@ -1510,7 +1510,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.19
+          "elapsed_ms": 13.71
         },
         {
           "case": "ambiguous_date",
@@ -1578,7 +1578,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 8.6
+          "elapsed_ms": 8.98
         },
         {
           "case": "currency_guard",
@@ -1653,7 +1653,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 16.92
+          "elapsed_ms": 19.67
         },
         {
           "case": "missing_tranche",
@@ -1728,7 +1728,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "elapsed_ms": 16.48
+          "elapsed_ms": 18.61
         },
         {
           "case": "corrupt_pdf",
@@ -1750,7 +1750,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 0.36
+          "elapsed_ms": 0.46
         },
         {
           "case": "oversized_pdf",
@@ -1772,7 +1772,7 @@
             "precision": null,
             "recall": null
           },
-          "elapsed_ms": 10.87
+          "elapsed_ms": 10.84
         }
       ],
       "fields": {
@@ -1896,7 +1896,7 @@
           "report": {
             "mode": "offline",
             "model_calls": 0,
-            "evaluated_at": "2026-11-03T09:46:47.382843+00:00",
+            "evaluated_at": "2026-11-03T09:52:17.765913+00:00",
             "manifest_sha256": "69cf507cd2a810cb9b0cb0b05bcc3e2fafdaf89ea41fec2d30e3e95cb6b6c78c",
             "cases": [
               {
@@ -1973,7 +1973,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.34
+                "elapsed_ms": 13.11
               },
               {
                 "case": "loan_math_error",
@@ -2049,7 +2049,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.5
+                "elapsed_ms": 20.56
               },
               {
                 "case": "loan_contradiction",
@@ -2125,7 +2125,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 15.99
+                "elapsed_ms": 38.12
               },
               {
                 "case": "loan_partial",
@@ -2201,7 +2201,7 @@
                   "precision": 1.0,
                   "recall": 0.7777777777777778
                 },
-                "elapsed_ms": 7.87
+                "elapsed_ms": 14.45
               },
               {
                 "case": "loan_duplicate",
@@ -2277,7 +2277,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 8.27
+                "elapsed_ms": 11.85
               },
               {
                 "case": "loan_wrong_header",
@@ -2350,7 +2350,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 9.09
+                "elapsed_ms": 16.92
               },
               {
                 "case": "loan_missing_marker",
@@ -2423,7 +2423,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 8.74
+                "elapsed_ms": 11.97
               },
               {
                 "case": "loan_page_scope",
@@ -2496,7 +2496,7 @@
                   "precision": 1.0,
                   "recall": 0.4
                 },
-                "elapsed_ms": 11.37
+                "elapsed_ms": 17.56
               },
               {
                 "case": "loan_injection",
@@ -2572,7 +2572,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.94
+                "elapsed_ms": 16.54
               },
               {
                 "case": "bank_clean",
@@ -2655,7 +2655,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 9.27
+                "elapsed_ms": 18.83
               },
               {
                 "case": "bank_balance_error",
@@ -2738,7 +2738,7 @@
                   "precision": 1.0,
                   "recall": 1.0
                 },
-                "elapsed_ms": 10.45
+                "elapsed_ms": 25.37
               },
               {
                 "case": "bank_ambiguous_sides",
@@ -2821,7 +2821,7 @@
                   "precision": 1.0,
                   "recall": 0.8
                 },
-                "elapsed_ms": 8.77
+                "elapsed_ms": 17.29
               }
             ],
             "fields": {
@@ -2976,7 +2976,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 5797,
+          "duration_ms": 8469,
           "usable_lines": 9,
           "total_lines": 10,
           "field_candidates": []
@@ -3212,7 +3212,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 4859,
+          "duration_ms": 6188,
           "usable_lines": 6,
           "total_lines": 6,
           "field_candidates": [
@@ -3439,7 +3439,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3703,
+          "duration_ms": 3766,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
@@ -3495,7 +3495,7 @@
           "threshold": 0.95,
           "confidence_calibrated": false,
           "performed": true,
-          "duration_ms": 3516,
+          "duration_ms": 3703,
           "usable_lines": 0,
           "total_lines": 0,
           "field_candidates": []
