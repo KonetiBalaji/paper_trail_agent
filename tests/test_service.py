@@ -336,6 +336,12 @@ def test_prior_history_separate_pdf_uploads(service):
     assert run_once(repo, kinds=['monitor']) and run_once(repo, kinds=['monitor'])
     assert repo.get_job('team-a', job_ids[-1])['result']['comparison_counts']['discrepancy'] == 1
     monitor = f'/api/cases/{later}/monitor'
+    assert client.get(monitor).json()['worker_available'] is False
+    worker_id = '9' * 32
+    repo.touch_worker(worker_id, ['monitor'])
+    assert client.get(monitor).json()['worker_available'] is True
+    repo.retire_worker(worker_id)
+    assert client.get(monitor).json()['worker_available'] is False
     entry, = client.get(monitor).json()['entries']
     entry_path = f"{monitor}/{entry['id']}"
     assert client.patch(entry_path, headers=headers, json={'action': 'resolve', 'expected_revision': 0}).status_code == 409

@@ -205,6 +205,7 @@ function renderMonitor(caseId) {
     try {
       const result = await jsonRequest(`${path}?offset=${offset}`);
       output.replaceChildren();
+      if (!result.worker_available) output.append(el('p', 'Monitoring worker is offline. Pending comparisons will run when a worker is available.'));
       if (!result.entries.length) output.append(el('p', 'No discrepancy entries recorded.'));
       for (const entry of result.entries) {
         const card = el('article', undefined, 'panel');

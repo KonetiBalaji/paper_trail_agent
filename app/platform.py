@@ -313,7 +313,9 @@ def create_router(root_provider,analyze_files):
     def monitor_timeline(case_id, offset: int = 0, actor=Depends(principal)):
         if offset < 0:
             raise HTTPException(422, 'Offset must be nonnegative')
-        return resources()[0].monitor_timeline(actor.workspace, case_id, offset)
+        repo = resources()[0]
+        result = repo.monitor_timeline(actor.workspace, case_id, offset)
+        return {**result, 'worker_available': repo.worker_status()['monitor']}
 
     @router.patch('/cases/{case_id}/monitor/{entry_id}')
     def review_monitor(case_id, entry_id, data: MonitorReview, actor=Depends(write_principal)):

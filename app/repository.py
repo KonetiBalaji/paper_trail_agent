@@ -557,7 +557,7 @@ class Repository:
     def worker_status(self,now=None):
         with self.engine.connect() as conn:
             active=conn.execute(select(workers.c.capabilities).where(workers.c.expires_at>(time.time() if now is None else now))).scalars().all()
-        return {kind:any(kind in value.split(',') for value in active) for kind in ('eval','ocr')}
+        return {kind:any(kind in value.split(',') for value in active) for kind in ('eval','ocr','monitor')}
 
     def retire_worker(self,worker_id):
         with self.transaction() as conn:conn.execute(delete(workers).where(workers.c.id==worker_id))
