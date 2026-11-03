@@ -7,3 +7,4 @@ textarea{width:100%;font:inherit;padding:10px;border:1px solid #bdcfc1;border-ra
 .receipt-note{overflow-wrap:anywhere}
 
 @media(max-width:700px){#history-form button{min-height:44px;margin:4px 8px 4px 0}}
+.workspace > *, .comparison-images > * { min-width: 0; }
