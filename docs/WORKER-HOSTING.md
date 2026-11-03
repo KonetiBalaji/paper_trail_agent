@@ -46,5 +46,9 @@ documents zero instances as disabled and a 1 GiB memory request.
 documents 100 CU-hours per project per month. Repeated database polling and
 heartbeats keep compute awake. Verify actual account quotas and choose an
 activation/idle policy before starting a worker. No paid upgrade or running
-daemon is configured by this patch. Container tests do not establish production
-uptime, hosted OCR availability, PostgreSQL recovery or a browser-rendered demo.
+daemon is configured by this patch. The monitoring handler is available in the
+same worker, and the case timeline displays its heartbeat. Confirm an active
+heartbeat and process a fictional carry discrepancy when validating a hosted
+worker. PostgreSQL dump and restore was verified separately in disposable CI
+run 41613699682. Provider backup recovery and hosted worker availability remain
+open.
