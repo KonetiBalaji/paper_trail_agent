@@ -65,6 +65,42 @@ def sample():
         'findings':[{'id':'F1','severity':'review','message':'Synthetic review','sources':[],
             'human_review':{'decision':'pending','revision':0,'history':[]}}],'calculations':[],'trace':[]}
 
+
+def test_postgres_native_dump_restore_preserves_original_versions_and_audit(postgres):
+    import subprocess
+
+    container = os.getenv('PTA_TEST_POSTGRES_CONTAINER')
+    if not container:
+        pytest.skip('Disposable PostgreSQL service container required')
+    repo, url, key = postgres
+    report = sample()
+    original = b'%PDF-SYNTHETIC-RESTORE-CANARY'
+    repo.create_case('team-a', 'uploader', report, [original])
+    repo.review('team-a', 'reviewer', report['id'], 'F1', 'note', 'Fictional restore check', 0, 1)
+    schema_name = url.query['options'].removeprefix('-csearch_path=')
+    target = 'pta_restore_' + uuid.uuid4().hex
+    command = ['docker', 'exec', '-i', container]
+    login = ['-U', url.username]
+    dump = subprocess.check_output(command + ['pg_dump', *login, '-d', url.database,
+        '--schema', schema_name, '--format=custom', '--no-owner', '--no-privileges'], timeout=60)
+    assert original not in dump
+    subprocess.run(command + ['createdb', *login, target], check=True, timeout=30)
+    try:
+        subprocess.run(command + ['pg_restore', *login, '-d', target, '--exit-on-error',
+            '--no-owner', '--no-privileges'], input=dump, check=True, timeout=60)
+        restored = Repository(url.set(database=target).render_as_string(hide_password=False), key)
+        try:
+            assert restored.get_document('team-a', report['id'], 'doc1') == original
+            for version in (1, 2):
+                assert restored.get_case('team-a', report['id'], version) == repo.get_case('team-a', report['id'], version)
+            assert restored.audit('team-a')['verified']
+            with pytest.raises(Missing):
+                restored.get_case('team-b', report['id'])
+        finally:
+            restored.close()
+    finally:
+        subprocess.run(command + ['dropdb', *login, target], check=True, timeout=30)
+
 def test_postgres_roundtrip_review_replay_isolation_delete(postgres):
     repo,_,_=postgres;report=sample();repo.create_case('team-a','alice',report,[b'%PDF-synthetic'])
     assert repo.get_document('team-a',report['id'],'doc1')==b'%PDF-synthetic'
