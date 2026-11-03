@@ -166,3 +166,37 @@ def test_email_intake_authentication_privacy_and_cross_channel_dedup(service):
     assert repeated.status_code == 200 and repeated.json()['id'] == case_id
     read_key, _ = key(client, ('cases:read',))
     assert send({'Authorization': 'Bearer ' + read_key['token']}).status_code == 401
+
+
+def test_mailbox_cursor_advances_only_after_authenticated_intake(service, tmp_path):
+    from email.message import EmailMessage
+    from scripts.poll_statement_mailbox import poll
+
+    client, _, _ = service
+    issued, _ = key(client)
+    message = EmailMessage()
+    message.set_content('Fictional mailbox test')
+    pdf = next((ROOT / 'math_error').glob('*.pdf'))
+    message.add_attachment(pdf.read_bytes(), maintype='application', subtype='pdf')
+
+    class Mailbox:
+        def response(self, code):
+            return code, [b'1234']
+
+        def uid(self, command, *args):
+            if command == 'SEARCH':
+                return 'OK', [b'7']
+            assert command == 'FETCH' and args[0] == '7'
+            return 'OK', [(b'1 (UID 7 BODY[]<0>', message.as_bytes()), b')']
+
+    cursor = tmp_path / 'mailbox.json'
+    endpoint = '/api/integrations/v1/email'
+    scope = ['example.invalid', 'test', 'Statements', 'https://testserver']
+    with pytest.raises(RuntimeError, match='HTTP 401'):
+        poll(Mailbox(), client, endpoint, cursor, scope)
+    assert not cursor.exists()
+    client.headers['Authorization'] = 'Bearer ' + issued['token']
+    assert poll(Mailbox(), client, endpoint, cursor, scope) == 1
+    assert poll(Mailbox(), client, endpoint, cursor, scope) == 0
+    with pytest.raises(RuntimeError, match='identity changed'):
+        poll(Mailbox(), client, endpoint, cursor, scope + ['changed'])

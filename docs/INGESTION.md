@@ -44,4 +44,18 @@ request limit including multipart overhead. HTTP 201 indicates creation and
 HTTP 200 indicates reuse of the same PDFs from any supported intake channel.
 
 See [Historical rules](HISTORICAL-RULES.md) for the private monitoring workflow.
-Mailbox polling, portal connections and hosted email verification remain open.
+For mailbox polling, configure `PTA_IMAP_HOST`, `PTA_IMAP_USER`,
+`PTA_IMAP_PASSWORD`, `PTA_IMAP_FOLDER`, `PTA_INTAKE_ORIGIN` and
+`PTA_INTAKE_KEY` in the connector's environment. Set the origin to the HTTPS
+address of your Paper Trail Agent instance. Use a dedicated statement folder
+and a `cases:submit` key. Run `python scripts/poll_statement_mailbox.py --cursor
+work/mailbox-cursor.json` from one scheduled process with a persistent private
+cursor path. The first run starts at the beginning of that folder.
+
+Each run reads up to ten messages without marking them read. It records progress
+after an accepted or deduplicated submission. A failed message stops the batch
+at the previous cursor. Review the message in the dedicated folder before
+resuming. A UID validity change also stops the connector for operator review.
+The cursor contains mailbox configuration identifiers and belongs in private
+storage. Live mailbox and hosted email verification remain open, along with
+lender and bank portal connections.
