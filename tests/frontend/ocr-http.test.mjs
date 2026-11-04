@@ -284,7 +284,7 @@ test('public synthetic MCP check discovers real tools and shows server call resu
   await waitFor(()=>!ui.doc.getElementById('run-reviewed-layouts').disabled && ui.doc.getElementById('reviewed-layouts-message').textContent,'Reviewed receipt did not load from backend');
   assert.match(ui.doc.getElementById('reviewed-layouts-message').textContent,/Reviewed layouts: active/);
   const layouts=ui.doc.getElementById('reviewed-layouts-results').textContent;
-  assert.match(layouts,/41 corpus cases passed/);assert.match(layouts,/cedar_capital_v1/);
+  assert.match(layouts,/44 corpus cases passed/);assert.match(layouts,/cedar_capital_v1/);assert.match(layouts,/spanish_loan_v1/);
   assert.match(layouts,/assistant/);assert.match(layouts,/Excluded/);
   assert.ok(ui.requests.some(r=>r.path==='/api/layouts' && r.status===200));
   ui.doc.querySelector('[data-fixture="reviewed_math_error"]').click();
