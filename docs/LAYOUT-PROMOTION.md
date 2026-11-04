@@ -160,3 +160,19 @@ run `scripts/promote_layouts.py` to write the receipt and rerun it with
 `--check` to verify the registry.
 A reviewer decision starts this process. The ground truth and regression
 results determine admission.
+
+For a candidate from a real reviewer, keep a private admission record in the
+workspace with the case ID, report version, finding ID, review revision,
+review decision, and source IDs returned by the candidate endpoint. Record
+which synthetic package and case reproduce the behavior, the package manifest
+SHA-256, and the resulting promotion receipt SHA-256. This lets a workspace
+maintainer trace the benchmark result back to the exact decision, even when a
+later report version changes it. Apply the workspace retention policy to that
+record.
+
+Publish only the fictional reconstruction, its independently checked expected
+results, and the synthetic package review. Keep the candidate JSON, private
+identifiers, source text, and screenshots out of the public repository. A
+synthetic rehearsal can verify the steps. Count a real reviewer contribution
+only after a reviewer decision is linked privately to a case in a verified
+promotion receipt.
