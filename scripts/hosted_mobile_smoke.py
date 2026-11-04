@@ -41,7 +41,33 @@ def main():
             assert exported.ok
             assert re.search(r"50\.00\s+USD", exported.text())
             assert "DEMO-001" not in exported.text()
-            print("Phone-width Chromium passed: keyboard start, touch case, layout width, and redacted checklist.")
+            case_id = case_url.rsplit("/", 1)[1]
+            page.locator("#history-query").fill("2026-10-31")
+            page.locator("#history-status").select_option("discrepancies")
+            page.get_by_role("button", name="Search cases").tap()
+            history = page.get_by_role("region", name="Saved cases")
+            reopen = history.get_by_role("button", name=f"Open {case_id[:8]}")
+            expect(reopen).to_be_visible()
+            with page.expect_response(lambda response: response.url.endswith(case_url)) as reopened:
+                reopen.tap()
+            assert reopened.value.ok
+            expect(page.locator("#case-id")).to_have_text(case_id)
+
+            page.get_by_role("checkbox", name="Compare two original statements side by side").check()
+            primary = page.locator("#pdf")
+            secondary = page.locator("#compare-pdf")
+            for image in (primary, secondary):
+                expect(image).to_be_visible()
+            page.wait_for_function("""() => ['pdf', 'compare-pdf'].every(
+                id => document.getElementById(id).naturalWidth > 0)""")
+            assert primary.get_attribute("src") != secondary.get_attribute("src")
+            assert primary.bounding_box()["y"] < secondary.bounding_box()["y"]
+            assert page.evaluate("document.documentElement.scrollWidth === window.innerWidth")
+
+            page.set_viewport_size({"width": 1280, "height": 900})
+            assert primary.bounding_box()["x"] < secondary.bounding_box()["x"]
+            assert abs(primary.bounding_box()["y"] - secondary.bounding_box()["y"]) < 2
+            print("Hosted Chromium passed keyboard, touch, export, history and responsive comparison checks.")
         finally:
             token = next((cookie["value"] for cookie in context.cookies() if cookie["name"] == "pta_csrf"), None)
             if token:
