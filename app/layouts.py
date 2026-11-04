@@ -15,13 +15,13 @@ def is_instruction_note(text):
 
 
 def statement_date(value):
-    if re.fullmatch(YEAR_FIRST_DATE,value):
-        value=value.replace("/", "-")
-    try:return date.fromisoformat(value).isoformat()
-    except ValueError:
-        match=re.fullmatch(r'(\d{1,2}) ([A-Za-z]{3}) (\d{4})',value)
-        if not match:raise ValueError('Unsupported statement date')
-        return date(int(match[3]),MONTHS[match[2].lower()],int(match[1])).isoformat()
+    if re.fullmatch(YEAR_FIRST_DATE, value):
+        return date.fromisoformat(value.replace('/', '-')).isoformat()
+    match = re.fullmatch(r'(\d{1,2}) ([A-Za-z]{3}) (\d{4})', value)
+    if not match or match[2].lower() not in MONTHS:
+        raise ValueError('Unsupported statement date')
+    return date(int(match[3]), MONTHS[match[2].lower()], int(match[1])).isoformat()
+
 
 def augment(doc,result):
     from .layout_proposals import document_mapping

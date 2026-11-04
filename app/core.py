@@ -97,7 +97,7 @@ def parse_statement(doc):
         if m: result['loan_id'] = m[1]
         m = re.search(r'^(?:(?:Document:\s*[\w-]+\s*\|\s*)?(?:Loan|Account):\s*[\w-]+\s*(?:\|\s*)?)?Currency:\s*([A-Z]{3})', text)
         if m: result['currency'] = m[1]
-        m = re.search(r'^(?:Statement\s+)?(?:period end|as of):\s*(' + YEAR_FIRST_DATE + r')', text, re.I)
+        m = re.fullmatch(r'^(?:Statement\s+)?(?:period end|as of):\s*(' + YEAR_FIRST_DATE + r')', text, re.I)
         if m:
             try: result['period_end'] = date.fromisoformat(m[1].replace("/", "-")).isoformat()
             except ValueError: pass

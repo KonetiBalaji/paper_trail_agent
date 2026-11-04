@@ -90,3 +90,12 @@ def test_malformed_labeled_amount_requires_review_even_with_valid_total(malforme
     assert any(line["id"] == issue["source"] and line["text"] == malformed_line
                for line in doc["lines"])
     assert findings and all(finding["severity"] == "review" for finding in findings)
+
+
+@pytest.mark.parametrize("period", ["20261031", "2026-W44-6", "2026-10-31 revised", "31 Okt 2026"])
+def test_unsupported_period_labels_require_review(period):
+    doc = statement("a", "EUR", period, 100)
+    findings, _ = reconcile([doc])
+    assert doc["statement"]["period_end"] is None
+    assert any(finding["type"] == "unsupported_date" for finding in findings)
+    assert all(finding["severity"] == "review" for finding in findings)
