@@ -94,11 +94,11 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8', newline='\n')
 
 
-def generate(root=ROOT):
+def generate(root=ROOT, *, definitions=DEFINITIONS, build_cases=corpus):
     root = Path(root); root.mkdir(parents=True, exist_ok=True)
-    write_json(root / 'definitions.json', {'schema_version': 1, 'fictional': True, 'definitions': DEFINITIONS})
+    write_json(root / 'definitions.json', {'schema_version': 1, 'fictional': True, 'definitions': definitions})
     cases = []
-    for case in corpus():
+    for case in build_cases():
         folder = root / 'cases' / case['case']; folder.mkdir(parents=True, exist_ok=True)
         entry = {key: value for key, value in case.items() if key != 'documents'}; entry['documents'] = []
         for index, doc in enumerate(case['documents'], 1):
@@ -109,7 +109,52 @@ def generate(root=ROOT):
     return cases
 
 
+SPANISH_DEFINITIONS = [{
+    'id': 'spanish_loan_v1', 'marker': 'Layout: PTA-SPANISH-LOAN-V1',
+    'header': 'Tramo Capital Intereses', 'kind': 'loan',
+    'columns': ['principal', 'interest'], 'max_pages': 1,
+}]
+
+
+def spanish_corpus():
+    truth = {
+        'loan_id': 'FICTICIO-001', 'currency': 'EUR', 'period_end': '2026-10-31',
+        'stated_total': '3300.00', 'transactions': [],
+        'tranches': [
+            {'id': 'T1', 'principal': '1000.00', 'interest': '100.00'},
+            {'id': 'T2', 'principal': '2000.00', 'interest': '200.00'},
+        ],
+    }
+    rows = [['T1', '1000.00', '100.00'], ['T2', '2000.00', '200.00']]
+
+    def statement(expected, header):
+        return {'lender': 'Prestamista ficticio', 'truth': expected, 'pages': [[
+            SPANISH_DEFINITIONS[0]['marker'],
+            'Número de préstamo: FICTICIO-001', 'Moneda: EUR',
+            'Fecha de corte: 31 de octubre de 2026',
+            table(header, rows),
+            'Total de capital e intereses: ' + expected['stated_total'],
+        ]]}
+
+    correct_header = ['Tramo', 'Capital', 'Intereses']
+    return [
+        {'case': 'loan_clean', 'expected_status': 'consistent', 'confirmed': [],
+         'documents': [statement(truth, correct_header)]},
+        {'case': 'loan_math_error', 'expected_status': 'discrepancies',
+         'confirmed': [{'type': 'incorrect_statement_total', 'difference': '50.00', 'computed': '3300.00'}],
+         'documents': [statement({**truth, 'stated_total': '3350.00'}, correct_header)]},
+        {'case': 'loan_changed_header', 'expected_status': 'review', 'confirmed': [],
+         'review_types': ['layout_header_missing'],
+         'documents': [statement({**truth, 'tranches': []}, ['Tramo', 'Principal', 'Intereses'])]},
+    ]
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument('--output', type=Path, default=ROOT)
-    result = generate(parser.parse_args().output)
+    parser.add_argument('--spanish', action='store_true', help='Generate the fictional Spanish loan candidate')
+    args = parser.parse_args()
+    if args.spanish and args.output == ROOT:
+        parser.error('--spanish requires a separate --output directory')
+    result = (generate(args.output, definitions=SPANISH_DEFINITIONS, build_cases=spanish_corpus)
+              if args.spanish else generate(args.output))
     print(f'Generated {len(result)} candidate cases; not reviewed or promoted.')
