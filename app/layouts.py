@@ -1,13 +1,21 @@
 """Strict table layouts with explicit headers, linked continuations and provenance.
 
-Unknown column meanings are never inferred. Dates support ISO or English named
-months; ambiguous slash dates remain unsupported.
+Unknown column meanings are never inferred. Dates support ISO, English abbreviated months or
+Spanish named months; ambiguous slash dates remain unsupported.
 """
 import re
 from datetime import date
 from .core import AMOUNT,YEAR_FIRST_DATE,money
 
 MONTHS={month:index for index,month in enumerate(('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'),1)}
+
+SPANISH_MONTHS = {
+    month: index for index, month in enumerate((
+        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+    ), 1)
+}
+
 
 def is_instruction_note(text):
     text = re.sub(r'^L[0-9]+\s+', '', text.strip())
@@ -18,9 +26,12 @@ def statement_date(value):
     if re.fullmatch(YEAR_FIRST_DATE, value):
         return date.fromisoformat(value.replace('/', '-')).isoformat()
     match = re.fullmatch(r'(\d{1,2}) ([A-Za-z]{3}) (\d{4})', value)
-    if not match or match[2].lower() not in MONTHS:
-        raise ValueError('Unsupported statement date')
-    return date(int(match[3]), MONTHS[match[2].lower()], int(match[1])).isoformat()
+    if match and match[2].lower() in MONTHS:
+        return date(int(match[3]), MONTHS[match[2].lower()], int(match[1])).isoformat()
+    match = re.fullmatch(r'(\d{1,2}) de ([a-z]+) de (\d{4})', value, re.I)
+    if match and match[2].lower() in SPANISH_MONTHS:
+        return date(int(match[3]), SPANISH_MONTHS[match[2].lower()], int(match[1])).isoformat()
+    raise ValueError('Unsupported statement date')
 
 
 def augment(doc,result):
@@ -55,10 +66,10 @@ def augment(doc,result):
             if match[2]:assign('currency',match[2].upper(),line)
         match=re.fullmatch(r'(?:Currency|Statement currency):?\s*([A-Z]{3})',text,re.I)
         if match:assign('currency',match[1].upper(),line);metadata=True
-        match=re.fullmatch(r'(?:Statement date|Statement period end|Period end|As of):\s*(.+)',text,re.I)
+        match=re.fullmatch(r'(?:Statement date|Statement period end|Period end|As of|Fecha de corte):\s*(.+)',text,re.I)
         if match:
             try:assign('period_end',statement_date(match[1]),line)
-            except (ValueError,KeyError):issue('unsupported_date','Statement date is invalid or ambiguous; review required.',source)
+            except ValueError:issue('unsupported_date','Statement date is invalid or ambiguous; review required.',source)
             metadata=True
         total_label = r'(?:Total principal and interest|Principal and interest total|Stated principal plus interest total)'
         match = re.fullmatch(total_label + r':?\s*' + AMOUNT, text, re.I)

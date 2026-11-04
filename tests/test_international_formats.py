@@ -6,13 +6,13 @@ from reportlab.pdfgen import canvas
 from app.core import money, parse_statement, read_pdf, reconcile
 
 
-def statement(doc_id, currency, period, interest, interest_text=None, extra_lines=()):
+def statement(doc_id, currency, period, interest, interest_text=None, extra_lines=(), period_label="Period end"):
     stream = io.BytesIO()
     pdf = canvas.Canvas(stream, invariant=True)
     lines = [
         "Loan: DEMO-INTL",
         f"Currency: {currency}",
-        f"Period end: {period}",
+        f"{period_label}: {period}",
         f"Tranche T1 | Principal: 1000.00 | Interest: {interest_text or f'{interest}.00'}",
         f"Stated principal plus interest total: {1000 + interest}.00",
     ]
@@ -99,3 +99,23 @@ def test_unsupported_period_labels_require_review(period):
     assert doc["statement"]["period_end"] is None
     assert any(finding["type"] == "unsupported_date" for finding in findings)
     assert all(finding["severity"] == "review" for finding in findings)
+
+
+def test_spanish_period_label_matches_an_equivalent_iso_period():
+    docs = [
+        statement("a", "EUR", "2026-10-31", 100),
+        statement("b", "EUR", "31 de octubre de 2026", 125, period_label="Fecha de corte"),
+    ]
+    findings, _ = reconcile(docs)
+    assert docs[1]["statement"]["period_end"] == "2026-10-31"
+    finding, = findings
+    assert finding["severity"] == "confirmed"
+    assert finding["difference"] == "25.00"
+
+
+@pytest.mark.parametrize("period", ["31/10/2026", "31 de febrero de 2026"])
+def test_invalid_spanish_period_requires_review(period):
+    doc = statement("a", "EUR", period, 100, period_label="Fecha de corte")
+    findings, _ = reconcile([doc])
+    assert doc["statement"]["period_end"] is None
+    assert any(finding["type"] == "unsupported_date" for finding in findings)
