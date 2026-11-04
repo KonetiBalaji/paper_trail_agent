@@ -1,0 +1,30 @@
+{
+  "case": "loan_clean",
+  "expected_status": "consistent",
+  "confirmed": [],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "726a81628c692c58c1ba2673b26b4eb103ddd521a5fc4ec54db3245cdd96040c",
+      "truth": {
+        "loan_id": "FICTICIO-002",
+        "currency": "EUR",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.25",
+        "transactions": [],
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.25",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ]
+      }
+    }
+  ]
+}

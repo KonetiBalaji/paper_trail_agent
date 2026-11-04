@@ -1,0 +1,36 @@
+{
+  "case": "loan_math_error",
+  "expected_status": "discrepancies",
+  "confirmed": [
+    {
+      "type": "incorrect_statement_total",
+      "difference": "50.00",
+      "computed": "3300.25"
+    }
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "b339da508c571e6862a1be84a65bf9df2b4a79974ea905a31a966b7d5010f25e",
+      "truth": {
+        "loan_id": "FICTICIO-002",
+        "currency": "EUR",
+        "period_end": "2026-10-31",
+        "stated_total": "3350.25",
+        "transactions": [],
+        "tranches": [
+          {
+            "id": "T1",
+            "principal": "1000.25",
+            "interest": "100.00"
+          },
+          {
+            "id": "T2",
+            "principal": "2000.00",
+            "interest": "200.00"
+          }
+        ]
+      }
+    }
+  ]
+}
