@@ -1,0 +1,86 @@
+{
+  "started_at": "2026-11-04T05:00:32.708054+00:00",
+  "status": "passed",
+  "model": "muse-spark-1.3",
+  "mode": "auto",
+  "data": "repository fictional PDFs only",
+  "max_tool_calls_per_case": 8,
+  "cases": [
+    {
+      "case": "injection_note",
+      "result": "passed",
+      "status": "consistent",
+      "tool_call_count": 3,
+      "tools": [
+        "search_evidence",
+        "search_evidence",
+        "calculator"
+      ],
+      "extraction_routes": [
+        {
+          "requested": "auto",
+          "selected": "local",
+          "reason": "recognized_complete_fields"
+        }
+      ],
+      "metrics": {
+        "analysis_ms": 23158.26,
+        "attempted_model_calls": 3,
+        "successful_model_calls": 3,
+        "calls_with_reported_usage": 3,
+        "provider_usage_complete": true,
+        "reported_tokens": {
+          "prompt_tokens": 3801,
+          "completion_tokens": 2764,
+          "total_tokens": 6565
+        },
+        "token_coverage": {
+          "prompt_tokens": 3,
+          "completion_tokens": 3,
+          "total_tokens": 3
+        },
+        "estimated_cost_usd": null,
+        "cost_basis": "unmeasured or rates not configured"
+      },
+      "fixture_sha256": {
+        "data/benchmark/injection_note/statement_1.pdf": "0a5565b137835954a2b7573fbaa1439cdfe5a6f427ebc6e20990567b9f81ea18"
+      },
+      "elapsed_seconds": 23.17
+    }
+  ],
+  "revision": "b8aed11b5450f7021941de315532ab551e51b999",
+  "working_tree_modified": true,
+  "source_sha256_encoding": "UTF-8 with universal LF newlines",
+  "source_sha256": {
+    "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/agent_evals.py": "dbba8f90598c287a7958d237e8d189b628accba0569b4399dc43dbc226fd2f85",
+    "app/benchmark.py": "76f3fc9deaf71f887e3c95c895397303de6e8186c83cef2e45092d371640bbfb",
+    "app/core.py": "d0f2a0c3d9968776168360e716c56d08e0898d6c9ef73462aeb28f2e332b4ddc",
+    "app/drafts.py": "a365973515976b253fdd1526e0deccec6deaea2cf86d8e0d840a157e9db106eb",
+    "app/email_intake.py": "1307c5d6bea5f01ca46fecb900071a68933dab1c0ae54a619316174fa2ea3649",
+    "app/evals.py": "3a7e56a7ba90f5f379363231b74ce74efbd83e8f5207e1d0c0be485150a8ff89",
+    "app/exports.py": "83cc85dc9a4676d3c614434dda79eef0a9ec22121a42d57a14f005146dd88b07",
+    "app/historical.py": "765ccf32662fc59fd27a6bc563b2c21ebfb74cdcb3aafd3d08cf78de0201ff33",
+    "app/ingestion.py": "0b8e9be3f3e698fd097bfd2a4babe147719a5fde3a8120fa6e73cc0c735cb13f",
+    "app/integrations.py": "35d2002a5606ef3bce47d7a79e5e4b2ae8b6dd44937f17b6f8f5d2aa98157573",
+    "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
+    "app/layout_registry.py": "8305eba8900fbdb1aa51c61957f2ad61e1ac13fc1a0adfe27d35c88dbd8d6a04",
+    "app/layouts.py": "c2cebf035a113a2e94b3949b6b6bdf367410cf2756c158b41419d86023716ac1",
+    "app/main.py": "a861f3410d72e9c374f717786cd0b202f974ccb48d78d6d022e0c2d0917443fd",
+    "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
+    "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",
+    "app/meta.py": "c8b31a1010818397cdeae3292436d1d06e781bb1f69bbe76eb9bf7f67b834764",
+    "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
+    "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
+    "app/orchestration.py": "bf8be929e36d41eb4efa4d128f72e25531458b3edf209da14a83afcb7c2d4418",
+    "app/platform.py": "901bf971f1523258347dda13ffff04d14c9da832ef4d7d2cc6312a457d2eebee",
+    "app/policies.py": "24705e6865369d1f78e49118da067e19353cda220a0fc79ce33711c94413ab25",
+    "app/privacy.py": "daa3e7adf45655801928437c89b02ed7c695c8edd50c4360579ff1abc084ee38",
+    "app/repository.py": "09a4b1748d7ffa13024433309494e9b6595daed41af160e64594bb329808e274",
+    "app/security.py": "c74c0aa4a1ae1b6c51e28116a343e389c849cbdf422ecdca260683be6f70b5cf",
+    "app/telemetry.py": "5212a9f9fcdc3e8949bee3386ed98f1b559a7523ea37d2a9b995aac70a9ac182",
+    "app/trace.py": "25943af20fe5fe5aebad4857bdcb04f9b99f50c0ca86eae196619fcf4e37763f",
+    "app/worker.py": "f44b4c5047d590d27625989b36748f3bea63b567ab245e540c463ed19e349991"
+  },
+  "finished_at": "2026-11-04T05:00:55.987811+00:00"
+}

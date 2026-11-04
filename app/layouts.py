@@ -9,6 +9,11 @@ from .core import AMOUNT,YEAR_FIRST_DATE,money
 
 MONTHS={month:index for index,month in enumerate(('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'),1)}
 
+def is_instruction_note(text):
+    text = re.sub(r'^L[0-9]+\s+', '', text.strip())
+    return bool(re.match(r'^(?:NOTE|SYSTEM|ASSISTANT|USER|DEVELOPER|INSTRUCTION):', text, re.I))
+
+
 def statement_date(value):
     if re.fullmatch(YEAR_FIRST_DATE,value):
         value=value.replace("/", "-")
@@ -41,7 +46,7 @@ def augment(doc,result):
         if pending:issue('partial_extraction','A split table row has no unambiguous linked continuation.',pending['line']['id']);pending=None
     for line in doc['lines']:
         text=re.sub(r'^L\d+\s+','',' '.join(line['text'].split()));source=line['id']
-        if re.match(r'^(?:NOTE|SYSTEM|ASSISTANT|USER|DEVELOPER|INSTRUCTION):',text,re.I):continue
+        if is_instruction_note(text):continue
         if re.fullmatch(r'Page\s+\d+(?:\s+(?:of|/)\s*\d+)?',text,re.I):continue
         metadata=False
         match=re.fullmatch(r'(?:Document:\s*[\w-]+\s*\|\s*)?(?:Loan|Account)(?: number| no\.?| id)?:\s*([\w-]+)(?:\s*(?:\|\s*)?Currency:\s*([A-Z]{3}))?',text,re.I)
