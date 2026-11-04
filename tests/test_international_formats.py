@@ -6,7 +6,7 @@ from reportlab.pdfgen import canvas
 from app.core import money, parse_statement, read_pdf, reconcile
 
 
-def statement(doc_id, currency, period, interest, interest_text=None):
+def statement(doc_id, currency, period, interest, interest_text=None, extra_lines=()):
     stream = io.BytesIO()
     pdf = canvas.Canvas(stream, invariant=True)
     lines = [
@@ -16,7 +16,7 @@ def statement(doc_id, currency, period, interest, interest_text=None):
         f"Tranche T1 | Principal: 1000.00 | Interest: {interest_text or f'{interest}.00'}",
         f"Stated principal plus interest total: {1000 + interest}.00",
     ]
-    for index, line in enumerate(lines):
+    for index, line in enumerate([*lines, *extra_lines]):
         pdf.drawString(40, 750 - index * 20, line)
     pdf.save()
     doc = read_pdf(stream.getvalue(), f"{doc_id}.pdf", doc_id)
@@ -76,3 +76,17 @@ def test_valid_western_and_indian_digit_grouping(amount, expected):
 def test_invalid_digit_grouping_rejected_by_calculator(amount):
     with pytest.raises(ValueError, match="digit grouping"):
         money(amount)
+
+
+@pytest.mark.parametrize("malformed_line", [
+    "Stated principal plus interest total: 1100.005",
+    "Opening balance: 1,00.00",
+    "Balance carried forward: 1,,100.00",
+])
+def test_malformed_labeled_amount_requires_review_even_with_valid_total(malformed_line):
+    doc = statement("a", "EUR", "2026-10-31", 100, extra_lines=[malformed_line])
+    findings, _ = reconcile([doc])
+    issue = next(item for item in doc["issues"] if item["type"] == "partial_extraction")
+    assert any(line["id"] == issue["source"] and line["text"] == malformed_line
+               for line in doc["lines"])
+    assert findings and all(finding["severity"] == "review" for finding in findings)
