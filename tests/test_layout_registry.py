@@ -36,7 +36,7 @@ def admitted(tmp_path):
     report['review_records'][0]['record_sha256'] = registry.digest(tmp_path / 'data/layout_packages/cedar_v1/review.json')
     def save():
         write(tmp_path / registry.REPORT, report)
-        write(tmp_path / registry.REGISTRY, {'schema_version': 1, 'packages': ['cedar_v1', 'spanish_loan_v1'],
+        write(tmp_path / registry.REGISTRY, {'schema_version': 1, 'packages': ['cedar_v1', 'spanish_comma_v1', 'spanish_loan_v1'],
                                            'report_sha256': registry.digest(tmp_path / registry.REPORT)})
     save()
     return tmp_path, report, save
@@ -46,7 +46,7 @@ def test_valid_receipt_enables_exact_native_mapping_and_real_calculation(admitte
     root, _, _ = admitted
     monkeypatch.setattr(registry, 'ROOT', root)
     status = registry.load()
-    assert status['status'] == 'active' and len(status['definitions']) == 3 and status['corpus_cases'] == 44
+    assert status['status'] == 'active' and len(status['definitions']) == 4 and status['corpus_cases'] == 47
     path = root / 'data/layout_packages/cedar_v1/cases/loan_math_error/statement_1.pdf'
     report = main.analyze_files([UploadFile(filename='fictional.pdf', file=io.BytesIO(path.read_bytes()))], 'local', persist=False)
     assert report['status'] == 'discrepancies'
@@ -110,7 +110,7 @@ def test_status_api_is_read_only_and_never_calls_a_provider(admitted, monkeypatc
     with TestClient(main.app) as client:
         response = client.get('/api/layouts')
         assert response.status_code == 200 and response.json()['status'] == 'active'
-        assert len(response.json()['layouts']) == 3
+        assert len(response.json()['layouts']) == 4
         assert response.json()['layouts'][0]['ocr_supported'] is False
         assert client.post('/api/layouts', json={'promoted': True}).status_code == 405
 

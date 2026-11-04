@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "review_kind": "assistant",
+  "reviewer": "Codex",
+  "reviewed_on_utc": "2026-11-04",
+  "decision": "reviewed_for_synthetic_scope",
+  "human_approval": false,
+  "scope": "Three fictional one-page native-text EUR loan fixtures with declared decimal-comma amounts.",
+  "definition_sha256": {
+    "spanish_comma_v1": "552fcc72bb1f5fe2a37a517070986e7b6124cdd9605d42caff330b9b74d8a189"
+  },
+  "manifest_sha256": "02edbc01d4169e2b10014295813412d6a76761ce355244e077d6c5b601c0a812",
+  "reviewed_meanings": [
+    "Capital pendiente is principal and Intereses devengados is accrued interest for these fixtures.",
+    "The exact mapping declares decimal comma and period grouping. The printed rows sum to 3300.25 EUR.",
+    "The printed 3350.25 EUR total is 50.00 EUR high. The mixed-format row is withheld for review."
+  ],
+  "review_evidence": [
+    "Inspected the extracted native text of all three PDFs and checked the amounts against the fixed known answers."
+  ],
+  "activation": "A valid source-bound promotion receipt is required separately."
+}
