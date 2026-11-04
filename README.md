@@ -258,7 +258,7 @@ Restart the server and select Muse Spark mode. The key remains on the server; it
 
 ## Authenticated database service
 
-Set `PAPER_TRAIL_MODE=service`, `DATABASE_URL`, and `DATA_ENCRYPTION_KEY` in server secret settings. Vercel requires PostgreSQL with TLS enabled; use Neon's pooled connection string. The encryption key must be a valid Fernet key and must be backed up separately from the database. Losing it makes encrypted documents and reports unrecoverable. Missing configuration fails closed. Never commit these values or paste them into chat.
+Set `PAPER_TRAIL_MODE=service`, `DATABASE_URL`, and `DATA_ENCRYPTION_KEY` in server secret settings. Vercel requires PostgreSQL. PostgreSQL in service mode requires one TLS-enforcing sslmode, including when the worker runs outside Vercel. Use Neon's pooled connection string for hosted service access. The encryption key must be a valid Fernet key and must be backed up separately from the database. Losing it makes encrypted documents and reports unrecoverable. Missing configuration fails closed. Never commit these values or paste them into chat.
 
 Service mode stores encrypted PDFs, reports and user identifiers in the database, isolates workspaces, uses opaque sessions and CSRF protection, and enforces admin/reviewer/viewer permissions. Provision accounts interactively with `python scripts/manage_users.py --email EMAIL --workspace WORKSPACE --role admin`; passwords are entered through a hidden prompt. There is no public registration. Local mode retains the original file storage behavior.
 

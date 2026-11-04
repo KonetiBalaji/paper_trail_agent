@@ -170,9 +170,12 @@ def test_passwords_are_salted_and_verified():
     assert not password_matches('wrong',first)
     with pytest.raises(ValueError):password_hash('short')
 
-@pytest.mark.parametrize('sslmode',['disable','allow','prefer',''])
-def test_vercel_requires_tls_before_database_connect(monkeypatch,tmp_path,sslmode):
-    monkeypatch.setenv('VERCEL','1');monkeypatch.setenv('DATABASE_URL','postgresql://synthetic:fake@localhost/not-used?sslmode='+sslmode)
+@pytest.mark.parametrize('vercel', ['0', '1'])
+@pytest.mark.parametrize('sslmode', ['disable', 'allow', 'prefer', '', 'require&sslmode=disable'])
+def test_service_requires_tls_before_database_connect(monkeypatch, tmp_path, sslmode, vercel):
+    monkeypatch.setenv('VERCEL', vercel)
+    monkeypatch.setenv('PAPER_TRAIL_MODE', 'service')
+    monkeypatch.setenv('DATABASE_URL','postgresql://synthetic:fake@localhost/not-used?sslmode='+sslmode)
     monkeypatch.setenv('DATA_ENCRYPTION_KEY',Fernet.generate_key().decode())
     with pytest.raises(Exception) as exc:platform.runtime(tmp_path)
     assert getattr(exc.value,'status_code',None)==503

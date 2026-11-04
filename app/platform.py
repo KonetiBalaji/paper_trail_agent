@@ -29,10 +29,13 @@ def runtime(root):
     url=os.getenv('DATABASE_URL','').strip();key=os.getenv('DATA_ENCRYPTION_KEY','').strip()
     if service_mode():
         if not url or not key:raise HTTPException(503,'Service requires DATABASE_URL and DATA_ENCRYPTION_KEY in server secret settings.')
-        if os.getenv('VERCEL')=='1':
-            sslmode=parse_qs(urlsplit(url).query).get('sslmode',[''])[0]
-            if not url.startswith(('postgres://','postgresql://','postgresql+psycopg://')) or sslmode not in ('require','verify-ca','verify-full'):
-                raise HTTPException(503,'Vercel service requires PostgreSQL with TLS required.')
+        postgres = url.startswith(('postgres://','postgresql://','postgresql+psycopg://'))
+        if os.getenv('VERCEL') == '1' and not postgres:
+            raise HTTPException(503, 'Vercel service requires PostgreSQL.')
+        if postgres:
+            ssl_modes = parse_qs(urlsplit(url).query, keep_blank_values=True).get('sslmode', [])
+            if len(ssl_modes) != 1 or ssl_modes[0] not in ('require', 'verify-ca', 'verify-full'):
+                raise HTTPException(503, 'Service PostgreSQL requires a single TLS-enforcing sslmode.')
     else:
         root=Path(root);root.mkdir(parents=True,exist_ok=True)
         url=url or 'sqlite:///'+(root/'platform.sqlite3').as_posix()
