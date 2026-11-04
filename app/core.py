@@ -93,20 +93,20 @@ def parse_statement(doc):
         if m:
             try: result['period_end'] = date.fromisoformat(m[1].replace("/", "-")).isoformat()
             except ValueError: pass
-        m = re.search(r'^Tranche\s+([\w-]+)\s*\|\s*Principal:\s*'+AMOUNT+r'\s*\|\s*Interest:\s*'+AMOUNT, text, re.I)
+        m = re.fullmatch(r'^Tranche\s+([\w-]+)\s*\|\s*Principal:\s*'+AMOUNT+r'\s*\|\s*Interest:\s*'+AMOUNT, text, re.I)
         if m:
             result['tranches'].append({'id':m[1], 'principal':format(money(m[2]),'.2f'),
                 'interest':format(money(m[3]),'.2f'),'source':source})
         elif re.search(r'^Tranche\s+[\w-]+\s*\|',text,re.I):
             doc.setdefault('issues',[]).append({'type':'partial_extraction','message':'A tranche row could not be fully extracted; review required.'})
-        m = re.search(r'^Stated principal plus interest total:\s*'+AMOUNT,text,re.I)
+        m = re.fullmatch(r'^Stated principal plus interest total:\s*'+AMOUNT,text,re.I)
         if m: result.update(stated_total=format(money(m[1]),'.2f'),total_source=source)
         for field in ('opening','closing'):
-            m = re.search('^'+field+r' balance:\s*'+AMOUNT,text,re.I)
+            m = re.fullmatch('^'+field+r' balance:\s*'+AMOUNT,text,re.I)
             if m:
                 result[field+'_balance']=format(money(m[1]),'.2f')
                 result[field+'_source']=source
-        m = re.search(r'^Transaction\s+([\w-]+)\s*\|\s*(' + YEAR_FIRST_DATE + r')\s*\|\s*Amount:\s*'+AMOUNT,text,re.I)
+        m = re.fullmatch(r'^Transaction\s+([\w-]+)\s*\|\s*(' + YEAR_FIRST_DATE + r')\s*\|\s*Amount:\s*'+AMOUNT,text,re.I)
         if m:
             try: transaction_date=date.fromisoformat(m[2].replace("/", "-")).isoformat()
             except ValueError:
