@@ -476,3 +476,14 @@ def test_monitor_claim_refreshes_worker_readiness(service, monkeypatch):
     monkeypatch.setattr(historical, 'prior_case_history', compare)
     assert run_once(repo, kinds=['monitor'], worker_id=worker_id)
     assert repo.get_job('team-a', 'monitor-fixture')['state'] == 'completed'
+
+
+def test_rejected_demo_starts_preserve_shared_quota(service):
+    client, repo, _ = service
+    for _ in range(6):
+        assert client.post('/api/platform/demo/start').status_code == 200
+    for _ in range(4):
+        response = client.post('/api/platform/demo/start')
+        assert response.status_code == 429
+        assert 1 <= int(response.headers['Retry-After']) <= 3600
+    assert repo.consume('demo-start-global', 60, 3600) == 7

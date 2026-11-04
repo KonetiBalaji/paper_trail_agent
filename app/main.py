@@ -259,7 +259,9 @@ async def missing_handler(request,exc):return JSONResponse({'detail':'Not found'
 async def conflict_handler(request,exc):return JSONResponse({'detail':str(exc)},status_code=409)
 
 @app.exception_handler(LimitExceeded)
-async def usage_handler(request,exc):return JSONResponse({'detail':'Usage limit reached; try later.'},status_code=429,headers={'Retry-After':'60'})
+async def usage_handler(request, exc):
+    headers = {'Retry-After': str(exc.retry_after)} if exc.retry_after is not None else {}
+    return JSONResponse({'detail':'Usage limit reached; try later.'}, status_code=429, headers=headers)
 
 @app.exception_handler(SQLAlchemyError)
 async def database_handler(request,exc):return JSONResponse({'detail':'Database unavailable; no successful result was recorded.'},status_code=503)
@@ -272,7 +274,9 @@ async def service_boundary(request,call_next):
             bucket='public-layout-status' if request.url.path=='/api/layouts' else 'public-agent-evaluation' if request.url.path=='/api/agent-evals' else 'public-benchmark' if extended else 'public-evaluation'
             try:platform.runtime(STORE)[0].consume(bucket,60 if extended else 120,3600)
             except HTTPException as exc:return JSONResponse({'detail':exc.detail},status_code=exc.status_code)
-            except LimitExceeded:return JSONResponse({'detail':'Evaluation usage limit reached'},status_code=429,headers={'Retry-After':'60'})
+            except LimitExceeded as exc:
+                return JSONResponse({'detail':'Evaluation usage limit reached'}, status_code=429,
+                                    headers={'Retry-After':str(exc.retry_after)})
             except SQLAlchemyError:return JSONResponse({'detail':'Database unavailable'},status_code=503)
         if request.method not in ('GET','HEAD','OPTIONS'):
             origin=request.headers.get('origin')

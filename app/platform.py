@@ -161,8 +161,8 @@ def create_router(root_provider,analyze_files):
     @router.post('/demo/start')
     def demo_start(request:Request,response:Response):
         repo,security=resources()
-        repo.consume('demo-start-global',60,3600)
         repo.consume('demo-start:'+security.digest(request.client.host if request.client else 'unknown'),6,3600)
+        repo.consume('demo-start-global',60,3600)
         repo.expire_demo_data()
         token,csrf=security.demo_session()
         response.set_cookie('pta_session',token,httponly=True,secure=service_mode(),samesite='strict',max_age=3600,path='/')
