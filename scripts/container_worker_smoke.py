@@ -70,6 +70,14 @@ def main():
             check('active_ocr_completed',repo.get_job('container-synthetic',queued['job_id'])['state']=='completed')
             check('no_new_job_after_sigterm',repo.get_job('container-synthetic',untouched)['state']=='queued')
             check('heartbeat_retired',not any(repo.worker_status().values()))
+            subprocess.run(
+                [sys.executable, 'scripts/worker_entrypoint.py', '--once'],
+                cwd=ROOT, env=env, check=True, timeout=120,
+            )
+            evaluation=repo.get_job('container-synthetic',untouched)
+            check('queued_eval_completed',evaluation['state']=='completed' and evaluation['result']['summary']['failed']==0)
+            check('one_shot_heartbeat_retired',not any(repo.worker_status().values()))
+
             derived=repo.get_case('container-synthetic',original['id'])
             check('versioned_review',derived['report_version']==2 and derived['status']=='review')
             check('fifty_candidate_difference',any(f.get('difference')=='50.00' and f['severity']=='review' for f in derived['findings']))
