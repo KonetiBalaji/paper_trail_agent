@@ -36,7 +36,7 @@ PyJWT==2.15.1
 pypdfium2==5.14.0
 pytest==9.2.0
 python-dotenv==1.2.4
-python-multipart==0.0.32
+python-multipart==0.0.33
 pywin32==312; sys_platform == "win32"
 referencing==0.37.0
 reportlab==5.1.0
