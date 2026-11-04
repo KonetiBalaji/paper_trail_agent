@@ -60,18 +60,18 @@ def augment(doc,result):
         if is_instruction_note(text):continue
         if re.fullmatch(r'Page\s+\d+(?:\s+(?:of|/)\s*\d+)?',text,re.I):continue
         metadata=False
-        match=re.fullmatch(r'(?:Document:\s*[\w-]+\s*\|\s*)?(?:Loan|Account)(?: number| no\.?| id)?:\s*([\w-]+)(?:\s*(?:\|\s*)?Currency:\s*([A-Z]{3}))?',text,re.I)
+        match=re.fullmatch(r'(?:Document:\s*[\w-]+\s*\|\s*)?(?:(?:Loan|Account)(?: number| no\.?| id)?|N\u00famero de pr\u00e9stamo):\s*([\w-]+)(?:\s*(?:\|\s*)?Currency:\s*([A-Z]{3}))?',text,re.I)
         if match:
             assign('loan_id',match[1],line);metadata=True
             if match[2]:assign('currency',match[2].upper(),line)
-        match=re.fullmatch(r'(?:Currency|Statement currency):?\s*([A-Z]{3})',text,re.I)
+        match=re.fullmatch(r'(?:Currency|Statement currency|Moneda):?\s*([A-Z]{3})',text,re.I)
         if match:assign('currency',match[1].upper(),line);metadata=True
         match=re.fullmatch(r'(?:Statement date|Statement period end|Period end|As of|Fecha de corte):\s*(.+)',text,re.I)
         if match:
             try:assign('period_end',statement_date(match[1]),line)
             except ValueError:issue('unsupported_date','Statement date is invalid or ambiguous; review required.',source)
             metadata=True
-        total_label = r'(?:Total principal and interest|Principal and interest total|Stated principal plus interest total)'
+        total_label = r'(?:Total principal and interest|Principal and interest total|Stated principal plus interest total|Total de capital e intereses)'
         match = re.fullmatch(total_label + r':?\s*' + AMOUNT, text, re.I)
         if match:
             assign('stated_total', format(money(match[1]), '.2f'), line, 'total_source')
