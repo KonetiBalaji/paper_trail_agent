@@ -23,6 +23,20 @@ jobs:
           printf 'SYNTHETIC_BUILD_CONTEXT_PROBE' > data/private/build-probe.txt
       - name: Build pinned amd64 OCR worker image
         run: docker build --platform linux/amd64 --file Dockerfile.worker --tag paper-trail-worker:ci .
+      - name: Scan worker OS packages for vulnerabilities
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        with:
+          image-ref: paper-trail-worker:ci
+          scanners: vuln
+          vuln-type: os
+          format: json
+          output: worker-os-vulnerabilities.json
+          exit-code: '0'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: worker-os-vulnerabilities
+          path: worker-os-vulnerabilities.json
       - name: Offline, resource-bounded container and shutdown verification
         shell: bash
         run: |
