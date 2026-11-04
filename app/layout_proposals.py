@@ -8,6 +8,7 @@ from contextvars import ContextVar
 import hashlib
 import json
 import re
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -24,6 +25,7 @@ class Proposal(BaseModel):
     kind: str
     columns: tuple[str, ...]
     max_pages: int = Field(ge=1, le=50)
+    amount_format: Literal['dot_decimal', 'decimal_comma'] = 'dot_decimal'
 
     @model_validator(mode='after')
     def literal_mapping(self):
@@ -32,12 +34,14 @@ class Proposal(BaseModel):
                    'bank_columns': {('debit', 'credit'), ('credit', 'debit')}}
         if self.kind not in allowed or self.columns not in allowed[self.kind]:
             raise ValueError('Only existing deterministic column semantics are allowed')
+        if self.amount_format == 'decimal_comma' and self.kind != 'loan':
+            raise ValueError('Decimal comma is supported only for reviewed loan tables')
         if not re.fullmatch(r'[A-Za-z][A-Za-z |]{3,119}', self.header):
             raise ValueError('A header must be literal English column labels, not a pattern or instruction')
         return self
 
     def fingerprint(self):
-        raw = json.dumps(self.model_dump(mode='json'), sort_keys=True, separators=(',', ':'))
+        raw = json.dumps(self.model_dump(mode='json', exclude_defaults=True), sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(raw.encode()).hexdigest()
 
 
@@ -102,6 +106,8 @@ def document_mapping(doc):
                            'marker_sources': [line['id'] for line, _ in markers],
                            'header_sources': [line['id'] for line in headers],
                            'promoted': False}
+    if proposal.amount_format != 'dot_decimal':
+        evidence['amount_format'] = proposal.amount_format
     if deployed is not None:
         doc['layout_support'] = evidence | deployed['provenance'][proposal.id]
     else:

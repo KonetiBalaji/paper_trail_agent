@@ -163,3 +163,40 @@ def test_spanish_loan_layout_requires_gated_mapping(tmp_path, monkeypatch):
     assert finding["severity"] == "confirmed"
     assert finding["computed"] == "3300.00" and finding["difference"] == "50.00"
     assert len(finding["sources"]) == 3
+
+
+def test_reviewed_decimal_comma_layout_preserves_exact_values(tmp_path, monkeypatch):
+    from app import layout_registry, meta
+    from app.layout_proposals import Proposal, trial
+    from scripts.generate_benchmark_fixtures import render, table
+
+    mapping = Proposal(
+        id="spanish_comma_trial", marker="Layout: PTA-SPANISH-COMMA-V1",
+        header="Tramo Capital Intereses", kind="loan",
+        columns=("principal", "interest"), max_pages=1, amount_format="decimal_comma",
+    )
+    path = tmp_path / "spanish-comma.pdf"
+    render(path, {"lender": "Prestamista ficticio", "pages": [[
+        mapping.marker, "Moneda: EUR", "Fecha de corte: 31 de octubre de 2026",
+        "N\u00famero de pr\u00e9stamo: FICTICIO-001",
+        table(["Tramo", "Capital", "Intereses"], [
+            ["T1", "1.000,25", "100,00"], ["T2", "2.000,00", "200,00"],
+        ]),
+        "Total de capital e intereses: 3.350,25",
+    ]]})
+    raw = path.read_bytes()
+    doc = read_pdf(raw, path.name, "doc1")
+    with trial([mapping]):
+        doc["statement"] = parse_statement(doc)
+        assert meta.validate_statement(doc["statement"], doc) == doc["statement"]
+        findings, _ = reconcile([doc])
+    finding, = findings
+    assert finding["computed"] == "3300.25" and finding["difference"] == "50.00"
+    assert len(finding["sources"]) == 3
+
+    monkeypatch.setattr(layout_registry, "ROOT", tmp_path)
+    unreviewed = read_pdf(raw, path.name, "doc1")
+    unreviewed["statement"] = parse_statement(unreviewed)
+    findings, _ = reconcile([unreviewed])
+    assert not unreviewed["statement"]["tranches"]
+    assert all(item["severity"] == "review" for item in findings)

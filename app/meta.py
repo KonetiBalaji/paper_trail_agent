@@ -8,7 +8,7 @@ from collections import Counter
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
 from .core import AMOUNT, money,parse_statement
-from .layouts import is_instruction_note
+from .layouts import is_instruction_note, reviewed_amount_format
 from .trace import record
 
 MAX_TURNS=6
@@ -112,11 +112,12 @@ def validate_statement(data, doc):
     lines = {l['id']:l['text'] for l in usable_lines}
     baseline_doc={'lines':usable_lines,'issues':[]}
     baseline=parse_statement(baseline_doc)
+    source_amount, source_money = reviewed_amount_format(baseline_doc)
     if baseline_doc['issues']:raise EvidenceError('Document has ambiguous or incomplete recognized fields')
     def grounded(value, source):
         if source not in lines: raise EvidenceError('Invalid source citation')
-        tokens = re.findall(r'(?<![\w.,($+-])' + AMOUNT + r'(?![\w.,)])', lines[source])
-        if money(value) not in [money(token) for token in tokens]:
+        tokens = re.findall(r'(?<![\w.,($+-])' + source_amount + r'(?![\w.,)])', lines[source])
+        if money(value) not in [source_money(token) for token in tokens]:
             raise EvidenceError('Amount is not present on cited source line')
     for t in parsed['tranches']:
         for field in ('principal_source','interest_source'):

@@ -33,6 +33,17 @@
         "loan_math_error",
         "loan_changed_header"
       ]
+    },
+    "spanish_comma_v1": {
+      "manifest_sha256": "02edbc01d4169e2b10014295813412d6a76761ce355244e077d6c5b601c0a812",
+      "definition_sha256": {
+        "spanish_comma_v1": "552fcc72bb1f5fe2a37a517070986e7b6124cdd9605d42caff330b9b74d8a189"
+      },
+      "cases": [
+        "loan_clean",
+        "loan_math_error",
+        "loan_mixed_amount"
+      ]
     }
   }
 }

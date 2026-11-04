@@ -8,7 +8,8 @@ from datetime import datetime,timezone
 from collections import Counter,defaultdict
 from pathlib import Path
 from fastapi import HTTPException,UploadFile
-from .core import AMOUNT,money
+from .core import money
+from .layouts import reviewed_amount_format
 
 ROOT=Path(__file__).resolve().parents[1]/'data'/'benchmark'
 FIELDS=('loan_id','currency','period_end','stated_total','opening_balance','closing_balance')
@@ -92,11 +93,13 @@ def evaluate_case(case,root=ROOT,analyzer=None):
             if bad or any(key not in gold_values or value!=gold_values[key] for key,value in actual_values.items()):
                 errors.append('Extracted fields differ from ground truth outside expected review abstentions')
             index={line['id']:line for line in doc['lines']}
+            amount, source_money = reviewed_amount_format(doc)
+            amount_token = r'(?<![\w.,($+-])' + amount + r'(?![\w.,)])'
             for field,value,source,signed_columns in amount_sources(doc):
                 result['citation_count']+=1;line=index.get(source)
                 if line:
                     result['resolved_citations']+=1;pages[doc['id']+':'+field]=line['page']
-                    tokens=[money(match[0]) for match in re.finditer(AMOUNT,line['text'])]
+                    tokens=[source_money(match[0]) for match in re.finditer(amount_token,line['text'])]
                     if money(value) in tokens or (signed_columns and abs(money(value)) in tokens):result['grounded_citations']+=1
         result['fields']={field:ratios(row) for field,row in sorted(counters.items())}
         if any(pages.get(key)!=page for key,page in case.get('source_pages',{}).items()):errors.append('Wrong page for a cross-page figure')

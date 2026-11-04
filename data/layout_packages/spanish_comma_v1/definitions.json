@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "definitions": [
+    {
+      "id": "spanish_comma_v1",
+      "marker": "Layout: PTA-SPANISH-COMMA-V1",
+      "header": "Tramo Capital pendiente Intereses devengados",
+      "kind": "loan",
+      "columns": [
+        "principal",
+        "interest"
+      ],
+      "max_pages": 1,
+      "amount_format": "decimal_comma"
+    }
+  ]
+}

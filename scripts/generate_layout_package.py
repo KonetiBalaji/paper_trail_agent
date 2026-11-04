@@ -149,12 +149,60 @@ def spanish_corpus():
     ]
 
 
+SPANISH_COMMA_DEFINITIONS = [{
+    'id': 'spanish_comma_v1', 'marker': 'Layout: PTA-SPANISH-COMMA-V1',
+    'header': 'Tramo Capital pendiente Intereses devengados', 'kind': 'loan',
+    'columns': ['principal', 'interest'], 'max_pages': 1,
+    'amount_format': 'decimal_comma',
+}]
+
+
+def spanish_comma_corpus():
+    truth = {
+        'loan_id': 'FICTICIO-002', 'currency': 'EUR', 'period_end': '2026-10-31',
+        'stated_total': '3300.25', 'transactions': [],
+        'tranches': [
+            {'id': 'T1', 'principal': '1000.25', 'interest': '100.00'},
+            {'id': 'T2', 'principal': '2000.00', 'interest': '200.00'},
+        ],
+    }
+    rows = [['T1', '1.000,25', '100,00'], ['T2', '2.000,00', '200,00']]
+
+    def statement(expected, printed_total, printed_rows):
+        return {'lender': 'Prestamista ficticio', 'truth': expected, 'pages': [[
+            SPANISH_COMMA_DEFINITIONS[0]['marker'],
+            'Número de préstamo: FICTICIO-002', 'Moneda: EUR',
+            'Fecha de corte: 31 de octubre de 2026',
+            table(['Tramo', 'Capital pendiente', 'Intereses devengados'], printed_rows),
+            'Total de capital e intereses: ' + printed_total,
+        ]]}
+
+    return [
+        {'case': 'loan_clean', 'expected_status': 'consistent', 'confirmed': [],
+         'documents': [statement(truth, '3.300,25', rows)]},
+        {'case': 'loan_math_error', 'expected_status': 'discrepancies',
+         'confirmed': [{'type': 'incorrect_statement_total', 'difference': '50.00', 'computed': '3300.25'}],
+         'documents': [statement({**truth, 'stated_total': '3350.25'}, '3.350,25', rows)]},
+        {'case': 'loan_mixed_amount', 'expected_status': 'review', 'confirmed': [],
+         'review_types': ['partial_extraction'],
+         'documents': [statement({**truth, 'tranches': truth['tranches'][1:]},
+                                 '3.300,25', [['T1', '1,000.25', '100,00'], rows[1]])]},
+    ]
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument('--output', type=Path, default=ROOT)
     parser.add_argument('--spanish', action='store_true', help='Generate the fictional Spanish loan candidate')
+    parser.add_argument('--spanish-comma', action='store_true', help='Generate the decimal-comma loan candidate')
     args = parser.parse_args()
-    if args.spanish and args.output == ROOT:
-        parser.error('--spanish requires a separate --output directory')
-    result = (generate(args.output, definitions=SPANISH_DEFINITIONS, build_cases=spanish_corpus)
-              if args.spanish else generate(args.output))
+    if args.spanish and args.spanish_comma:
+        parser.error('Choose one Spanish candidate')
+    if (args.spanish or args.spanish_comma) and args.output.resolve() == ROOT.resolve():
+        parser.error('Spanish candidates require a separate --output directory')
+    if args.spanish_comma:
+        result = generate(args.output, definitions=SPANISH_COMMA_DEFINITIONS, build_cases=spanish_comma_corpus)
+    elif args.spanish:
+        result = generate(args.output, definitions=SPANISH_DEFINITIONS, build_cases=spanish_corpus)
+    else:
+        result = generate(args.output)
     print(f'Generated {len(result)} candidate cases; not reviewed or promoted.')
