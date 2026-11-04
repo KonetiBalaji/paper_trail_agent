@@ -55,16 +55,34 @@ def augment(doc,result):
             try:assign('period_end',statement_date(match[1]),line)
             except (ValueError,KeyError):issue('unsupported_date','Statement date is invalid or ambiguous; review required.',source)
             metadata=True
-        match=re.fullmatch(r'(?:Total principal and interest|Principal and interest total|Stated principal plus interest total):?\s*'+AMOUNT,text,re.I)
-        if match:assign('stated_total',format(money(match[1]),'.2f'),line,'total_source');metadata=True;unfinished();mode=None
-        for field in ('opening','closing'):
-            match=re.fullmatch(field+r'(?: ledger)? balance:\s*'+AMOUNT,text,re.I)
+        total_label = r'(?:Total principal and interest|Principal and interest total|Stated principal plus interest total)'
+        match = re.fullmatch(total_label + r':?\s*' + AMOUNT, text, re.I)
+        if match:
+            assign('stated_total', format(money(match[1]), '.2f'), line, 'total_source')
+            metadata = True
+            unfinished()
+            mode = None
+        elif re.match(total_label + r'(?:\s*:|\s+[-+($0-9])', text, re.I):
+            issue('partial_extraction', 'A stated total could not be read as an exact amount.', source)
+        for field in ('opening', 'closing'):
+            label = field + r'(?: ledger)? balance:'
+            match = re.fullmatch(label + r'\s*' + AMOUNT, text, re.I)
             if match:
-                assign(field+'_balance',format(money(match[1]),'.2f'),line,field+'_source');metadata=True
-                if field=='closing':mode=None
-        match=re.fullmatch(r'(?:Balance brought forward|Balance carried forward):\s*'+AMOUNT,text,re.I)
-        if match:carries.append({'amount':format(money(match[1]),'.2f'),'source':source});metadata=True
-        if metadata:continue
+                assign(field + '_balance', format(money(match[1]), '.2f'), line, field + '_source')
+                metadata = True
+                if field == 'closing':
+                    mode = None
+            elif re.match(label, text, re.I):
+                issue('partial_extraction', 'A stated balance could not be read as an exact amount.', source)
+        carry_label = r'(?:Balance brought forward|Balance carried forward):'
+        match = re.fullmatch(carry_label + r'\s*' + AMOUNT, text, re.I)
+        if match:
+            carries.append({'amount': format(money(match[1]), '.2f'), 'source': source})
+            metadata = True
+        elif re.match(carry_label, text, re.I):
+            issue('partial_extraction', 'A carried balance could not be read as an exact amount.', source)
+        if metadata:
+            continue
         normalized=text.lower().replace('|',' ')
         normalized=' '.join(normalized.split())
         if re.fullmatch(r'(?:tranche|facility) (?:outstanding )?principal (?:accrued )?interest',normalized):
