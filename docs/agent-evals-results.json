@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "evaluated_at": "2026-11-04T04:49:39.372398+00:00",
+  "evaluated_at": "2026-11-04T05:07:32.305109+00:00",
   "passed": true,
   "generation_model_calls": 0,
   "scope": "Offline corpus, controlled faults, actual local MCP probes and separately labeled recorded live evidence. Not real-world accuracy.",
@@ -1705,8 +1705,8 @@
   "live": {
     "status": "scored",
     "current_source_match": true,
-    "artifact_sha256": "9e5f3027e0b27d4586f3fd23b838e7c6d443836edfd191aa1e6514c08852fe4c",
-    "finished_at": "2026-11-04T04:49:27.291743+00:00",
+    "artifact_sha256": "a718794efc8565bdc7891cea1ec376c65bc9465c53885705f84ffe7976b8bf72",
+    "finished_at": "2026-11-04T05:07:17.976383+00:00",
     "fields": {
       "id": {
         "tp": 14,
@@ -1715,13 +1715,6 @@
         "precision": 1.0,
         "recall": 0.9333333333333333
       },
-      "stated_total": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 1,
-        "precision": 1.0,
-        "recall": 0.875
-      },
       "currency": {
         "tp": 7,
         "fp": 0,
@@ -1729,7 +1722,7 @@
         "precision": 1.0,
         "recall": 0.875
       },
-      "interest": {
+      "principal": {
         "tp": 14,
         "fp": 0,
         "fn": 1,
@@ -1743,7 +1736,14 @@
         "precision": 1.0,
         "recall": 0.875
       },
-      "principal": {
+      "stated_total": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      },
+      "interest": {
         "tp": 14,
         "fp": 0,
         "fn": 1,
@@ -1766,13 +1766,6 @@
         "precision": 1.0,
         "recall": 1.0
       },
-      "stated_total": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 0,
-        "precision": 1.0,
-        "recall": 1.0
-      },
       "currency": {
         "tp": 7,
         "fp": 0,
@@ -1780,7 +1773,7 @@
         "precision": 1.0,
         "recall": 1.0
       },
-      "interest": {
+      "principal": {
         "tp": 14,
         "fp": 0,
         "fn": 0,
@@ -1794,7 +1787,14 @@
         "precision": 1.0,
         "recall": 1.0
       },
-      "principal": {
+      "stated_total": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "interest": {
         "tp": 14,
         "fp": 0,
         "fn": 0,
@@ -1857,13 +1857,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -1871,7 +1864,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -1885,7 +1878,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -1908,13 +1908,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -1922,7 +1915,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -1936,7 +1929,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -1954,23 +1954,23 @@
         "image_abstention_fn": 0,
         "layout": "labeled_loan_pair",
         "failures": [],
-        "elapsed_seconds": 52.66
+        "elapsed_seconds": 48.83
       },
       {
         "case": "contradiction",
         "requests": {
-          "correct": 4,
-          "total": 4,
+          "correct": 3,
+          "total": 3,
           "rate": 1.0
         },
         "calculator_exactness": {
-          "correct": 3,
-          "total": 3,
+          "correct": 2,
+          "total": 2,
           "rate": 1.0
         },
         "calculator_input_grounding": {
-          "correct": 3,
-          "total": 3,
+          "correct": 2,
+          "total": 2,
           "rate": 1.0
         },
         "case_bound_retrieval": {
@@ -2001,13 +2001,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -2015,7 +2008,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2029,7 +2022,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2052,13 +2052,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -2066,7 +2059,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2080,7 +2073,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2098,7 +2098,7 @@
         "image_abstention_fn": 0,
         "layout": "labeled_loan_pair",
         "failures": [],
-        "elapsed_seconds": 49.56
+        "elapsed_seconds": 42.89
       },
       {
         "case": "math_error",
@@ -2145,13 +2145,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -2159,7 +2152,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2173,7 +2166,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2196,13 +2196,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -2210,7 +2203,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2224,7 +2217,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2242,13 +2242,13 @@
         "image_abstention_fn": 0,
         "layout": "labeled_loan_pair",
         "failures": [],
-        "elapsed_seconds": 51.67
+        "elapsed_seconds": 48.83
       },
       {
         "case": "messy",
         "requests": {
-          "correct": 3,
-          "total": 3,
+          "correct": 2,
+          "total": 2,
           "rate": 1.0
         },
         "calculator_exactness": {
@@ -2262,8 +2262,8 @@
           "rate": 1.0
         },
         "case_bound_retrieval": {
-          "correct": 2,
-          "total": 2,
+          "correct": 1,
+          "total": 1,
           "rate": 1.0
         },
         "distinct_check_coverage": {
@@ -2289,13 +2289,6 @@
             "precision": 1.0,
             "recall": 0.6666666666666666
           },
-          "stated_total": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.5
-          },
           "currency": {
             "tp": 1,
             "fp": 0,
@@ -2303,7 +2296,7 @@
             "precision": 1.0,
             "recall": 0.5
           },
-          "interest": {
+          "principal": {
             "tp": 2,
             "fp": 0,
             "fn": 1,
@@ -2317,7 +2310,14 @@
             "precision": 1.0,
             "recall": 0.5
           },
-          "principal": {
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "interest": {
             "tp": 2,
             "fp": 0,
             "fn": 1,
@@ -2340,13 +2340,6 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "stated_total": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "currency": {
             "tp": 1,
             "fp": 0,
@@ -2354,7 +2347,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "interest": {
+          "principal": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2368,7 +2361,14 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "principal": {
+          "stated_total": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2386,28 +2386,28 @@
         "image_abstention_fn": 7,
         "layout": "native_plus_image_review",
         "failures": [],
-        "elapsed_seconds": 49.66
+        "elapsed_seconds": 34.42
       }
     ],
     "summary": {
       "requests": {
-        "correct": 13,
-        "total": 13,
+        "correct": 11,
+        "total": 11,
         "rate": 1.0
       },
       "calculator_exactness": {
-        "correct": 6,
-        "total": 6,
+        "correct": 5,
+        "total": 5,
         "rate": 1.0
       },
       "calculator_input_grounding": {
-        "correct": 6,
-        "total": 6,
+        "correct": 5,
+        "total": 5,
         "rate": 1.0
       },
       "case_bound_retrieval": {
-        "correct": 7,
-        "total": 7,
+        "correct": 6,
+        "total": 6,
         "rate": 1.0
       },
       "distinct_check_coverage": {
@@ -2477,6 +2477,30 @@
               "output": {
                 "error": "Schema or evidence validation failed",
                 "reason": "Amount is not present on cited source line"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "live-meta-injection-filter-initial-failure.json",
+      "sha256": "0e3aa52151622dc5fd0d38520e1781bc5ab8050f7784dcb9c98ca19cef5a4359",
+      "started_at": "2026-11-04T05:00:57.337432+00:00",
+      "passed_cases": 3,
+      "failed_cases": [
+        {
+          "case": "messy",
+          "finding_types": [
+            "ocr_required",
+            "comparison_skipped"
+          ],
+          "failed_validations": [
+            {
+              "name": "agent_citations",
+              "document": null,
+              "output": {
+                "error": "Schema or retrieved-source validation failed"
               }
             }
           ]
@@ -2559,11 +2583,11 @@
     "app/integrations.py": "35d2002a5606ef3bce47d7a79e5e4b2ae8b6dd44937f17b6f8f5d2aa98157573",
     "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
     "app/layout_registry.py": "8305eba8900fbdb1aa51c61957f2ad61e1ac13fc1a0adfe27d35c88dbd8d6a04",
-    "app/layouts.py": "3d16c4c8476f9ea28977768aeb74bf45d4b67e857c69831c609a01fcbf950f4c",
+    "app/layouts.py": "c2cebf035a113a2e94b3949b6b6bdf367410cf2756c158b41419d86023716ac1",
     "app/main.py": "a861f3410d72e9c374f717786cd0b202f974ccb48d78d6d022e0c2d0917443fd",
     "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
     "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",
-    "app/meta.py": "63fcdcddd4cbdf96e04072a723acd2bc634073443bd1dd1fba5a1ce256cc41bb",
+    "app/meta.py": "c8b31a1010818397cdeae3292436d1d06e781bb1f69bbe76eb9bf7f67b834764",
     "app/ocr.py": "32b086e90d273c0ff1f0418b25662045721a84c49dc61ee20c5ab03382746536",
     "app/ocr_case.py": "a423e77bf926e4331e1cc44d48e054494b58f063732afc6a2107be8fe310ab43",
     "app/orchestration.py": "bf8be929e36d41eb4efa4d128f72e25531458b3edf209da14a83afcb7c2d4418",
