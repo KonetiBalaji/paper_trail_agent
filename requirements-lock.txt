@@ -20,7 +20,7 @@ jsonschema-specifications==2025.9.1
 jsonschema==4.26.0
 mcp-types==2.3.0
 mcp==2.3.0
-opentelemetry-api==1.45.1
+opentelemetry-api==1.45.2
 packaging==26.3
 pdfminer.six==20260107
 pdfplumber==0.11.10
@@ -29,17 +29,17 @@ pluggy==1.7.0
 psycopg-binary==3.3.6
 psycopg==3.3.6
 pycparser==3.12
-pydantic==2.14.1
-pydantic_core==2.50.1
+pydantic==2.14.2
+pydantic_core==2.50.2
 Pygments==2.21.0
 PyJWT==2.15.1
 pypdfium2==5.14.0
-pytest==9.1.1
+pytest==9.2.0
 python-dotenv==1.2.4
 python-multipart==0.0.32
 pywin32==312; sys_platform == "win32"
 referencing==0.37.0
-reportlab==4.5.1
+reportlab==5.1.0
 rpds-py==2026.9.1
 SQLAlchemy==2.1.6
 sse-starlette==3.6.0
