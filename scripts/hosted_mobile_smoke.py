@@ -67,7 +67,30 @@ def main():
             page.set_viewport_size({"width": 1280, "height": 900})
             assert primary.bounding_box()["x"] < secondary.bounding_box()["x"]
             assert abs(primary.bounding_box()["y"] - secondary.bounding_box()["y"]) < 2
-            print("Hosted Chromium passed keyboard, touch, export, history and responsive comparison checks.")
+            page.set_viewport_size({"width": 390, "height": 844})
+            prepare = page.get_by_role("button", name="Prepare lender draft F1")
+            expect(prepare).to_be_disabled()
+            with page.expect_response(lambda response: response.request.method == "PATCH"
+                                      and response.url.endswith(case_url + "/findings/F1")) as approved:
+                page.get_by_role("button", name="Approve F1").tap()
+            assert approved.value.ok
+            expect(prepare).to_be_enabled()
+            page.get_by_label("Draft purpose").select_option("statement_dispute")
+            with page.expect_response(lambda response: "/findings/F1/draft?" in response.url) as prepared:
+                prepare.tap()
+            response = prepared.value
+            assert response.ok
+            draft = response.json()
+            assert draft["difference"] == "50.00" and draft["delivery"] == "manual_only"
+            assert draft["requires_final_human_review"] and draft["sent"] is False
+            text = page.get_by_role("textbox", name="Lender draft for F1")
+            expect(text).to_have_value(draft["text"])
+            assert "3300.00 USD" in draft["text"] and "3350.00 USD" in draft["text"]
+            assert "DEMO-001" not in draft["text"]
+            page.get_by_role("button", name="Select draft text").tap()
+            assert text.evaluate("(input) => input.selectionStart === 0 && input.selectionEnd === input.value.length")
+            assert page.evaluate("document.documentElement.scrollWidth === window.innerWidth")
+            print("Hosted Chromium passed keyboard, touch, exports, history, comparison and mobile dispute draft checks.")
         finally:
             token = next((cookie["value"] for cookie in context.cookies() if cookie["name"] == "pta_csrf"), None)
             if token:
