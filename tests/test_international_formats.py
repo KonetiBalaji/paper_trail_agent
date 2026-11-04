@@ -3,17 +3,17 @@ import io
 import pytest
 from reportlab.pdfgen import canvas
 
-from app.core import parse_statement, read_pdf, reconcile
+from app.core import money, parse_statement, read_pdf, reconcile
 
 
-def statement(doc_id, currency, period, interest, suffix=""):
+def statement(doc_id, currency, period, interest, interest_text=None):
     stream = io.BytesIO()
     pdf = canvas.Canvas(stream, invariant=True)
     lines = [
         "Loan: DEMO-INTL",
         f"Currency: {currency}",
         f"Period end: {period}",
-        f"Tranche T1 | Principal: 1000.00 | Interest: {interest}.00{suffix}",
+        f"Tranche T1 | Principal: 1000.00 | Interest: {interest_text or f'{interest}.00'}",
         f"Stated principal plus interest total: {1000 + interest}.00",
     ]
     for index, line in enumerate(lines):
@@ -53,10 +53,26 @@ def test_cross_currency_and_ambiguous_dates_require_review(currency, period, exp
     assert all(f["severity"] == "review" for f in findings)
 
 
-def test_fractional_cent_tranche_is_not_truncated_to_a_clean_match():
+@pytest.mark.parametrize("invalid_amount", ["100.005", "1,00.00", "1,,00.00"])
+def test_malformed_tranche_cannot_become_a_clean_match(invalid_amount):
     valid = statement("a", "EUR", "2026-10-31", 100)
-    invalid = statement("b", "EUR", "2026-10-31", 100, suffix="5")
+    invalid = statement("b", "EUR", "2026-10-31", 100, interest_text=invalid_amount)
     findings, _ = reconcile([valid, invalid])
     assert invalid["statement"]["tranches"] == []
     assert any(f["type"] == "partial_extraction" for f in findings)
     assert all(f["severity"] == "review" for f in findings)
+
+
+@pytest.mark.parametrize("amount, expected", [
+    ("1,234.56", "1234.56"),
+    ("12,34,567.89", "1234567.89"),
+    ("(12,34,567.89)", "-1234567.89"),
+])
+def test_valid_western_and_indian_digit_grouping(amount, expected):
+    assert str(money(amount)) == expected
+
+
+@pytest.mark.parametrize("amount", ["12,34.56", "1,,234.56", ",123.45", "1.234,56"])
+def test_invalid_digit_grouping_rejected_by_calculator(amount):
+    with pytest.raises(ValueError, match="digit grouping"):
+        money(amount)

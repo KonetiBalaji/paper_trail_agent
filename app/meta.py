@@ -7,7 +7,7 @@ import time
 from collections import Counter
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
-from .core import money,parse_statement
+from .core import AMOUNT, money,parse_statement
 from .trace import record
 
 MAX_TURNS=6
@@ -109,8 +109,7 @@ def validate_statement(data, doc):
     if baseline_doc['issues']:raise EvidenceError('Document has ambiguous or incomplete recognized fields')
     def grounded(value, source):
         if source not in lines: raise EvidenceError('Invalid source citation')
-        normalized = lines[source].replace(',','').replace('$','')
-        tokens=re.findall(r'(?<![\w.])(?:\(\d+\.\d{2}\)|[-+]?\d+\.\d{2})(?![\d.])',normalized)
+        tokens = re.findall(r'(?<![\w.,($+-])' + AMOUNT + r'(?![\w.,)])', lines[source])
         if money(value) not in [money(token) for token in tokens]:
             raise EvidenceError('Amount is not present on cited source line')
     for t in parsed['tranches']:
@@ -120,7 +119,7 @@ def validate_statement(data, doc):
         if not re.search(r'(?<!\w)'+re.escape(t['id'])+r'(?!\w)',lines[t['source']]):
             raise EvidenceError('Ungrounded tranche identifier')
         for field in ('principal','interest'):
-            match=re.search(field+r':\s*([-+]?\$?[\d,]+\.\d{2}|\([\d,]+\.\d{2}\))',lines[t.get(field+'_source',t['source'])],re.I)
+            match=re.search(field+r':\s*' + AMOUNT + r'(?![\w.,)])',lines[t.get(field+'_source',t['source'])],re.I)
             if match and money(match[1])!=money(t[field]):raise EvidenceError('Amount does not match field label')
             t[field]=format(money(t[field]),'.2f')
         known=next((row for row in baseline['tranches'] if row['id']==t['id'] and row['source']==t['source']),None)
