@@ -52,3 +52,18 @@ heartbeat and process a fictional carry discrepancy when validating a hosted
 worker. PostgreSQL dump and restore was verified separately in disposable CI
 run 41613699682. Provider backup recovery and hosted worker availability remain
 open.
+
+## Worker image OS scan
+
+CI scans an archive of the built Linux amd64 worker image with a digest-pinned
+Trivy container and uploads the JSON report. Findings remain visible at every
+severity. The scan reports findings without blocking the build based on severity.
+
+The Bookworm scan found 4 critical and 54 high package findings. The Trixie
+candidate found 1 critical and 58 high, and passed the worker smoke test. Neither
+scan reported fixed versions for its critical or high findings. The remaining
+critical Trixie finding is CVE-2026-6653 in libxml2. Debian lists it as a minor
+issue and still marks Trixie vulnerable.
+[Bookworm scan](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41761879097),
+[Trixie scan](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41762130819),
+[Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-6653).
