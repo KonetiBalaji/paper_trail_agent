@@ -6,14 +6,14 @@ from reportlab.pdfgen import canvas
 from app.core import parse_statement, read_pdf, reconcile
 
 
-def statement(doc_id, currency, period, interest):
+def statement(doc_id, currency, period, interest, suffix=""):
     stream = io.BytesIO()
     pdf = canvas.Canvas(stream, invariant=True)
     lines = [
         "Loan: DEMO-INTL",
         f"Currency: {currency}",
         f"Period end: {period}",
-        f"Tranche T1 | Principal: 1000.00 | Interest: {interest}.00",
+        f"Tranche T1 | Principal: 1000.00 | Interest: {interest}.00{suffix}",
         f"Stated principal plus interest total: {1000 + interest}.00",
     ]
     for index, line in enumerate(lines):
@@ -50,4 +50,13 @@ def test_cross_currency_and_ambiguous_dates_require_review(currency, period, exp
         statement("b", currency, period, 125),
     ])
     assert any(f["type"] == expected for f in findings)
+    assert all(f["severity"] == "review" for f in findings)
+
+
+def test_fractional_cent_tranche_is_not_truncated_to_a_clean_match():
+    valid = statement("a", "EUR", "2026-10-31", 100)
+    invalid = statement("b", "EUR", "2026-10-31", 100, suffix="5")
+    findings, _ = reconcile([valid, invalid])
+    assert invalid["statement"]["tranches"] == []
+    assert any(f["type"] == "partial_extraction" for f in findings)
     assert all(f["severity"] == "review" for f in findings)
