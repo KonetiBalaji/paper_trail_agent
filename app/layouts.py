@@ -34,9 +34,24 @@ def statement_date(value):
     raise ValueError('Unsupported statement date')
 
 
+DECIMAL_COMMA_AMOUNT = r'([-+]?(?:[0-9]{1,3}(?:\.[0-9]{3})+|[0-9]+),[0-9]{2})'
+
+
+def reviewed_amount_format(doc):
+    evidence = doc.get('layout_support') or doc.get('layout_trial') or {}
+    if evidence.get('amount_format') == 'decimal_comma':
+        return DECIMAL_COMMA_AMOUNT, decimal_comma_money
+    return AMOUNT, money
+
+
+def decimal_comma_money(value):
+    return money(value.replace('.', '').replace(',', '.'))
+
+
 def augment(doc,result):
     from .layout_proposals import document_mapping
     proposed=document_mapping(doc)
+    loan_amount, loan_money = reviewed_amount_format(doc)
     mode=None;order=None;pending=None;recognized=set();carries=[]
     issues=doc.setdefault('issues',[]);seen={};conflicted=set()
     def issue(kind,message,source,related=None):
@@ -72,9 +87,9 @@ def augment(doc,result):
             except ValueError:issue('unsupported_date','Statement date is invalid or ambiguous; review required.',source)
             metadata=True
         total_label = r'(?:Total principal and interest|Principal and interest total|Stated principal plus interest total|Total de capital e intereses)'
-        match = re.fullmatch(total_label + r':?\s*' + AMOUNT, text, re.I)
+        match = re.fullmatch(total_label + r':?\s*' + loan_amount, text, re.I)
         if match:
-            assign('stated_total', format(money(match[1]), '.2f'), line, 'total_source')
+            assign('stated_total', format(loan_money(match[1]), '.2f'), line, 'total_source')
             metadata = True
             unfinished()
             mode = None
@@ -116,23 +131,23 @@ def augment(doc,result):
                             'bank_columns':'bank_debit_credit_v1'}[mode])
             recognized.add(('reviewed:' if doc.get('layout_support') else 'trial:')+definition.id);continue
         if mode=='loan':
-            match=re.fullmatch(r'([\w-]+)\s+'+AMOUNT+r'\s+'+AMOUNT,text)
+            match=re.fullmatch(r'([\w-]+)\s+'+loan_amount+r'\s+'+loan_amount,text)
             if match:
                 unfinished()
-                doc_row={'id':match[1],order[0]:format(money(match[2]),'.2f'),order[1]:format(money(match[3]),'.2f'),'source':source}
+                doc_row={'id':match[1],order[0]:format(loan_money(match[2]),'.2f'),order[1]:format(loan_money(match[3]),'.2f'),'source':source}
                 result['tranches'].append(doc_row);continue
-            match=re.fullmatch(r'([\w-]+)\s+\(continued\)\s+'+AMOUNT,text,re.I)
+            match=re.fullmatch(r'([\w-]+)\s+\(continued\)\s+'+loan_amount,text,re.I)
             if match:
                 if not pending or match[1]!=pending['id'] or order!=pending['order']:
                     issue('partial_extraction','A continuation does not match an unambiguous preceding table row.',source)
                 else:
-                    first=pending['line']['id'];fields={order[0]:pending['value'],order[1]:format(money(match[2]),'.2f')}
+                    first=pending['line']['id'];fields={order[0]:pending['value'],order[1]:format(loan_money(match[2]),'.2f')}
                     result['tranches'].append({'id':match[1],**fields,'source':first,order[0]+'_source':first,order[1]+'_source':source})
                     recognized.add('loan_linked_continuation_v1');pending=None
                 continue
-            match=re.fullmatch(r'([\w-]+)\s+'+AMOUNT,text)
+            match=re.fullmatch(r'([\w-]+)\s+'+loan_amount,text)
             if match:
-                unfinished();pending={'id':match[1],'value':format(money(match[2]),'.2f'),'line':line,'order':order};continue
+                unfinished();pending={'id':match[1],'value':format(loan_money(match[2]),'.2f'),'line':line,'order':order};continue
         if mode in ('bank_signed','bank_columns'):
             pattern=r'(\d{4}-\d{2}-\d{2})\s+([\w-]+)\s+'+AMOUNT+(r'\s+'+AMOUNT if mode=='bank_columns' else '')
             match=re.fullmatch(pattern,text)
