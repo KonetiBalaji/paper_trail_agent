@@ -18,7 +18,10 @@ from sqlalchemy import (create_engine,MetaData,Table,Column,String,Integer,Large
 
 class Conflict(Exception):pass
 class Missing(Exception):pass
-class LimitExceeded(Exception):pass
+class LimitExceeded(Exception):
+    def __init__(self, message, retry_after=None):
+        super().__init__(message)
+        self.retry_after = retry_after
 
 def canonical(value):return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode('utf-8')
 def utc():return datetime.now(timezone.utc).isoformat()
@@ -461,7 +464,7 @@ class Repository:
             self._insert_once(conn,limits,{'bucket':bucket,'window_start':window,'count':0})
             row=conn.execute(select(limits).where(limits.c.bucket==bucket).with_for_update()).mappings().first()
             count=row['count'] if row['window_start']==window else 0
-            if count>=limit:raise LimitExceeded('Usage limit reached')
+            if count>=limit:raise LimitExceeded('Usage limit reached', retry_after=window + seconds - now)
             conn.execute(update(limits).where(limits.c.bucket==bucket).values(window_start=window,count=count+1))
             return count+1
 
