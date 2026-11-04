@@ -2,6 +2,7 @@
 **
 !Dockerfile.worker
 !Dockerfile.worker.dockerignore
+!requirements.txt
 !requirements-lock.txt
 !requirements-ocr-lock.txt
 !requirements-ocr.txt
