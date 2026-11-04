@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "review_kind": "assistant",
+  "reviewer": "Codex",
+  "reviewed_on_utc": "2026-11-04",
+  "decision": "reviewed_for_synthetic_scope",
+  "human_approval": false,
+  "scope": "Three fictional one-page native-text EUR loan fixtures with dot-decimal amounts.",
+  "definition_sha256": {
+    "spanish_loan_v1": "4cd48a2b82184fb026a48e7e66277986668effed28476ebf19e978f6e9d6a73d"
+  },
+  "manifest_sha256": "2fc3bfc57bf54cbdacbb4d5e7ecd117c9991436536371b8f42c39ae2e4a0d5f2",
+  "reviewed_meanings": [
+    "Tramo is the row identifier, Capital is principal and Intereses is interest in these fixtures.",
+    "The printed rows total 3300.00 EUR. A stated 3350.00 EUR total differs by 50.00 EUR.",
+    "The changed Principal header is outside the exact mapping and requires review."
+  ],
+  "review_evidence": [
+    "Inspected the extracted native text of each one-page PDF and checked the printed values against the fixed ground truth."
+  ],
+  "activation": "A valid source-bound promotion receipt is required separately."
+}

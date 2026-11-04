@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
   "packages": [
-    "cedar_v1"
+    "cedar_v1",
+    "spanish_loan_v1"
   ],
-  "report_sha256": "ef15d0d5fca8bd0e705dd74b628168658f5babbf3d554fd0290cbec89dd0d6d3"
+  "report_sha256": "7aa7817c48cae14d6b0c648c43fdce06e1b1d5ef438232add5e665bd15cd7824"
 }

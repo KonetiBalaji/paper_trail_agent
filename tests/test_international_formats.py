@@ -121,7 +121,7 @@ def test_invalid_spanish_period_requires_review(period):
     assert any(finding["type"] == "unsupported_date" for finding in findings)
 
 
-def test_spanish_loan_layout_requires_gated_mapping(tmp_path):
+def test_spanish_loan_layout_requires_gated_mapping(tmp_path, monkeypatch):
     from app.layout_proposals import Proposal, trial
     from scripts.generate_benchmark_fixtures import render, table
 
@@ -142,8 +142,11 @@ def test_spanish_loan_layout_requires_gated_mapping(tmp_path):
         "Total de capital e intereses: 3350.00",
     ]]})
     raw = path.read_bytes()
+    from app import layout_registry
     unreviewed = read_pdf(raw, path.name, "doc1")
-    unreviewed["statement"] = parse_statement(unreviewed)
+    with monkeypatch.context() as isolated:
+        isolated.setattr(layout_registry, "ROOT", tmp_path)
+        unreviewed["statement"] = parse_statement(unreviewed)
     findings, _ = reconcile([unreviewed])
     assert any(finding["type"] == "layout_not_promoted" for finding in findings)
     assert all(finding["severity"] == "review" for finding in findings)
