@@ -69,3 +69,5 @@ against a provider endpoint that serves the latest statement to import new
 versions. Repeated bytes reuse the saved case. The verified flow uses a
 simulated provider. Interactive provider authentication and live portal
 verification remain open.
+
+Live US bank connections are deferred to a later stage. Current portal intake is verified against a simulated direct PDF provider.

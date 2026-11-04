@@ -8,3 +8,11 @@ textarea{width:100%;font:inherit;padding:10px;border:1px solid #bdcfc1;border-ra
 
 @media(max-width:700px){#history-form button{min-height:44px;margin:4px 8px 4px 0}}
 .workspace > *, .comparison-images > * { min-width: 0; }
+
+@media (max-width: 700px) {
+  #results .actions a.button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
