@@ -62,3 +62,16 @@ def test_provider_error_is_safe(monkeypatch,code):
     monkeypatch.setattr(meta.httpx,'post',lambda *a,**k:httpx.Response(code))
     with pytest.raises(meta.MetaError) as err:meta.request([])
     assert str(code) in str(err.value) and 'secret-do-not-log' not in str(err.value)
+
+
+def test_model_cannot_ground_amount_in_malformed_grouping():
+    doc = documents('clean')[0]
+    tranche = doc['statement']['tranches'][0]
+    source = next(line for line in doc['lines'] if line['id'] == tranche['source'])
+    total = next(line for line in doc['lines'] if line['id'] == doc['statement']['total_source'])
+    total['text'] = 'Aggregate 3300.00'
+    source['text'] = 'T1 principal 1,000.00 and interest 100.00'
+    assert meta.validate_statement(doc['statement'], doc)['tranches'][0]['interest'] == '100.00'
+    source['text'] = source['text'].replace('100.00', '1,00.00')
+    with pytest.raises(ValueError, match='not present on cited source line'):
+        meta.validate_statement(doc['statement'], doc)

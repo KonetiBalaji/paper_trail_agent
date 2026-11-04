@@ -7,8 +7,16 @@ from decimal import Decimal, InvalidOperation
 from itertools import combinations
 import pdfplumber
 
+# Accept plain digits and complete Western or Indian comma grouping.
+GROUPED_INTEGER = r'(?:[0-9]{1,3}(?:,[0-9]{3})+|[0-9]{1,2}(?:,[0-9]{2})+,[0-9]{3})'
+AMOUNT_DIGITS = rf'(?:{GROUPED_INTEGER}|[0-9]+)'
+
+
 def money(value):
-    s = str(value).strip().replace(',', '').replace('$', '')
+    s = str(value).strip()
+    if ',' in s and not re.fullmatch(rf'(?:[-+]?\$?{GROUPED_INTEGER}(?:\.[0-9]+)?|\({GROUPED_INTEGER}(?:\.[0-9]+)?\))', s):
+        raise ValueError('Invalid monetary digit grouping')
+    s = s.replace(',', '').replace('$', '')
     if s.startswith('(') and s.endswith(')'):
         s = '-' + s[1:-1]
     try:
@@ -73,7 +81,7 @@ def mark_duplicate_documents(documents):
             if issue not in doc.setdefault('issues',[]):doc['issues'].append(issue)
         else:seen[digest]=doc['id']
 
-AMOUNT = r'([-+]?\$?[\d,]+\.\d{2}|\([\d,]+\.\d{2}\))'
+AMOUNT = rf'([-+]?\$?{AMOUNT_DIGITS}\.[0-9]{{2}}|\({AMOUNT_DIGITS}\.[0-9]{{2}}\))'
 
 YEAR_FIRST_DATE = r'\d{4}(?:-\d{2}-\d{2}|/\d{2}/\d{2})'
 
