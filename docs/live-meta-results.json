@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-11-04T04:30:06.000708+00:00",
+  "started_at": "2026-11-04T04:38:10.260782+00:00",
   "model": "muse-spark-1.3",
   "data": "repository synthetic PDFs only",
   "cases": [
@@ -13,23 +13,46 @@
       "source_counts": [],
       "tools": [
         "search_evidence",
-        "search_evidence",
         "calculator"
       ],
-      "tool_call_count": 3,
+      "tool_call_count": 2,
       "agent_evaluation": {
         "tool_requests": [
           {
             "tool": "search_evidence",
             "input": {
-              "query": "statement totals 3300.00 operands"
+              "query": "statement amounts totals 1000.00 2000.00 3300.00"
             },
             "result": [
+              {
+                "id": "doc1:p1:l6",
+                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+                "page": 1,
+                "line": 6
+              },
+              {
+                "id": "doc1:p1:l7",
+                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+                "page": 1,
+                "line": 7
+              },
               {
                 "id": "doc1:p1:l8",
                 "text": "L07 Stated principal plus interest total: 3300.00",
                 "page": 1,
                 "line": 8
+              },
+              {
+                "id": "doc2:p1:l6",
+                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
+                "page": 1,
+                "line": 6
+              },
+              {
+                "id": "doc2:p1:l7",
+                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
+                "page": 1,
+                "line": 7
               },
               {
                 "id": "doc2:p1:l8",
@@ -48,84 +71,12 @@
                 "text": "L04 Statement period end: 2026-10-31",
                 "page": 1,
                 "line": 5
-              },
-              {
-                "id": "doc1:p1:l6",
-                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
-                "page": 1,
-                "line": 6
-              },
-              {
-                "id": "doc1:p1:l7",
-                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
-                "page": 1,
-                "line": 7
-              },
-              {
-                "id": "doc2:p1:l1",
-                "text": "Paper Trail Agent | Test Statement",
-                "page": 1,
-                "line": 1
-              },
-              {
-                "id": "doc2:p1:l5",
-                "text": "L04 Statement period end: 2026-10-31",
-                "page": 1,
-                "line": 5
               }
             ],
             "validation": "passed",
             "event_id": "E14",
             "transport": "mcp_stdio",
             "mcp_sequence": 1
-          },
-          {
-            "tool": "search_evidence",
-            "input": {
-              "query": "Tranche T1 Principal Interest doc2"
-            },
-            "result": [
-              {
-                "id": "doc1:p1:l6",
-                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
-                "page": 1,
-                "line": 6
-              },
-              {
-                "id": "doc2:p1:l6",
-                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
-                "page": 1,
-                "line": 6
-              },
-              {
-                "id": "doc1:p1:l7",
-                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
-                "page": 1,
-                "line": 7
-              },
-              {
-                "id": "doc2:p1:l7",
-                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
-                "page": 1,
-                "line": 7
-              },
-              {
-                "id": "doc1:p1:l8",
-                "text": "L07 Stated principal plus interest total: 3300.00",
-                "page": 1,
-                "line": 8
-              },
-              {
-                "id": "doc2:p1:l8",
-                "text": "L07 Stated principal plus interest total: 3300.00",
-                "page": 1,
-                "line": 8
-              }
-            ],
-            "validation": "passed",
-            "event_id": "E16",
-            "transport": "mcp_stdio",
-            "mcp_sequence": 2
           },
           {
             "tool": "calculator",
@@ -141,9 +92,9 @@
               "sum": "3300.00"
             },
             "validation": "passed",
-            "event_id": "E17",
+            "event_id": "E16",
             "transport": "mcp_stdio",
-            "mcp_sequence": 3
+            "mcp_sequence": 2
           }
         ],
         "gold_lines": [
@@ -301,6 +252,20 @@
         ],
         "verified_differences": [],
         "fields": {
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -308,21 +273,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -343,7 +294,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -352,6 +303,20 @@
           }
         },
         "native_fields": {
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -359,21 +324,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -394,7 +345,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -407,7 +358,7 @@
       "mcp": {
         "transport": "mcp_stdio",
         "protocol_version": "2026-07-28",
-        "actual_server_calls": 3,
+        "actual_server_calls": 2,
         "failed_server_calls": 0,
         "tools": [
           {
@@ -416,14 +367,9 @@
             "sequence": 1
           },
           {
-            "tool": "search_evidence",
-            "validation": "passed",
-            "sequence": 2
-          },
-          {
             "tool": "calculator",
             "validation": "passed",
-            "sequence": 3
+            "sequence": 2
           }
         ]
       },
@@ -433,7 +379,7 @@
         "critic_challenges": 0,
         "verified_calculations": 2
       },
-      "elapsed_seconds": 48.58
+      "elapsed_seconds": 45.91
     },
     {
       "case": "contradiction",
@@ -700,6 +646,20 @@
           "25.00"
         ],
         "fields": {
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -707,21 +667,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -742,7 +688,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -751,6 +697,20 @@
           }
         },
         "native_fields": {
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -758,21 +718,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -793,7 +739,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -832,7 +778,7 @@
         "critic_challenges": 0,
         "verified_calculations": 2
       },
-      "elapsed_seconds": 45.86
+      "elapsed_seconds": 39.8
     },
     {
       "case": "math_error",
@@ -849,15 +795,16 @@
       "tools": [
         "search_evidence",
         "search_evidence",
+        "calculator",
         "calculator"
       ],
-      "tool_call_count": 3,
+      "tool_call_count": 4,
       "agent_evaluation": {
         "tool_requests": [
           {
             "tool": "search_evidence",
             "input": {
-              "query": "statement_B total stated computed"
+              "query": "statement total stated computed"
             },
             "result": [
               {
@@ -871,6 +818,30 @@
                 "text": "L07 Stated principal plus interest total: 3350.00",
                 "page": 1,
                 "line": 8
+              },
+              {
+                "id": "doc1:p1:l1",
+                "text": "Paper Trail Agent | Test Statement",
+                "page": 1,
+                "line": 1
+              },
+              {
+                "id": "doc1:p1:l5",
+                "text": "L04 Statement period end: 2026-10-31",
+                "page": 1,
+                "line": 5
+              },
+              {
+                "id": "doc2:p1:l1",
+                "text": "Paper Trail Agent | Test Statement",
+                "page": 1,
+                "line": 1
+              },
+              {
+                "id": "doc2:p1:l5",
+                "text": "L04 Statement period end: 2026-10-31",
+                "page": 1,
+                "line": 5
               }
             ],
             "validation": "passed",
@@ -881,9 +852,21 @@
           {
             "tool": "search_evidence",
             "input": {
-              "query": "principal interest 1000.00 2000.00"
+              "query": "principal interest total line items"
             },
             "result": [
+              {
+                "id": "doc1:p1:l8",
+                "text": "L07 Stated principal plus interest total: 3300.00",
+                "page": 1,
+                "line": 8
+              },
+              {
+                "id": "doc2:p1:l8",
+                "text": "L07 Stated principal plus interest total: 3350.00",
+                "page": 1,
+                "line": 8
+              },
               {
                 "id": "doc1:p1:l6",
                 "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
@@ -907,18 +890,6 @@
                 "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
                 "page": 1,
                 "line": 7
-              },
-              {
-                "id": "doc1:p1:l8",
-                "text": "L07 Stated principal plus interest total: 3300.00",
-                "page": 1,
-                "line": 8
-              },
-              {
-                "id": "doc2:p1:l8",
-                "text": "L07 Stated principal plus interest total: 3350.00",
-                "page": 1,
-                "line": 8
               }
             ],
             "validation": "passed",
@@ -940,9 +911,25 @@
               "sum": "3300.00"
             },
             "validation": "passed",
-            "event_id": "E17",
+            "event_id": "E18",
             "transport": "mcp_stdio",
             "mcp_sequence": 3
+          },
+          {
+            "tool": "calculator",
+            "input": {
+              "values": [
+                "3300.00",
+                "50.00"
+              ]
+            },
+            "result": {
+              "sum": "3350.00"
+            },
+            "validation": "passed",
+            "event_id": "E20",
+            "transport": "mcp_stdio",
+            "mcp_sequence": 4
           }
         ],
         "gold_lines": [
@@ -1106,6 +1093,20 @@
           "50.00"
         ],
         "fields": {
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -1113,21 +1114,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -1148,7 +1135,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -1157,6 +1144,20 @@
           }
         },
         "native_fields": {
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 2,
             "fp": 0,
@@ -1164,21 +1165,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -1199,7 +1186,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -1212,7 +1199,7 @@
       "mcp": {
         "transport": "mcp_stdio",
         "protocol_version": "2026-07-28",
-        "actual_server_calls": 3,
+        "actual_server_calls": 4,
         "failed_server_calls": 0,
         "tools": [
           {
@@ -1229,6 +1216,11 @@
             "tool": "calculator",
             "validation": "passed",
             "sequence": 3
+          },
+          {
+            "tool": "calculator",
+            "validation": "passed",
+            "sequence": 4
           }
         ]
       },
@@ -1238,7 +1230,7 @@
         "critic_challenges": 0,
         "verified_calculations": 2
       },
-      "elapsed_seconds": 48.94
+      "elapsed_seconds": 51.98
     },
     {
       "case": "messy",
@@ -1250,16 +1242,15 @@
       "source_counts": [],
       "tools": [
         "search_evidence",
-        "search_evidence",
         "calculator"
       ],
-      "tool_call_count": 3,
+      "tool_call_count": 2,
       "agent_evaluation": {
         "tool_requests": [
           {
             "tool": "search_evidence",
             "input": {
-              "query": "doc1.pdf totals amounts"
+              "query": "statement_A amounts totals"
             },
             "result": [
               {
@@ -1275,36 +1266,6 @@
             "mcp_sequence": 1
           },
           {
-            "tool": "search_evidence",
-            "input": {
-              "query": "1000.00 2000.00 total"
-            },
-            "result": [
-              {
-                "id": "doc1:p1:l6",
-                "text": "L05 Tranche T1 | Principal: 1000.00 | Interest: 100.00",
-                "page": 1,
-                "line": 6
-              },
-              {
-                "id": "doc1:p1:l7",
-                "text": "L06 Tranche T2 | Principal: 2000.00 | Interest: 200.00",
-                "page": 1,
-                "line": 7
-              },
-              {
-                "id": "doc1:p1:l8",
-                "text": "L07 Stated principal plus interest total: 3300.00",
-                "page": 1,
-                "line": 8
-              }
-            ],
-            "validation": "passed",
-            "event_id": "E14",
-            "transport": "mcp_stdio",
-            "mcp_sequence": 2
-          },
-          {
             "tool": "calculator",
             "input": {
               "values": [
@@ -1318,9 +1279,9 @@
               "sum": "3300.00"
             },
             "validation": "passed",
-            "event_id": "E15",
+            "event_id": "E14",
             "transport": "mcp_stdio",
-            "mcp_sequence": 3
+            "mcp_sequence": 2
           }
         ],
         "gold_lines": [
@@ -1399,12 +1360,24 @@
         ],
         "required_finding_sources": [],
         "final_agent_sources": [
-          "doc1:p1:l6",
-          "doc1:p1:l7",
-          "doc1:p1:l8"
+          "doc1:p1:l9"
         ],
         "verified_differences": [],
         "fields": {
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.6666666666666666
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
           "currency": {
             "tp": 1,
             "fp": 0,
@@ -1412,21 +1385,7 @@
             "precision": 1.0,
             "recall": 0.5
           },
-          "period_end": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.5
-          },
           "id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.6666666666666666
-          },
-          "principal": {
             "tp": 2,
             "fp": 0,
             "fn": 1,
@@ -1447,7 +1406,7 @@
             "precision": 1.0,
             "recall": 0.5
           },
-          "loan_id": {
+          "period_end": {
             "tp": 1,
             "fp": 0,
             "fn": 1,
@@ -1456,6 +1415,20 @@
           }
         },
         "native_fields": {
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "currency": {
             "tp": 1,
             "fp": 0,
@@ -1463,21 +1436,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "period_end": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "principal": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -1498,7 +1457,7 @@
             "precision": 1.0,
             "recall": 1.0
           },
-          "loan_id": {
+          "period_end": {
             "tp": 1,
             "fp": 0,
             "fn": 0,
@@ -1511,7 +1470,7 @@
       "mcp": {
         "transport": "mcp_stdio",
         "protocol_version": "2026-07-28",
-        "actual_server_calls": 3,
+        "actual_server_calls": 2,
         "failed_server_calls": 0,
         "tools": [
           {
@@ -1520,14 +1479,9 @@
             "sequence": 1
           },
           {
-            "tool": "search_evidence",
-            "validation": "passed",
-            "sequence": 2
-          },
-          {
             "tool": "calculator",
             "validation": "passed",
-            "sequence": 3
+            "sequence": 2
           }
         ]
       },
@@ -1537,7 +1491,7 @@
         "critic_challenges": 0,
         "verified_calculations": 1
       },
-      "elapsed_seconds": 31.17
+      "elapsed_seconds": 39.89
     }
   ],
   "status": "passed",
@@ -1584,7 +1538,7 @@
     "data/synthetic/messy/statement_A.pdf": "a1046e64908c11a5bc4d64ef2a8ddb792bfbbec016f4566727fb1d9e327c376e",
     "data/synthetic/messy/statement_B.pdf": "b502b0d715b73d609bdb97d4b7b30dfc64cf1d7e846f326123541076460b5285"
   },
-  "revision": "0a3c65dd08ec65169bea1459c964c994e1914719",
+  "revision": "6abf082be49d538948e9127ca43b5e10aa533089",
   "working_tree_modified": true,
-  "finished_at": "2026-11-04T04:33:00.668200+00:00"
+  "finished_at": "2026-11-04T04:41:07.981252+00:00"
 }
