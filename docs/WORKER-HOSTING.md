@@ -67,3 +67,13 @@ issue and still marks Trixie vulnerable.
 [Bookworm scan](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41761879097),
 [Trixie scan](https://github.com/KonetiBalaji/paper_trail_agent/actions/runs/41762130819),
 [Debian tracker](https://security-tracker.debian.org/tracker/CVE-2026-6653).
+
+Vercel Hobby cron invokes a function at most daily per schedule, with
+hour-level scheduling precision. It can serve a daily maintenance workload
+within function limits, but a daily invocation leaves queued OCR and
+reconciliation work waiting and cannot provide a live worker heartbeat. Keep
+public uptime probes separate from job execution. A production worker release
+needs a host that can sustain the tested memory footprint and the agreed
+queue-processing interval. Verify the heartbeat, a queued synthetic job, and
+the encrypted report and audit record after deployment.
+[Vercel cron limits](https://vercel.com/docs/cron-jobs/usage-and-pricing).
