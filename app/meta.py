@@ -8,6 +8,7 @@ from collections import Counter
 import httpx
 from pydantic import BaseModel, ConfigDict, Field
 from .core import AMOUNT, money,parse_statement
+from .layouts import is_instruction_note
 from .trace import record
 
 MAX_TURNS=6
@@ -102,7 +103,8 @@ def json_content(content):
 
 def validate_statement(data, doc):
     parsed = Statement.model_validate(data).model_dump()
-    usable_lines=[line for line in doc['lines'] if line.get('usable',True)]
+    usable_lines = [line for line in doc['lines']
+                    if line.get('usable', True) and not is_instruction_note(line['text'])]
     lines = {l['id']:l['text'] for l in usable_lines}
     baseline_doc={'lines':usable_lines,'issues':[]}
     baseline=parse_statement(baseline_doc)
