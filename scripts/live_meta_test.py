@@ -14,10 +14,15 @@ from app.main import app
 from app.meta import configured
 
 
+CASES = {'clean': 0, 'contradiction': 1, 'math_error': 1, 'messy': 0}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report',default='work/live-meta-results.json',help='Sanitized synthetic-test evidence JSON path')
+    parser.add_argument('--case', action='append', choices=CASES, help='Run selected diagnostics only')
     args=parser.parse_args()
+    selected = [case for case in CASES if not args.case or case in args.case]
     if not configured():
         print('NOT RUN: Enter MODEL_API_KEY in the project .env file. No API key was found.')
         raise SystemExit(2)
@@ -38,7 +43,8 @@ def main():
     def save():output.write_text(json.dumps(evidence,indent=2),encoding='utf-8',newline='\n')
     save()
     with TestClient(app) as client:
-        for case,expected in [('clean',0),('contradiction',1),('math_error',1),('messy',0)]:
+        for case in selected:
+            expected = CASES[case]
             started=time.monotonic()
             print('RUN live Meta:',case,flush=True)
             files=[('files',(p.name,p.read_bytes(),'application/pdf')) for p in sorted((root/case).glob('*.pdf'))]
@@ -116,7 +122,8 @@ def main():
                                          for issue in doc.get('issues',[])
                                          if issue.get('type')=='model_extraction_failed'
                                          and issue.get('message','').startswith((
-                                             'Meta API returned HTTP ', 'Meta API unavailable or response format invalid.',
+                                             'Meta API returned HTTP ', 'Meta API request timed out.',
+                                             'Meta API transport failed.', 'Meta API response format invalid.',
                                              'Model extraction failed evidence validation;', 'Invalid model message;'))],
                     'failed_validations':[{'name':e['name'],'document':e.get('document'),'output':e.get('output')}
                                           for e in report.get('trace',[]) if e['kind']=='validation' and e['validation']=='failed'],
@@ -124,7 +131,7 @@ def main():
                 save()
                 raise
             finally:client.delete(base)
-    evidence['status']='passed';evidence['finished_at']=datetime.now(timezone.utc).isoformat();save()
+    evidence['status']='passed' if len(selected) == len(CASES) else 'diagnostic_passed';evidence['finished_at']=datetime.now(timezone.utc).isoformat();save()
     print('Sanitized evidence saved:',output,flush=True)
 
 if __name__ == '__main__':
