@@ -88,8 +88,12 @@ def request(messages, tools=None):
             usage={key:value for key,value in reported.items() if key in ('prompt_tokens','completion_tokens','total_tokens') and type(value) is int and value>=0}
             if not usage:usage=None
         return {**message,'__provider_usage':usage}
-    except (httpx.HTTPError,KeyError,IndexError,ValueError,TypeError) as exc:
-        raise MetaError('Meta API unavailable or response format invalid. Retry after checking configuration.') from exc
+    except httpx.TimeoutException as exc:
+        raise MetaError('Meta API request timed out.') from exc
+    except httpx.HTTPError as exc:
+        raise MetaError('Meta API transport failed.') from exc
+    except (KeyError,IndexError,ValueError,TypeError) as exc:
+        raise MetaError('Meta API response format invalid.') from exc
 
 def json_content(content):
     s = (content or '').strip()
