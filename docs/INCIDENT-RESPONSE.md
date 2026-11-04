@@ -76,3 +76,16 @@ with known impact, actions and contact path; obtain owner approval before
 sending. Do not send messages automatically. Publish a redacted incident summary
 only after disclosure review. Close with root cause, timeline, affected records,
 evidence links, credential actions, regression proof and follow-up owners.
+
+## Local incident rehearsal
+
+Run from the repository root with the test dependencies installed.
+
+```sh
+python -m pytest tests/test_integrations.py tests/test_repository.py -k 'revocable or disabled_owner or tampering_and_truncation or tail_deletion or encrypted_backup' -q
+```
+
+Expect five passing checks in disposable test databases. They verify credential
+containment, detection of modified or removed audit entries, and encrypted
+SQLite recovery. Record the commit and test result with the drill evidence.
+Provider recovery and cloud access review require separate exercises.
