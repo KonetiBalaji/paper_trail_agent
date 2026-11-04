@@ -1,8 +1,6 @@
 name: Hosted mobile smoke
 on:
   workflow_dispatch:
-  push:
-    branches: [hosted-mobile-verification]
 permissions:
   contents: read
 jobs:
