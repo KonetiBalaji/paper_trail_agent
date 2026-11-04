@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0t64 libgomp1 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --uid 10001 --create-home --shell /usr/sbin/nologin worker
-COPY requirements-lock.txt requirements-ocr-lock.txt requirements-ocr.txt ./
+COPY requirements.txt requirements-lock.txt requirements-ocr-lock.txt requirements-ocr.txt ./
 RUN python -m pip install --no-cache-dir -r requirements-ocr.txt && python -m pip check
 COPY --chown=10001:10001 app ./app
 COPY --chown=10001:10001 data/synthetic ./data/synthetic
