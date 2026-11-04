@@ -280,6 +280,17 @@ Service mode offers eight fixed fixture buttons after **Start private demo sessi
 4. The Meta agent can search original evidence (keyword RAG) and invoke a calculator. The tool loop is bounded; final citations must have been retrieved.
 5. Findings link to the original PDF page and extracted source line. JSON and Markdown checklist exports retain the evidence. Cases can be deleted locally.
 
+### Access and pricing
+
+| Access | Price and availability |
+| --- | --- |
+| Public synthetic demo | Free. Includes fictional cases, source evidence, human review and redacted exports. |
+| Self-hosted workspace | Paper Trail Agent does not charge a subscription for self-hosting. Your hosting, database and optional Meta API usage are billed separately by the providers you configure. |
+| Managed private workspaces | No paid plan is currently offered. Existing private workspaces are provisioned by their administrators. |
+
+See [getting started and support](https://paper-trail-agent.vercel.app/static/help.html)
+and [service status](https://paper-trail-agent.vercel.app/static/status.html).
+
 ### Current supported scope
 
 The local parser supports explicit `Loan:` or `Account:`, `Currency:`, ISO period-end dates, `Tranche ... | Principal: ... | Interest: ...`, and explicitly labeled principal-plus-interest totals. Bank support includes `Opening balance:`, `Closing balance:`, and `Transaction ID | YYYY-MM-DD | Amount: signed-value`. Meta extraction supports alternative wording only when amounts and identifiers can be grounded in extracted text. This is not a general accounting engine: it does not infer amortization schedules, day-count conventions, unlabeled debit/credit table conventions, or exchange rates. Scanned pages request manual review by default; authenticated service workspaces can use the optional OCR worker to produce review-only candidates. Recognized tables support repeated headers, reordered principal/interest columns, and explicitly linked `T1 (continued)` rows across pages. Each split amount keeps its own source line. Unlinked wrapped rows and unknown column meanings require review. Missing fields and mismatched periods are not confirmed financial contradictions.
