@@ -13,7 +13,7 @@ import html
 EMAIL=re.compile(r'(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b')
 SSN=re.compile(r'\b\d{3}-\d{2}-\d{4}\b')
 PHONE=re.compile(r'(?<![\w.])(?:\+1[ .-]?)?\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}(?![\w.])')
-LABELED=re.compile(r'(?im)\b(borrower(?: name)?|customer(?: name)?|full name|address|email|phone|ssn|social security(?: number)?|account(?: number| no\.?| id)?|loan(?: number| no\.?| id)?|routing(?: number)?|iban)\s*[:=]\s*([^\n|]+)')
+LABELED=re.compile(r'(?im)\b(borrower(?: name)?|customer(?: name)?|full name|address|email|phone|ssn|social security(?: number)?|account(?: number| no\.?| id)?|loan(?: number| no\.?| id)?|routing(?: number)?|iban|n[u\u00fa]mero de pr[e\u00e9]stamo|n[u\u00fa]mero de cuenta)\s*[:=]\s*([^\n|]+)')
 SENSITIVE={'loan_id','account_id','account_number','routing_number','iban','borrower','borrower_name','customer_name','full_name','address','email','phone','ssn'}
 URL_QUERY=re.compile(r'''(?i)(https?://[^\s?"']+|/[A-Za-z0-9_./%-]+)\?[^\s"']+''')
 

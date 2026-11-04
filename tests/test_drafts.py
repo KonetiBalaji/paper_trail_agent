@@ -65,3 +65,23 @@ def test_dispute_uses_same_evidence_without_sending_or_inventing_legal_claims():
     assert dispute['draft_sha256'] != enquiry['draft_sha256']
     assert not dispute['sent'] and dispute['requires_final_human_review']
     with pytest.raises(DraftUnavailable): build_draft(report, 'F1', 2, 1, 'send_money')
+
+
+def test_decimal_comma_draft_preserves_amounts_and_redacts_spanish_identifier():
+    from app.privacy import report_for_export
+
+    path = ROOT.parent / 'layout_packages/spanish_comma_v1/cases/loan_math_error/statement_1.pdf'
+    report = analyze_files([UploadFile(filename=path.name, file=io.BytesIO(path.read_bytes()))],
+                           persist=False)
+    report['report_version'] = 2
+    finding, = report['findings']
+    finding['human_review'] = {'decision': 'confirmed', 'revision': 1, 'history': []}
+    draft = build_draft(report, finding['id'], 2, 1, kind='statement_dispute')
+    assert draft['currency'] == 'EUR' and draft['difference'] == '50.00'
+    assert '3300.25 EUR; statement says 3350.25 EUR' in draft['text']
+    assert '3.350,25' in draft['text'] and len(draft['sources']) == 3
+    assert draft['delivery'] == 'manual_only' and not draft['sent']
+    original_lines = report['documents'][0]['lines']
+    exported_lines = report_for_export(report)['documents'][0]['lines']
+    assert any('FICTICIO-002' in line['text'] for line in original_lines)
+    assert all('FICTICIO-002' not in line['text'] for line in exported_lines)
