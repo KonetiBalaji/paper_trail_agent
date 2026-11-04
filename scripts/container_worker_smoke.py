@@ -21,6 +21,64 @@ def memory_peak():
     return None
 
 
+def check_monitoring(repo, env, check):
+    from fastapi import UploadFile
+    from reportlab.pdfgen import canvas
+
+    from app.ingestion import intake
+    from app.main import analyze_files
+
+    workspace = 'container-monitor'
+    actor = 'container-test'
+    cases = []
+    for month, last_day, opening, closing in (
+        ('09', 30, '1000.00', '900.00'), ('10', 31, '950.00', '850.00'),
+    ):
+        stream = io.BytesIO()
+        pdf = canvas.Canvas(stream, invariant=True)
+        end = f'2026-{month}-{last_day}'
+        lines = [
+            'Historical rules: PTA-BANK-PERIOD-V1',
+            'Account: FICTIONAL-001',
+            'Currency: USD',
+            f'Period start: 2026-{month}-01',
+            f'Period end: {end}',
+            f'Opening balance: {opening}',
+            'Transaction count: 1',
+            f'Transaction PAYMENT-1 | {end} | Amount: -100.00',
+            f'Closing balance: {closing}',
+        ]
+        for index, line in enumerate(lines):
+            pdf.drawString(40, 750 - index * 20, line)
+        pdf.save()
+        stream.seek(0)
+        report = intake(repo, workspace, actor, [UploadFile(stream, filename='statement.pdf')],
+                        'local', 'upload', analyze_files)
+        cases.append(report['id'])
+        subprocess.run([sys.executable, 'scripts/worker_entrypoint.py', '--once'],
+                       cwd=ROOT, env=env, check=True, timeout=120)
+    earlier, latest = cases
+    entry, = repo.monitor_timeline(workspace, latest)['entries']
+    comparison = entry['comparison']
+    check('monitor_earlier_case', comparison['prior']['case_id'] == earlier)
+    check('monitor_exact_carry_difference', comparison['pair']['difference'] == '50.00')
+    closing, opening = comparison['pair']['carry_sources']
+    for case_id, source, label in (
+        (earlier, closing.split('/', 1)[1], 'Closing balance: 900.00'),
+        (latest, opening, 'Opening balance: 950.00'),
+    ):
+        lines = repo.get_case(workspace, case_id)['documents'][0]['lines']
+        check('monitor_source_' + label.split()[0].lower(),
+              any(line['id'] == source and line['text'] == label for line in lines))
+    for revision, action in enumerate(('review', 'resolve')):
+        saved = repo.review_monitor(workspace, actor, latest, entry['id'], action, revision)
+    check('monitor_replay', saved['comparison'] == comparison and
+          [event['action'] for event in saved['history']] == ['review', 'resolve'])
+    check('monitor_audit_and_readiness', repo.audit(workspace)['verified'] and
+          not any(repo.worker_status().values()))
+
+
+
 def main():
     from cryptography.fernet import Fernet
     from fastapi import UploadFile
@@ -85,13 +143,14 @@ def main():
             check('original_pdf_unchanged',repo.get_document('container-synthetic',original['id'],'doc1')==raw)
             check('original_report_unchanged',repo.get_case('container-synthetic',original['id'],1)==original)
             check('audit_verified',repo.audit('container-synthetic')['verified'])
+            check_monitoring(repo, env, check)
             scans=evaluate(ROOT/'data/ocr')
             check('four_actual_scan_cases',scans['passed'] and len(scans['cases'])==4)
         finally:
             if worker is not None and worker.poll() is None:
                 worker.kill();worker.communicate(timeout=5)
             repo.close()
-    report={'passed':True,'scope':'Offline Linux amd64 image, read-only root, non-root user, 1 CPU/1 GiB CI limit. Actual OCR, encrypted SQLite versions and in-flight SIGTERM; not a hosted PostgreSQL or Vercel daemon proof.',
+    report={'passed':True,'scope':'Offline Linux amd64 image, read-only root, non-root user, 1 CPU/1 GiB CI limit. Actual OCR, historical monitoring, encrypted SQLite versions and in-flight SIGTERM; not a hosted PostgreSQL or Vercel daemon proof.',
             'duration_seconds':round(time.monotonic()-started,2),'shutdown_seconds':shutdown_seconds,
             'cgroup_memory_peak_bytes':memory_peak(),'checks':checks,
             'ocr_cases':[{'case':row['case'],'checks':row['checks']} for row in scans['cases']],
