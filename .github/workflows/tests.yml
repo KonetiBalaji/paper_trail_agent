@@ -30,7 +30,7 @@ jobs:
             aquasec/trivy@sha256:16f1ee8462d0ba07dd69239150d60ba7b591c55e02dfc33a3fc19710b861d180 \
             image --input /image.tar --scanners vuln --pkg-types os --format json \
             --exit-code 0 > worker-os-vulnerabilities.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: worker-os-vulnerabilities
@@ -50,7 +50,7 @@ jobs:
           report['dockerfile_sha256']=hashlib.sha256(Path('Dockerfile.worker').read_bytes()).hexdigest()
           path.write_text(json.dumps(report,indent=2)+'\n')
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: worker-image-evaluation
@@ -76,7 +76,7 @@ jobs:
       - name: Candidate layouts plus all native packages and actual OCR regression
         run: python scripts/evaluate_layout_package.py --with-ocr --report work/layout-package-results.json
       - run: python scripts/test_frontend.py --report work/frontend-ocr-results.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ocr-evaluation
@@ -129,12 +129,12 @@ jobs:
       - run: python scripts/check_deployment_requirements.py
       - run: python scripts/promote_layouts.py --check
       - run: python scripts/evaluate_agents.py --report work/agent-evals-results.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: agent-evaluation
           path: work/agent-evals-results.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: mcp-evaluation
