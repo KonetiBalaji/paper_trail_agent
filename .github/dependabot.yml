@@ -5,12 +5,20 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
+    ignore:
+      # NumPy 2.5 requires Python 3.12. The worker runs Python 3.11.
+      - dependency-name: numpy
+        versions: ['>=2.5,<2.6']
     groups:
       python-compatible:
         patterns: ['*']
         update-types: [minor, patch]
   - package-ecosystem: pip
     directory: /tests
+    ignore:
+      # The video tooling also runs on Python 3.11.
+      - dependency-name: numpy
+        versions: ['>=2.5,<2.6']
     schedule:
       interval: weekly
     open-pull-requests-limit: 2
