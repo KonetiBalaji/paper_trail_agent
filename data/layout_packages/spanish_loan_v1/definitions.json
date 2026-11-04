@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "definitions": [
+    {
+      "id": "spanish_loan_v1",
+      "marker": "Layout: PTA-SPANISH-LOAN-V1",
+      "header": "Tramo Capital Intereses",
+      "kind": "loan",
+      "columns": [
+        "principal",
+        "interest"
+      ],
+      "max_pages": 1
+    }
+  ]
+}

@@ -20,8 +20,8 @@ def run():
         response = client.get('/api/layouts'); response.raise_for_status(); status = response.json()
         check('active_source_bound_registry', status['status'] == 'active')
         check('exact_deployed_receipt', status['receipt_sha256'] == expected)
-        check('full_corpus_count', status['corpus_cases'] == 41)
-        check('two_reviewed_native_layouts', {r['id'] for r in status['layouts']} == {'cedar_capital_v1', 'cedar_movement_v1'}
+        check('full_corpus_count', status['corpus_cases'] == 44)
+        check('three_reviewed_native_layouts', {r['id'] for r in status['layouts']} == {'cedar_capital_v1', 'cedar_movement_v1', 'spanish_loan_v1'}
               and all(r['max_pages'] == 1 and not r['ocr_supported'] and r['review_kind'] == 'assistant' for r in status['layouts']))
         check('status_does_not_create_session', not client.cookies)
         response = client.post('/api/platform/demo/start'); response.raise_for_status()

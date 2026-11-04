@@ -36,7 +36,7 @@ def admitted(tmp_path):
     report['review_records'][0]['record_sha256'] = registry.digest(tmp_path / 'data/layout_packages/cedar_v1/review.json')
     def save():
         write(tmp_path / registry.REPORT, report)
-        write(tmp_path / registry.REGISTRY, {'schema_version': 1, 'packages': ['cedar_v1'],
+        write(tmp_path / registry.REGISTRY, {'schema_version': 1, 'packages': ['cedar_v1', 'spanish_loan_v1'],
                                            'report_sha256': registry.digest(tmp_path / registry.REPORT)})
     save()
     return tmp_path, report, save
@@ -46,7 +46,7 @@ def test_valid_receipt_enables_exact_native_mapping_and_real_calculation(admitte
     root, _, _ = admitted
     monkeypatch.setattr(registry, 'ROOT', root)
     status = registry.load()
-    assert status['status'] == 'active' and len(status['definitions']) == 2 and status['corpus_cases'] == 41
+    assert status['status'] == 'active' and len(status['definitions']) == 3 and status['corpus_cases'] == 44
     path = root / 'data/layout_packages/cedar_v1/cases/loan_math_error/statement_1.pdf'
     report = main.analyze_files([UploadFile(filename='fictional.pdf', file=io.BytesIO(path.read_bytes()))], 'local', persist=False)
     assert report['status'] == 'discrepancies'
@@ -110,7 +110,7 @@ def test_status_api_is_read_only_and_never_calls_a_provider(admitted, monkeypatc
     with TestClient(main.app) as client:
         response = client.get('/api/layouts')
         assert response.status_code == 200 and response.json()['status'] == 'active'
-        assert len(response.json()['layouts']) == 2
+        assert len(response.json()['layouts']) == 3
         assert response.json()['layouts'][0]['ocr_supported'] is False
         assert client.post('/api/layouts', json={'promoted': True}).status_code == 405
 
@@ -186,3 +186,22 @@ def test_materialized_or_virtual_negative_fixture_has_identical_binding(admitted
     assert registry.load(root)['status'] == 'active'
     path.write_bytes(b'%PDF-wrong-negative-fixture')
     assert registry.load(root)['status'] == 'stale'
+
+
+def test_spanish_receipt_enables_exact_total_and_keeps_changed_header_in_review():
+    package = PROJECT / 'data/layout_packages/spanish_loan_v1/cases'
+    expected = {'loan_math_error': 'discrepancies', 'loan_changed_header': 'review'}
+    for name, status in expected.items():
+        raw = (package / name / 'statement_1.pdf').read_bytes()
+        report = main.analyze_files([UploadFile(filename='fictional.pdf', file=io.BytesIO(raw))],
+                                    'local', persist=False)
+        assert report['status'] == status
+        if name == 'loan_math_error':
+            assert report['documents'][0]['layout_support']['id'] == 'spanish_loan_v1'
+            assert report['documents'][0]['layout_support']['promoted']
+            finding, = report['findings']
+            assert finding['difference'] == '50.00' and finding['computed'] == '3300.00'
+            assert len(finding['sources']) == 3
+        else:
+            assert any(f['type'] == 'layout_header_missing' for f in report['findings'])
+            assert all(f['severity'] == 'review' for f in report['findings'])

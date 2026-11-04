@@ -119,3 +119,47 @@ def test_invalid_spanish_period_requires_review(period):
     findings, _ = reconcile([doc])
     assert doc["statement"]["period_end"] is None
     assert any(finding["type"] == "unsupported_date" for finding in findings)
+
+
+def test_spanish_loan_layout_requires_gated_mapping(tmp_path, monkeypatch):
+    from app.layout_proposals import Proposal, trial
+    from scripts.generate_benchmark_fixtures import render, table
+
+    mapping = Proposal(
+        id="spanish_loan_trial", marker="Layout: PTA-SPANISH-LOAN-V1",
+        header="Tramo Capital Intereses", kind="loan",
+        columns=("principal", "interest"), max_pages=1,
+    )
+    path = tmp_path / "spanish-statement.pdf"
+    render(path, {"lender": "Prestamista ficticio", "pages": [[
+        mapping.marker,
+        "Número de préstamo: FICTICIO-001",
+        "Moneda: EUR",
+        "Fecha de corte: 31 de octubre de 2026",
+        table(["Tramo", "Capital", "Intereses"], [
+            ["T1", "1000.00", "100.00"], ["T2", "2000.00", "200.00"],
+        ]),
+        "Total de capital e intereses: 3350.00",
+    ]]})
+    raw = path.read_bytes()
+    from app import layout_registry
+    unreviewed = read_pdf(raw, path.name, "doc1")
+    with monkeypatch.context() as isolated:
+        isolated.setattr(layout_registry, "ROOT", tmp_path)
+        unreviewed["statement"] = parse_statement(unreviewed)
+    findings, _ = reconcile([unreviewed])
+    assert any(finding["type"] == "layout_not_promoted" for finding in findings)
+    assert all(finding["severity"] == "review" for finding in findings)
+
+    candidate = read_pdf(raw, path.name, "doc1")
+    with trial([mapping]):
+        candidate["statement"] = parse_statement(candidate)
+        findings, _ = reconcile([candidate])
+    finding, = findings
+    assert candidate["layout_trial"]["promoted"] is False
+    assert candidate["statement"]["loan_id"] == "FICTICIO-001"
+    assert candidate["statement"]["currency"] == "EUR"
+    assert candidate["statement"]["period_end"] == "2026-10-31"
+    assert finding["severity"] == "confirmed"
+    assert finding["computed"] == "3300.00" and finding["difference"] == "50.00"
+    assert len(finding["sources"]) == 3

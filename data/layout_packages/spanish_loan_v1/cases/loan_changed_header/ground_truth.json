@@ -1,0 +1,22 @@
+{
+  "case": "loan_changed_header",
+  "expected_status": "review",
+  "confirmed": [],
+  "review_types": [
+    "layout_header_missing"
+  ],
+  "documents": [
+    {
+      "file": "statement_1.pdf",
+      "sha256": "092c9163c41c0fd826a480c83f7c45f1bc0f56c121b83df2ecf04c5fe7d5b18e",
+      "truth": {
+        "loan_id": "FICTICIO-001",
+        "currency": "EUR",
+        "period_end": "2026-10-31",
+        "stated_total": "3300.00",
+        "transactions": [],
+        "tranches": []
+      }
+    }
+  ]
+}
