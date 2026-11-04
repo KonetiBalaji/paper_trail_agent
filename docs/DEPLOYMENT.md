@@ -71,6 +71,28 @@ The timeline reports whether a monitoring worker has an active heartbeat.
 Persistent hosted worker setup and email and portal intake remain open.
 
 The PostgreSQL CI restore drill verifies a disposable database, original PDFs,
-report versions and audit integrity. Provider backup recovery remains open.
-The public uptime workflow is available on the review branch. GitHub schedules
-it after it reaches the default branch.
+report versions and audit integrity. Scheduled production uptime checks run
+from the default branch.
+
+### Neon point-in-time recovery drill
+
+Run the drill in an isolated Neon project containing only fictional data. Check
+the project's restore window and branch allowance in the provider console.
+Leave the production endpoint and Vercel secrets in place throughout the drill.
+
+1. On the drill source branch, save a synthetic PDF case and record a reviewer
+   decision. Record the PDF hash, report versions, finding revision, and audit
+   verification result. Capture a UTC recovery point after those writes commit.
+2. Save a second, distinguishable synthetic review after the recovery point.
+   Verify that it appears on the source branch.
+3. [Create a separate branch at the recorded recovery point](https://neon.com/blog/point-in-time-recovery).
+   Use its own connection string and the drill encryption key in an isolated
+   service instance. Keep both values out of logs and evidence.
+4. On the restored branch, verify the original PDF hash, both earlier report
+   versions, the earlier decision, and the audit chain. Verify the later
+   decision is absent there and still present on the source branch.
+5. Record the deployed commit, UTC recovery point, elapsed time and pass/fail
+   for each check. Record removal of the isolated resources separately. Publish
+   only synthetic results and omit database connection details.
+
+Provider backup recovery remains open until the drill has a passing record.
