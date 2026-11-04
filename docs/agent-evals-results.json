@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "evaluated_at": "2026-11-04T04:41:19.951325+00:00",
+  "evaluated_at": "2026-11-04T04:49:39.372398+00:00",
   "passed": true,
   "generation_model_calls": 0,
   "scope": "Offline corpus, controlled faults, actual local MCP probes and separately labeled recorded live evidence. Not real-world accuracy.",
@@ -1705,38 +1705,10 @@
   "live": {
     "status": "scored",
     "current_source_match": true,
-    "artifact_sha256": "0b4f2ed7c98f1a373f6acc761133a87d6c6a8dc1e9cbc4906f4fa8433100097a",
-    "finished_at": "2026-11-04T04:41:07.981252+00:00",
+    "artifact_sha256": "9e5f3027e0b27d4586f3fd23b838e7c6d443836edfd191aa1e6514c08852fe4c",
+    "finished_at": "2026-11-04T04:49:27.291743+00:00",
     "fields": {
-      "principal": {
-        "tp": 14,
-        "fp": 0,
-        "fn": 1,
-        "precision": 1.0,
-        "recall": 0.9333333333333333
-      },
-      "loan_id": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 1,
-        "precision": 1.0,
-        "recall": 0.875
-      },
-      "currency": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 1,
-        "precision": 1.0,
-        "recall": 0.875
-      },
       "id": {
-        "tp": 14,
-        "fp": 0,
-        "fn": 1,
-        "precision": 1.0,
-        "recall": 0.9333333333333333
-      },
-      "interest": {
         "tp": 14,
         "fp": 0,
         "fn": 1,
@@ -1750,7 +1722,35 @@
         "precision": 1.0,
         "recall": 0.875
       },
+      "currency": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      },
+      "interest": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.9333333333333333
+      },
       "period_end": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.875
+      },
+      "principal": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 1,
+        "precision": 1.0,
+        "recall": 0.9333333333333333
+      },
+      "loan_id": {
         "tp": 7,
         "fp": 0,
         "fn": 1,
@@ -1759,35 +1759,7 @@
       }
     },
     "native_fields": {
-      "principal": {
-        "tp": 14,
-        "fp": 0,
-        "fn": 0,
-        "precision": 1.0,
-        "recall": 1.0
-      },
-      "loan_id": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 0,
-        "precision": 1.0,
-        "recall": 1.0
-      },
-      "currency": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 0,
-        "precision": 1.0,
-        "recall": 1.0
-      },
       "id": {
-        "tp": 14,
-        "fp": 0,
-        "fn": 0,
-        "precision": 1.0,
-        "recall": 1.0
-      },
-      "interest": {
         "tp": 14,
         "fp": 0,
         "fn": 0,
@@ -1801,7 +1773,35 @@
         "precision": 1.0,
         "recall": 1.0
       },
+      "currency": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "interest": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
       "period_end": {
+        "tp": 7,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "principal": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "loan_id": {
         "tp": 7,
         "fp": 0,
         "fn": 0,
@@ -1815,214 +1815,42 @@
       {
         "case": "clean",
         "requests": {
-          "correct": 2,
-          "total": 2,
-          "rate": 1.0
-        },
-        "calculator_exactness": {
-          "correct": 1,
-          "total": 1,
-          "rate": 1.0
-        },
-        "calculator_input_grounding": {
-          "correct": 1,
-          "total": 1,
-          "rate": 1.0
-        },
-        "case_bound_retrieval": {
-          "correct": 1,
-          "total": 1,
-          "rate": 1.0
-        },
-        "distinct_check_coverage": {
-          "correct": 1,
-          "total": 1,
-          "rate": 1.0
-        },
-        "finding_source_retrieval": {
-          "correct": 0,
-          "total": 0,
-          "rate": null
-        },
-        "finding_source_final_citation": {
-          "correct": 0,
-          "total": 0,
-          "rate": null
-        },
-        "fields": {
-          "principal": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          }
-        },
-        "native_fields": {
-          "principal": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "stated_total": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "period_end": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          }
-        },
-        "image_abstention_fn": 0,
-        "layout": "labeled_loan_pair",
-        "failures": [],
-        "elapsed_seconds": 45.91
-      },
-      {
-        "case": "contradiction",
-        "requests": {
           "correct": 3,
           "total": 3,
           "rate": 1.0
         },
         "calculator_exactness": {
-          "correct": 2,
-          "total": 2,
-          "rate": 1.0
-        },
-        "calculator_input_grounding": {
-          "correct": 2,
-          "total": 2,
-          "rate": 1.0
-        },
-        "case_bound_retrieval": {
           "correct": 1,
           "total": 1,
           "rate": 1.0
         },
-        "distinct_check_coverage": {
+        "calculator_input_grounding": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "case_bound_retrieval": {
           "correct": 2,
           "total": 2,
+          "rate": 1.0
+        },
+        "distinct_check_coverage": {
+          "correct": 1,
+          "total": 1,
           "rate": 1.0
         },
         "finding_source_retrieval": {
-          "correct": 2,
-          "total": 2,
-          "rate": 1.0
+          "correct": 0,
+          "total": 0,
+          "rate": null
         },
         "finding_source_final_citation": {
-          "correct": 2,
-          "total": 2,
-          "rate": 1.0
+          "correct": 0,
+          "total": 0,
+          "rate": null
         },
         "fields": {
-          "principal": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2036,7 +1864,35 @@
             "precision": 1.0,
             "recall": 1.0
           },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2045,35 +1901,7 @@
           }
         },
         "native_fields": {
-          "principal": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2087,7 +1915,35 @@
             "precision": 1.0,
             "recall": 1.0
           },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2098,75 +1954,47 @@
         "image_abstention_fn": 0,
         "layout": "labeled_loan_pair",
         "failures": [],
-        "elapsed_seconds": 39.8
+        "elapsed_seconds": 52.66
       },
       {
-        "case": "math_error",
+        "case": "contradiction",
         "requests": {
           "correct": 4,
           "total": 4,
           "rate": 1.0
         },
         "calculator_exactness": {
-          "correct": 2,
-          "total": 2,
+          "correct": 3,
+          "total": 3,
           "rate": 1.0
         },
         "calculator_input_grounding": {
-          "correct": 2,
-          "total": 2,
+          "correct": 3,
+          "total": 3,
           "rate": 1.0
         },
         "case_bound_retrieval": {
-          "correct": 2,
-          "total": 2,
-          "rate": 1.0
-        },
-        "distinct_check_coverage": {
           "correct": 1,
           "total": 1,
           "rate": 1.0
         },
+        "distinct_check_coverage": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
         "finding_source_retrieval": {
-          "correct": 3,
-          "total": 3,
+          "correct": 2,
+          "total": 2,
           "rate": 1.0
         },
         "finding_source_final_citation": {
-          "correct": 3,
-          "total": 3,
+          "correct": 2,
+          "total": 2,
           "rate": 1.0
         },
         "fields": {
-          "principal": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2180,7 +2008,35 @@
             "precision": 1.0,
             "recall": 1.0
           },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2189,35 +2045,7 @@
           }
         },
         "native_fields": {
-          "principal": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 4,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
             "tp": 4,
             "fp": 0,
             "fn": 0,
@@ -2231,7 +2059,35 @@
             "precision": 1.0,
             "recall": 1.0
           },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2242,13 +2098,13 @@
         "image_abstention_fn": 0,
         "layout": "labeled_loan_pair",
         "failures": [],
-        "elapsed_seconds": 51.98
+        "elapsed_seconds": 49.56
       },
       {
-        "case": "messy",
+        "case": "math_error",
         "requests": {
-          "correct": 2,
-          "total": 2,
+          "correct": 3,
+          "total": 3,
           "rate": 1.0
         },
         "calculator_exactness": {
@@ -2262,8 +2118,152 @@
           "rate": 1.0
         },
         "case_bound_retrieval": {
+          "correct": 2,
+          "total": 2,
+          "rate": 1.0
+        },
+        "distinct_check_coverage": {
           "correct": 1,
           "total": 1,
+          "rate": 1.0
+        },
+        "finding_source_retrieval": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "finding_source_final_citation": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "fields": {
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "native_fields": {
+          "id": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "stated_total": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "currency": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "period_end": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 4,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "image_abstention_fn": 0,
+        "layout": "labeled_loan_pair",
+        "failures": [],
+        "elapsed_seconds": 51.67
+      },
+      {
+        "case": "messy",
+        "requests": {
+          "correct": 3,
+          "total": 3,
+          "rate": 1.0
+        },
+        "calculator_exactness": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "calculator_input_grounding": {
+          "correct": 1,
+          "total": 1,
+          "rate": 1.0
+        },
+        "case_bound_retrieval": {
+          "correct": 2,
+          "total": 2,
           "rate": 1.0
         },
         "distinct_check_coverage": {
@@ -2282,35 +2282,7 @@
           "rate": null
         },
         "fields": {
-          "principal": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.6666666666666666
-          },
-          "loan_id": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.5
-          },
-          "currency": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.5
-          },
           "id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 1,
-            "precision": 1.0,
-            "recall": 0.6666666666666666
-          },
-          "interest": {
             "tp": 2,
             "fp": 0,
             "fn": 1,
@@ -2324,7 +2296,35 @@
             "precision": 1.0,
             "recall": 0.5
           },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.6666666666666666
+          },
           "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.5
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "precision": 1.0,
+            "recall": 0.6666666666666666
+          },
+          "loan_id": {
             "tp": 1,
             "fp": 0,
             "fn": 1,
@@ -2333,35 +2333,7 @@
           }
         },
         "native_fields": {
-          "principal": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "loan_id": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "currency": {
-            "tp": 1,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
           "id": {
-            "tp": 2,
-            "fp": 0,
-            "fn": 0,
-            "precision": 1.0,
-            "recall": 1.0
-          },
-          "interest": {
             "tp": 2,
             "fp": 0,
             "fn": 0,
@@ -2375,7 +2347,35 @@
             "precision": 1.0,
             "recall": 1.0
           },
+          "currency": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "interest": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
           "period_end": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "principal": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "loan_id": {
             "tp": 1,
             "fp": 0,
             "fn": 0,
@@ -2386,13 +2386,13 @@
         "image_abstention_fn": 7,
         "layout": "native_plus_image_review",
         "failures": [],
-        "elapsed_seconds": 39.89
+        "elapsed_seconds": 49.66
       }
     ],
     "summary": {
       "requests": {
-        "correct": 11,
-        "total": 11,
+        "correct": 13,
+        "total": 13,
         "rate": 1.0
       },
       "calculator_exactness": {
@@ -2406,8 +2406,8 @@
         "rate": 1.0
       },
       "case_bound_retrieval": {
-        "correct": 5,
-        "total": 5,
+        "correct": 7,
+        "total": 7,
         "rate": 1.0
       },
       "distinct_check_coverage": {
@@ -2559,7 +2559,7 @@
     "app/integrations.py": "35d2002a5606ef3bce47d7a79e5e4b2ae8b6dd44937f17b6f8f5d2aa98157573",
     "app/layout_proposals.py": "616d3c06c6f072af32bc44a98a553a561f36a7060c22193477fb3acf6531fae4",
     "app/layout_registry.py": "8305eba8900fbdb1aa51c61957f2ad61e1ac13fc1a0adfe27d35c88dbd8d6a04",
-    "app/layouts.py": "22ad01cdb17b43e36667050478f55c2bd871a0d51c965dc6e919f7749b736f41",
+    "app/layouts.py": "3d16c4c8476f9ea28977768aeb74bf45d4b67e857c69831c609a01fcbf950f4c",
     "app/main.py": "a861f3410d72e9c374f717786cd0b202f974ccb48d78d6d022e0c2d0917443fd",
     "app/mcp_client.py": "e377bdf8bbccb0717714b6de33b3c757d07ed62368c7a189936fa8b2d1bac1c2",
     "app/mcp_server.py": "4a03bdd3dfa89ce5897f77eaaf9afff57006904d2203a3e1dd876c0dfb352fef",
