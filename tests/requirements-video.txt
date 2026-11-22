@@ -1,5 +1,5 @@
 # Optional local production tools. Never installed in the web/worker image.
-imageio-ffmpeg==0.7.0
+imageio-ffmpeg==0.8.1
 pillow==13.0.0
 av==18.1.0
 faster-whisper==1.2.1
