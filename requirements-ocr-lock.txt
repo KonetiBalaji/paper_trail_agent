@@ -1,8 +1,8 @@
 # Optional OCR-only pins; core versions come from requirements-lock.txt.
 flatbuffers==25.12.19
 numpy==2.4.6
-onnxruntime==1.31.1
-opencv-python==5.0.0.93
+onnxruntime==1.32.0
+opencv-python==5.1.0.95
 protobuf==7.36.2
 pyclipper==1.4.0
 PyYAML==6.0.3
